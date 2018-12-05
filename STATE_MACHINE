@@ -1,0 +1,42 @@
+Battle States
+
+ALL CAPS is engine level issues (no user input)
+lower case is user input
+
+BATTLE START
+Choose what pokemon to send out
+ENTRANCE
+
+TURN START
+
+Choose moves
+SWAP POKEMON
+ATTACK PHASE
+HANDLE FAINTS
+HANDLE END TURN
+TURN END
+
+BATTLE END
+
+
+SWAP POKEMON STATE
+Choose pokemon to send out
+RETURN old_poke
+ENTRANCE new_poke
+
+ENTRANCE poke
+move poke from team to field
+handle hazards
+handle poke.ability
+handle terrain
+
+RETURN POKE
+Move poke from field to empty party slot
+
+HANDLE FAINTS poke
+set poke.status to faint
+SWAP POKEMON STATE
+
+ATTACK PHASE
+Sort pokes by attack priority -> speed -> random on speed ties
+
