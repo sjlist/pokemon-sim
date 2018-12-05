@@ -1,0 +1,9 @@
+{
+  "HP":60,
+  "ATK": 65,
+  "DEF": 60,
+  "SPA": 130,
+  "SPD": 75,
+  "SPE": 110,
+  "TYPE": ["GHOST", "POISON"]
+}
