@@ -5,28 +5,31 @@
 #ifndef POKEMON_SIM_TYPE_H
 #define POKEMON_SIM_TYPE_H
 
-enum class PokeTypes
+enum PokeTypes
 {
     NORMAL = 0,
     FIRE,
-    FIGHTING,
     WATER,
-    FLYING,
     GRASS,
-    POISON,
     ELECTRIC,
-    GROUND,
-    PSYCHIC,
-    ROCK,
     ICE,
+    FIGHTING,
+    POISON,
+    GROUND,
+    FLYING,
+    PSYCHIC,
     BUG,
-    DRAGON,
+    ROCK,
     GHOST,
+    DRAGON,
     DARK,
     STEEL,
     FAIRY,
-    NONE
+    NONE,
+    NUM_TYPES
 };
+
+float calculate_damage_modifier_single(PokeTypes pokemon_type, PokeTypes move_type);
 
 float calculate_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_type);
 

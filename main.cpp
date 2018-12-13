@@ -7,7 +7,7 @@
 
 int main()
 {
-    PokeTypes pokemon_type [2] = {PokeTypes::FIRE, PokeTypes::FLYING};
+    PokeTypes pokemon_type [2] = {PokeTypes::FIRE, PokeTypes::ELECTRIC};
     float e = calculate_damage_modifier(pokemon_type, PokeTypes::WATER);
     std::cout << e <<"\n";
     return 1;

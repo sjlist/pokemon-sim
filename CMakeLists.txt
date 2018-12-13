@@ -13,3 +13,5 @@ add_executable(pokemon_sim
     Pokemon.h
     Type.cpp
     Type.h)
+
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
