@@ -9,8 +9,11 @@ add_executable(pokemon_sim
     main.cpp
     Move.cpp
     Move.h
+    Natures.cpp
+    Natures.h
     Pokemon.cpp
     Pokemon.h
+    Stats.h
     Type.cpp
     Type.h)
 

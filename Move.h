@@ -10,12 +10,22 @@
 
 class Move {
 public:
+    Move();
+
+    int get_pp();
+    int get_power();
+    int get_acc();
+    PokeTypes get_type();
+    std::string get_name();
+
+
+private:
     std::string name;
     int max_pp;
     int current_pp;
     int power;
-    PokeTypes type[2];
-
+    int acc;
+    PokeTypes type;
 };
 
 
