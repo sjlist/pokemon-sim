@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/slist/Documents/pokemon-sim/Move.cpp
+Move.h
+/home/slist/Documents/pokemon-sim/Move.h
+
+/home/slist/Documents/pokemon-sim/Move.h
+string
+-
+Type.h
+/home/slist/Documents/pokemon-sim/Type.h
+
+/home/slist/Documents/pokemon-sim/Pokemon.cpp
+Pokemon.h
+/home/slist/Documents/pokemon-sim/Pokemon.h
+
+/home/slist/Documents/pokemon-sim/Pokemon.h
+Move.h
+/home/slist/Documents/pokemon-sim/Move.h
+
+/home/slist/Documents/pokemon-sim/Type.cpp
+Type.h
+/home/slist/Documents/pokemon-sim/Type.h
+map
+-
+
+/home/slist/Documents/pokemon-sim/Type.h
+
+/home/slist/Documents/pokemon-sim/main.cpp
+iostream
+-
+Type.h
+/home/slist/Documents/pokemon-sim/Type.h
+
