@@ -3,9 +3,14 @@ project(pokemon_sim)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(.)
+include_directories(.
+    ../jsoncpp/include)
 
 add_executable(pokemon_sim
+    Battle.cpp
+    Battle.h
+    Field.cpp
+    Field.h
     main.cpp
     Move.cpp
     Move.h

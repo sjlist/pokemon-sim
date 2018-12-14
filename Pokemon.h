@@ -10,16 +10,18 @@
 
 class Pokemon {
 public:
-    Pokemon(std::string species_name);
+    Pokemon();
     PokeTypes* get_type();
     int get_level();
     int get_stat(STAT stat);
+    bool is_active();
+//    bool load_species_data(std::string species);
 
     Move moves[4];
 
     void set_stats(int* base_stats, int* ivs, int* evs, int level, Natures nature);
 private:
-
+    bool active;
     int level;
 
     PokeTypes type[2];

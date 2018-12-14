@@ -2,15 +2,19 @@
 // Created by slist on 12/12/18.
 //
 
+#include <string>
+/*#include <json/json.h>
+#include <fstream>*/
+#include <iostream>
+
 #include "Pokemon.h"
 #include "Move.h"
 #include "Natures.h"
 
-#include <string>
-
-Pokemon::Pokemon(std::string species_name)
+Pokemon::Pokemon()
 {
-    Pokemon::name = species_name;
+    Pokemon::name = "";
+    Pokemon::active = false;
     Pokemon::current_hp = 100;
     Pokemon::level = 50;
     Pokemon::base_stats[0] = 100;
@@ -24,6 +28,26 @@ Pokemon::Pokemon(std::string species_name)
 
     Move move_1 = Move();
     Pokemon::moves[0] = move_1;
+}
+
+/*
+bool Pokemon::load_species_data(std::string species)
+{
+    std::ifstream ifs("species/" + species + ".json");
+    Json::Value obj;
+
+    if (Json::CharReader::parse(ifs, obj))
+    {
+        std::cout << obj["HP"] << "\n";
+        return true;
+    }
+    return false;
+}
+*/
+
+bool Pokemon::is_active()
+{
+    return Pokemon::active;
 }
 
 int Pokemon::get_stat(STAT stat)

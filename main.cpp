@@ -8,7 +8,7 @@
 
 int main()
 {
-    Pokemon garchomp = Pokemon("Garchomp");
+    Pokemon garchomp = Pokemon();
     int base [6] = {130, 95, 80, 85, 102, 108};
     int iv [6] = {31, 31, 31, 31 ,31, 31};
     int ev [6] = {252, 0, 0, 0, 252, 8};
@@ -20,5 +20,6 @@ int main()
 
     float damage_mod = calculate_damage_modifier(garchomp.get_type(), garchomp.moves[0].get_type());
     int base_damage = ((((2 * garchomp.get_level() / 5) + 2)* garchomp.moves[0].get_power() * garchomp.get_stat(STAT::ATK) / (garchomp.get_stat(STAT::DEF) * 50)) + 2) * damage_mod;
+    std::cout << base_damage << "\n";
     return 1;
 }
