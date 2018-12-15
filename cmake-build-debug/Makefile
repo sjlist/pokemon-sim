@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/clion-2018.2.5/bin/cmake/linux/bin/cmake
+CMAKE_COMMAND = /home/slist/libs/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /opt/clion-2018.2.5/bin/cmake/linux/bin/cmake -E remove -f
+RM = /home/slist/libs/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/slist/Documents/pokemon-sim
+CMAKE_SOURCE_DIR = /home/slist/pokemon-sim
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/slist/Documents/pokemon-sim/cmake-build-debug
+CMAKE_BINARY_DIR = /home/slist/pokemon-sim/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/slist/Documents/pokemon-sim/cmake-build-debug
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/clion-2018.2.5/bin/cmake/linux/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/home/slist/libs/cmake/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/opt/clion-2018.2.5/bin/cmake/linux/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/home/slist/libs/cmake/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles /home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/slist/pokemon-sim/cmake-build-debug/CMakeFiles /home/slist/pokemon-sim/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/slist/pokemon-sim/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,6 +123,60 @@ pokemon_sim/fast:
 	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/build
 .PHONY : pokemon_sim/fast
 
+Battle.o: Battle.cpp.o
+
+.PHONY : Battle.o
+
+# target to build an object file
+Battle.cpp.o:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Battle.cpp.o
+.PHONY : Battle.cpp.o
+
+Battle.i: Battle.cpp.i
+
+.PHONY : Battle.i
+
+# target to preprocess a source file
+Battle.cpp.i:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Battle.cpp.i
+.PHONY : Battle.cpp.i
+
+Battle.s: Battle.cpp.s
+
+.PHONY : Battle.s
+
+# target to generate assembly for a file
+Battle.cpp.s:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Battle.cpp.s
+.PHONY : Battle.cpp.s
+
+Field.o: Field.cpp.o
+
+.PHONY : Field.o
+
+# target to build an object file
+Field.cpp.o:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Field.cpp.o
+.PHONY : Field.cpp.o
+
+Field.i: Field.cpp.i
+
+.PHONY : Field.i
+
+# target to preprocess a source file
+Field.cpp.i:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Field.cpp.i
+.PHONY : Field.cpp.i
+
+Field.s: Field.cpp.s
+
+.PHONY : Field.s
+
+# target to generate assembly for a file
+Field.cpp.s:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Field.cpp.s
+.PHONY : Field.cpp.s
+
 Move.o: Move.cpp.o
 
 .PHONY : Move.o
@@ -149,6 +203,33 @@ Move.s: Move.cpp.s
 Move.cpp.s:
 	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Move.cpp.s
 .PHONY : Move.cpp.s
+
+Natures.o: Natures.cpp.o
+
+.PHONY : Natures.o
+
+# target to build an object file
+Natures.cpp.o:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Natures.cpp.o
+.PHONY : Natures.cpp.o
+
+Natures.i: Natures.cpp.i
+
+.PHONY : Natures.i
+
+# target to preprocess a source file
+Natures.cpp.i:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Natures.cpp.i
+.PHONY : Natures.cpp.i
+
+Natures.s: Natures.cpp.s
+
+.PHONY : Natures.s
+
+# target to generate assembly for a file
+Natures.cpp.s:
+	$(MAKE) -f CMakeFiles/pokemon_sim.dir/build.make CMakeFiles/pokemon_sim.dir/Natures.cpp.s
+.PHONY : Natures.cpp.s
 
 Pokemon.o: Pokemon.cpp.o
 
@@ -240,9 +321,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... pokemon_sim"
 	@echo "... edit_cache"
+	@echo "... Battle.o"
+	@echo "... Battle.i"
+	@echo "... Battle.s"
+	@echo "... Field.o"
+	@echo "... Field.i"
+	@echo "... Field.s"
 	@echo "... Move.o"
 	@echo "... Move.i"
 	@echo "... Move.s"
+	@echo "... Natures.o"
+	@echo "... Natures.i"
+	@echo "... Natures.s"
 	@echo "... Pokemon.o"
 	@echo "... Pokemon.i"
 	@echo "... Pokemon.s"

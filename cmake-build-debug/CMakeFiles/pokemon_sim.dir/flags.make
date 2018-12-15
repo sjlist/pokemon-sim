@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++14
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/slist/Documents/pokemon-sim/. 
+CXX_INCLUDES = -I/home/slist/pokemon-sim/. -I/home/slist/pokemon-sim/../libs/boost 
 

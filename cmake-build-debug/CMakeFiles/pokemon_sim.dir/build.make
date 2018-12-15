@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /opt/clion-2018.2.5/bin/cmake/linux/bin/cmake
+CMAKE_COMMAND = /home/slist/libs/cmake/bin/cmake
 
 # The command to remove a file.
-RM = /opt/clion-2018.2.5/bin/cmake/linux/bin/cmake -E remove -f
+RM = /home/slist/libs/cmake/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/slist/Documents/pokemon-sim
+CMAKE_SOURCE_DIR = /home/slist/pokemon-sim
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/slist/Documents/pokemon-sim/cmake-build-debug
+CMAKE_BINARY_DIR = /home/slist/pokemon-sim/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/pokemon_sim.dir/depend.make
@@ -57,79 +57,124 @@ include CMakeFiles/pokemon_sim.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/pokemon_sim.dir/flags.make
 
+CMakeFiles/pokemon_sim.dir/Battle.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
+CMakeFiles/pokemon_sim.dir/Battle.cpp.o: ../Battle.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/pokemon_sim.dir/Battle.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Battle.cpp.o -c /home/slist/pokemon-sim/Battle.cpp
+
+CMakeFiles/pokemon_sim.dir/Battle.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Battle.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Battle.cpp > CMakeFiles/pokemon_sim.dir/Battle.cpp.i
+
+CMakeFiles/pokemon_sim.dir/Battle.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Battle.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Battle.cpp -o CMakeFiles/pokemon_sim.dir/Battle.cpp.s
+
+CMakeFiles/pokemon_sim.dir/Field.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
+CMakeFiles/pokemon_sim.dir/Field.cpp.o: ../Field.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/pokemon_sim.dir/Field.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Field.cpp.o -c /home/slist/pokemon-sim/Field.cpp
+
+CMakeFiles/pokemon_sim.dir/Field.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Field.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Field.cpp > CMakeFiles/pokemon_sim.dir/Field.cpp.i
+
+CMakeFiles/pokemon_sim.dir/Field.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Field.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Field.cpp -o CMakeFiles/pokemon_sim.dir/Field.cpp.s
+
 CMakeFiles/pokemon_sim.dir/main.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
 CMakeFiles/pokemon_sim.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/pokemon_sim.dir/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/main.cpp.o -c /home/slist/Documents/pokemon-sim/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/pokemon_sim.dir/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/main.cpp.o -c /home/slist/pokemon-sim/main.cpp
 
 CMakeFiles/pokemon_sim.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/Documents/pokemon-sim/main.cpp > CMakeFiles/pokemon_sim.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/main.cpp > CMakeFiles/pokemon_sim.dir/main.cpp.i
 
 CMakeFiles/pokemon_sim.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/Documents/pokemon-sim/main.cpp -o CMakeFiles/pokemon_sim.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/main.cpp -o CMakeFiles/pokemon_sim.dir/main.cpp.s
 
 CMakeFiles/pokemon_sim.dir/Move.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
 CMakeFiles/pokemon_sim.dir/Move.cpp.o: ../Move.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/pokemon_sim.dir/Move.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Move.cpp.o -c /home/slist/Documents/pokemon-sim/Move.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/pokemon_sim.dir/Move.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Move.cpp.o -c /home/slist/pokemon-sim/Move.cpp
 
 CMakeFiles/pokemon_sim.dir/Move.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Move.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/Documents/pokemon-sim/Move.cpp > CMakeFiles/pokemon_sim.dir/Move.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Move.cpp > CMakeFiles/pokemon_sim.dir/Move.cpp.i
 
 CMakeFiles/pokemon_sim.dir/Move.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Move.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/Documents/pokemon-sim/Move.cpp -o CMakeFiles/pokemon_sim.dir/Move.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Move.cpp -o CMakeFiles/pokemon_sim.dir/Move.cpp.s
+
+CMakeFiles/pokemon_sim.dir/Natures.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
+CMakeFiles/pokemon_sim.dir/Natures.cpp.o: ../Natures.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/pokemon_sim.dir/Natures.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Natures.cpp.o -c /home/slist/pokemon-sim/Natures.cpp
+
+CMakeFiles/pokemon_sim.dir/Natures.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Natures.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Natures.cpp > CMakeFiles/pokemon_sim.dir/Natures.cpp.i
+
+CMakeFiles/pokemon_sim.dir/Natures.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Natures.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Natures.cpp -o CMakeFiles/pokemon_sim.dir/Natures.cpp.s
 
 CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
 CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o: ../Pokemon.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o -c /home/slist/Documents/pokemon-sim/Pokemon.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o -c /home/slist/pokemon-sim/Pokemon.cpp
 
 CMakeFiles/pokemon_sim.dir/Pokemon.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Pokemon.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/Documents/pokemon-sim/Pokemon.cpp > CMakeFiles/pokemon_sim.dir/Pokemon.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Pokemon.cpp > CMakeFiles/pokemon_sim.dir/Pokemon.cpp.i
 
 CMakeFiles/pokemon_sim.dir/Pokemon.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Pokemon.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/Documents/pokemon-sim/Pokemon.cpp -o CMakeFiles/pokemon_sim.dir/Pokemon.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Pokemon.cpp -o CMakeFiles/pokemon_sim.dir/Pokemon.cpp.s
 
 CMakeFiles/pokemon_sim.dir/Type.cpp.o: CMakeFiles/pokemon_sim.dir/flags.make
 CMakeFiles/pokemon_sim.dir/Type.cpp.o: ../Type.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/pokemon_sim.dir/Type.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Type.cpp.o -c /home/slist/Documents/pokemon-sim/Type.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/pokemon_sim.dir/Type.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/pokemon_sim.dir/Type.cpp.o -c /home/slist/pokemon-sim/Type.cpp
 
 CMakeFiles/pokemon_sim.dir/Type.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/pokemon_sim.dir/Type.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/Documents/pokemon-sim/Type.cpp > CMakeFiles/pokemon_sim.dir/Type.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/slist/pokemon-sim/Type.cpp > CMakeFiles/pokemon_sim.dir/Type.cpp.i
 
 CMakeFiles/pokemon_sim.dir/Type.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/pokemon_sim.dir/Type.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/Documents/pokemon-sim/Type.cpp -o CMakeFiles/pokemon_sim.dir/Type.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/slist/pokemon-sim/Type.cpp -o CMakeFiles/pokemon_sim.dir/Type.cpp.s
 
 # Object files for target pokemon_sim
 pokemon_sim_OBJECTS = \
+"CMakeFiles/pokemon_sim.dir/Battle.cpp.o" \
+"CMakeFiles/pokemon_sim.dir/Field.cpp.o" \
 "CMakeFiles/pokemon_sim.dir/main.cpp.o" \
 "CMakeFiles/pokemon_sim.dir/Move.cpp.o" \
+"CMakeFiles/pokemon_sim.dir/Natures.cpp.o" \
 "CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o" \
 "CMakeFiles/pokemon_sim.dir/Type.cpp.o"
 
 # External object files for target pokemon_sim
 pokemon_sim_EXTERNAL_OBJECTS =
 
-pokemon_sim: CMakeFiles/pokemon_sim.dir/main.cpp.o
-pokemon_sim: CMakeFiles/pokemon_sim.dir/Move.cpp.o
-pokemon_sim: CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o
-pokemon_sim: CMakeFiles/pokemon_sim.dir/Type.cpp.o
-pokemon_sim: CMakeFiles/pokemon_sim.dir/build.make
-pokemon_sim: CMakeFiles/pokemon_sim.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable pokemon_sim"
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Battle.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Field.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/main.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Move.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Natures.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Pokemon.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/Type.cpp.o
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/build.make
+bin/pokemon_sim: CMakeFiles/pokemon_sim.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable bin/pokemon_sim"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pokemon_sim.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-CMakeFiles/pokemon_sim.dir/build: pokemon_sim
+CMakeFiles/pokemon_sim.dir/build: bin/pokemon_sim
 
 .PHONY : CMakeFiles/pokemon_sim.dir/build
 
@@ -138,6 +183,6 @@ CMakeFiles/pokemon_sim.dir/clean:
 .PHONY : CMakeFiles/pokemon_sim.dir/clean
 
 CMakeFiles/pokemon_sim.dir/depend:
-	cd /home/slist/Documents/pokemon-sim/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/slist/Documents/pokemon-sim /home/slist/Documents/pokemon-sim /home/slist/Documents/pokemon-sim/cmake-build-debug /home/slist/Documents/pokemon-sim/cmake-build-debug /home/slist/Documents/pokemon-sim/cmake-build-debug/CMakeFiles/pokemon_sim.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/slist/pokemon-sim/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/slist/pokemon-sim /home/slist/pokemon-sim /home/slist/pokemon-sim/cmake-build-debug /home/slist/pokemon-sim/cmake-build-debug /home/slist/pokemon-sim/cmake-build-debug/CMakeFiles/pokemon_sim.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/pokemon_sim.dir/depend
 
