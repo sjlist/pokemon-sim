@@ -3,47 +3,50 @@
 //
 
 #include <string>
-/*#include <json/json.h>
-#include <fstream>*/
 #include <iostream>
+#include <cassert>
 
 #include "Pokemon.h"
 #include "Move.h"
 #include "Natures.h"
+#include "loadJSON.h"
+#include <boost/property_tree/ptree.hpp>
 
 Pokemon::Pokemon()
 {
-    Pokemon::name = "";
     Pokemon::active = false;
-    Pokemon::current_hp = 100;
-    Pokemon::level = 50;
-    Pokemon::base_stats[0] = 100;
-    Pokemon::base_stats[1] = 100;
-    Pokemon::base_stats[2] = 100;
-    Pokemon::base_stats[3] = 100;
-    Pokemon::base_stats[4] = 100;
-    Pokemon::base_stats[5] = 100;
-    Pokemon::type[0] = PokeTypes::GROUND;
-    Pokemon::type[1] = PokeTypes::DRAGON;
-
-    Move move_1 = Move();
-    Pokemon::moves[0] = move_1;
 }
 
-/*
-bool Pokemon::load_species_data(std::string species)
+void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
-    std::ifstream ifs("species/" + species + ".json");
-    Json::Value obj;
-
-    if (Json::CharReader::parse(ifs, obj))
-    {
-        std::cout << obj["HP"] << "\n";
-        return true;
-    }
-    return false;
+    Pokemon::load_species(poke_ptree.get<std::string>("species"));
+    Pokemon::level = poke_ptree.get<int>("level", 0);
 }
-*/
+
+void Pokemon::load_species(std::string species_name)
+{
+    std::cout << species_name << "\n";
+    boost::property_tree::ptree root;
+
+    try
+    {
+        root = load_json_file("/home/slist/pokemon-sim/species/" + species_name + ".json");
+    }
+    catch(...)
+    {
+        std::cout << "ERROR: FAILED TO LOAD SPECIES " << species_name << "\n";
+        assert(0);
+    }
+
+    Pokemon::base_stats[STAT::HP] = root.get<int>("HP", 0);
+    Pokemon::base_stats[STAT::ATK] = root.get<int>("ATK", 0);
+    Pokemon::base_stats[STAT::DEF] = root.get<int>("DEF", 0);
+    Pokemon::base_stats[STAT::SPA] = root.get<int>("SPA", 0);
+    Pokemon::base_stats[STAT::SPD] = root.get<int>("SPD", 0);
+    Pokemon::base_stats[STAT::SPE] = root.get<int>("SPE", 0);
+    Pokemon::species = species_name;
+    std::cout << Pokemon::base_stats[0] << "\n";
+}
 
 bool Pokemon::is_active()
 {
@@ -64,7 +67,6 @@ PokeTypes* Pokemon::get_type()
 {
     return Pokemon::type;
 }
-
 
 int Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
@@ -93,4 +95,9 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
             Pokemon::current_hp = Pokemon::base_stats[i];
         }
     }
+}
+
+void Pokemon::print_pokemon()
+{
+
 }

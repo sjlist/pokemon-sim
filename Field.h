@@ -6,6 +6,7 @@
 #define POKEMON_SIM_FIELD_H
 
 #include "Pokemon.h"
+#include "Players.h"
 
 enum Terrain
 {
@@ -33,11 +34,16 @@ enum Weather
 class Field {
 public:
     Field();
+    bool send_out(Players player, Pokemon poke);
 
     Pokemon active_pokes [2];
     bool stealth_rocks, toxic_spikes, spikes, trick_room;
     Weather weather_state;
     Terrain terrain;
+
+    void print_field();
+private:
+    bool active_open(Players player);
 };
 
 
