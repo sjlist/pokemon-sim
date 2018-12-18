@@ -18,6 +18,7 @@ public:
     int get_stat(STAT stat);
     bool is_active();
     void print_pokemon();
+    bool use_move(int move_number);
 
     void load_pokemon(boost::property_tree::ptree poke_ptree);
     void set_stats(int* base_stats, int* ivs, int* evs, int level, Natures nature);

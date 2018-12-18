@@ -31,9 +31,13 @@ void Move::load_move(std::string move_name)
     Move::max_pp = move_tree.get<int>("pp", 0);
     Move::current_pp = Move::max_pp;
     Move::priority = move_tree.get<int>("priority", 0);
+    Move::crit_chance = (float)move_tree.get<int>("crit_chance", 0) / 100;
+    Move::damage_type = move_tree.get<std::string>("damage_type");
+
     tmp_tree = move_tree.get_child("status");
     Move::status_effect = string_to_status(tmp_tree.get<std::string>("status"));
     Move::status_chance = (float)tmp_tree.get<int>("chance") / 100;
+
 }
 
 std::string Move::get_name()
@@ -71,14 +75,29 @@ float Move::get_status_chance()
     return Move::status_chance;
 }
 
+bool Move::use()
+{
+    if(Move::current_pp > 0)
+    {
+        Move::current_pp--;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void Move::print_move()
 {
     std::cout << "Name: " << Move::name << "\n";
+    std::cout << "Damage Type: " << Move::damage_type << "\n";
     std::cout << "Type: " << Move::type << "\n";
     std::cout << "Power: " << Move::power << "\n";
     std::cout << "Acc: " << Move::acc << "\n";
     std::cout << "PP: " << Move::current_pp << "/" << Move::max_pp << "\n";
     std::cout << "Priority: " << Move::priority << "\n";
     std::cout << "Status effect: " << Move::status_effect << "\n";
-    std::cout << "Status Chance: " << Move::status_chance << "\n";
+    std::cout << "Status chance: " << Move::status_chance << "\n";
+    std::cout << "Crit chance: " << Move::crit_chance << "\n";
 }

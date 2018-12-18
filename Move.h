@@ -13,6 +13,7 @@ class Move {
 public:
     Move();
 
+    bool use();
     int get_pp();
     int get_power();
     int get_acc();
@@ -26,13 +27,16 @@ public:
 private:
     std::string name;
     int max_pp;
-    int current_pp;
     int power;
     float acc;
     int priority;
     STATUS status_effect;
     float status_chance;
+    float crit_chance;
     PokeTypes type;
+    std::string damage_type;
+
+    int current_pp;
 };
 
 

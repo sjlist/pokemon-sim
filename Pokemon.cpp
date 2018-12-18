@@ -68,6 +68,11 @@ PokeTypes* Pokemon::get_type()
     return Pokemon::type;
 }
 
+bool Pokemon::use_move(int move_number)
+{
+    return Pokemon::moves[move_number].use();
+}
+
 int Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
     return ((2 * base_hp + iv_hp + (ev_hp / 4)) * level) / 100 + level + 10;
