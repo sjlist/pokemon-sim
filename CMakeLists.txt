@@ -9,6 +9,7 @@ include_directories(.
 add_executable(pokemon_sim
     Battle.cpp
     Battle.h
+    Config.h
     Field.cpp
     Field.h
     loadJSON.cpp

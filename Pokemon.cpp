@@ -9,6 +9,7 @@
 #include "Pokemon.h"
 #include "Move.h"
 #include "Natures.h"
+#include "Config.h"
 #include "loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
 
@@ -30,7 +31,7 @@ void Pokemon::load_species(std::string species_name)
 
     try
     {
-        root = load_json_file("/home/slist/pokemon-sim/species/" + species_name + ".json");
+        root = load_json_file(PROJECT_DIRECTORY + "species/" + species_name + ".json");
     }
     catch(...)
     {

@@ -4,6 +4,7 @@
 
 #include "Battle.h"
 #include "Pokemon.h"
+#include "Config.h"
 #include "loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
@@ -22,11 +23,11 @@ void Battle::load_battle()
 
 void Battle::load_teams(std::vector<std::string> team_names)
 {
-    boost::property_tree::ptree team_1 = load_json_file("/home/slist/pokemon-sim/teams/" + team_names[Players::PLAYER_ONE] + ".json");
-    boost::property_tree::ptree team_2 = load_json_file("/home/slist/pokemon-sim/teams/" + team_names[Players::PLAYER_TWO] + ".json");
+    boost::property_tree::ptree team_1 = load_json_file(PROJECT_DIRECTORY + "teams/" + team_names[Players::PLAYER_ONE] + ".json");
+    boost::property_tree::ptree team_2 = load_json_file(PROJECT_DIRECTORY + "teams/"  + team_names[Players::PLAYER_TWO] + ".json");
     int i = 0;
     bool done [] = {false, false};
-    //load team 1
+
     while(!(done[Players::PLAYER_ONE] && done[Players::PLAYER_TWO]) && i < 6)
     {
         if(!done[Players::PLAYER_ONE])
