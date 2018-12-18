@@ -1,3 +1,0 @@
-/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles/pokemon_sim.dir
-/home/slist/pokemon-sim/cmake-build-debug/CMakeFiles/edit_cache.dir
