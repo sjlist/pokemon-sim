@@ -1,0 +1,12 @@
+{
+  "power": 100,
+  "pp": 15,
+  "type": "FIRE",
+  "priority": 1,
+  "acc": 100,
+  "status":
+  {
+    "status": "BURN",
+    "chance": 10
+  }
+}

@@ -14,4 +14,5 @@ enum STAT
     HP,
     NUM_STATS
 };
+
 #endif //POKEMON_SIM_STATS_H

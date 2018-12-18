@@ -25,7 +25,7 @@ enum PokeTypes
     DARK,
     STEEL,
     FAIRY,
-    NONE,
+    NO_TYPE,
     NUM_TYPES
 };
 

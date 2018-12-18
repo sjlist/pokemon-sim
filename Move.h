@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Type.h"
+#include "Status.h"
 
 class Move {
 public:
@@ -17,14 +18,20 @@ public:
     int get_acc();
     PokeTypes get_type();
     std::string get_name();
-
+    float get_status_chance();
+    STATUS get_status_effect();
+    void load_move(std::string move_name);
+    void print_move();
 
 private:
     std::string name;
     int max_pp;
     int current_pp;
     int power;
-    int acc;
+    float acc;
+    int priority;
+    STATUS status_effect;
+    float status_chance;
     PokeTypes type;
 };
 

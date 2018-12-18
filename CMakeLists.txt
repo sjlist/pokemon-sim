@@ -23,6 +23,8 @@ add_executable(pokemon_sim
     Pokemon.cpp
     Pokemon.h
     Stats.h
+    Status.cpp
+    Status.h
     Type.cpp
     Type.h)
 
