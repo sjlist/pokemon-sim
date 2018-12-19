@@ -16,7 +16,7 @@ public:
     bool use();
     int get_pp();
     int get_power();
-    int get_acc();
+    float get_acc();
     PokeTypes get_type();
     std::string get_name();
     float get_status_chance();

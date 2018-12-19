@@ -6,12 +6,12 @@
 #define POKEMON_SIM_STATS_H
 enum STAT
 {
-    ATK = 0,
+    HP = 0,
+    ATK,
     DEF,
     SPA,
     SPD,
     SPE,
-    HP,
     NUM_STATS
 };
 

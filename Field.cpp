@@ -21,6 +21,7 @@ bool Field::send_out(Players player, Pokemon poke)
     if(Field::active_open(player))
     {
         Field::active_pokes[player] = poke;
+        Field::active_pokes[player].set_active(true);
         return true;
     }
     else
@@ -29,13 +30,13 @@ bool Field::send_out(Players player, Pokemon poke)
 
 bool Field::active_open(Players player)
 {
-    if(Field::active_pokes[player].is_active())
-        return false;
-    else
-        return true;
+    return !Field::active_pokes[player].is_active();
 }
 
 void Field::print_field()
 {
+    std::cout << "ACTIVE POKEMON: " << "\nPLAYER ONE\n";
     Field::active_pokes[Players::PLAYER_ONE].print_pokemon();
+    std::cout << "\nPLAYER TWO\n";
+    Field::active_pokes[Players::PLAYER_TWO].print_pokemon();
 }

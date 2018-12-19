@@ -1,0 +1,13 @@
+{
+  "HP":108,
+  "ATK": 130,
+  "DEF": 95,
+  "SPA": 80,
+  "SPD": 85,
+  "SPE": 102,
+  "TYPES":
+  {
+    "TYPE0" : "DRAGON",
+    "TYPE1" : "GROUND"
+  }
+}

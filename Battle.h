@@ -14,11 +14,13 @@ public:
     Battle();
     Field active_field;
     void load_battle();
+    void init();
 
 private:
     std::vector<std::string> select_teams();
-    void init();
     void load_teams(std::vector<std::string> team_names);
+
+    void send_out(Players player, int poke_position);
 
     Pokemon p1_party [6];
     Pokemon p2_party [6];

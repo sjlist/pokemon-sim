@@ -55,7 +55,7 @@ int Move::get_power()
     return Move::power;
 }
 
-int Move::get_acc()
+float Move::get_acc()
 {
     return Move::acc;
 }

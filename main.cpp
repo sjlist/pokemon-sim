@@ -6,15 +6,17 @@
 #include "Type.h"
 #include "Pokemon.h"
 #include "Battle.h"
+#include "Move.h"
 
 int main()
 {
     Battle battle;
     battle.load_battle();
-    Move flame;
-    flame.load_move("Flamethrower");
-    flame.print_move();
+    //Move flame;
+    //flame.load_move("Flamethrower");
+    //flame.print_move();
 
+    battle.init();
     // Pokemon gengar;
     // Pokemon garchomp;
     // int base [6] = {130, 95, 80, 85, 102, 108};

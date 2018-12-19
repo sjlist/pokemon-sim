@@ -65,8 +65,27 @@ std::vector<std::string> Battle::select_teams()
     return teams;
 }
 
+void Battle::send_out(Players player, int poke_position)
+{
+    switch(player)
+    {
+        case Players::PLAYER_ONE:
+            Battle::active_field.send_out(Players::PLAYER_ONE, p1_party[poke_position]);
+            p1_party[poke_position].set_active(true);
+            break;;
+        case Players::PLAYER_TWO:
+            Battle::active_field.send_out(Players::PLAYER_TWO, p2_party[poke_position]);
+            p2_party[poke_position].set_active(true);
+            break;;
+        default :
+            assert(0);
+    }
+}
+
 // Battle init occurs after teams are loaded in
 void Battle::init()
 {
-
+    Battle::send_out(Players::PLAYER_ONE, 0);
+    Battle::send_out(Players::PLAYER_TWO, 0);
+    Battle::active_field.print_field();
 }

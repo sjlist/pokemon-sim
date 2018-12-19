@@ -5,5 +5,9 @@
   "SPA": 130,
   "SPD": 75,
   "SPE": 110,
-  "TYPE": ["GHOST", "POISON"]
+  "TYPES":
+  {
+    "TYPE0" : "GHOST",
+    "TYPE1" : "POISON"
+  }
 }

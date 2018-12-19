@@ -6,11 +6,12 @@
 #define POKEMON_SIM_NATURES_H
 
 #include "Stats.h"
+#include <string>
 
 enum Natures
 {
     HARDY = 0,
-    LONLEY,
+    LONELY,
     BRAVE,
     ADAMANT,
     NAUGHTY,
@@ -38,5 +39,7 @@ enum Natures
 };
 
 float get_nature_mod(Natures nature, STAT stat);
+
+Natures string_to_nature(std::string nature_string);
 
 #endif //POKEMON_SIM_NATURES_H

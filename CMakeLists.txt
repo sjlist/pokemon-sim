@@ -4,7 +4,7 @@ project(pokemon_sim)
 set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.
-    ../libs/boost)
+        ../libs/boost)
 
 add_executable(pokemon_sim
     Battle.cpp

@@ -17,6 +17,7 @@ public:
     int get_level();
     int get_stat(STAT stat);
     bool is_active();
+    void set_active(bool state);
     void print_pokemon();
     bool use_move(int move_number);
 
@@ -33,7 +34,7 @@ private:
     int stat_modifiers [5];
     std::string species;
 
-    void load_species(std::string species_name);
+    int* load_species(std::string species_name);
     int calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
     int calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
 };
