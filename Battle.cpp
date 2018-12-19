@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstdlib>
 
 Battle::Battle()
 {
@@ -85,7 +86,61 @@ void Battle::send_out(Players player, int poke_position)
 // Battle init occurs after teams are loaded in
 void Battle::init()
 {
+    std::srand(time(NULL));
     Battle::send_out(Players::PLAYER_ONE, 0);
     Battle::send_out(Players::PLAYER_TWO, 0);
     Battle::active_field.print_field();
+}
+
+void Battle::attack(Players player, int move, FIELD_POSITION target)
+{
+
+    int eff_atk, eff_def;
+    if(move.get_damage_type() == "physical")
+    {
+        eff_atk = Battle::active_field.active_pokes[player].get_stat(STAT::ATK);
+        eff_def = Battle::active_field.active_pokes[!player].get_stat(STAT::DEF);
+    }
+    else
+    {
+        eff_atk = Battle::active_field.active_pokes[player].get_stat(STAT::SPA);
+        eff_def = Battle::active_field.active_pokes[!player].get_stat(STAT::SPD);
+    }
+
+
+
+}
+
+bool Battle::roll_acc(float acc)
+{
+    return true;
+}
+
+bool Battle::roll_crit(float crit_chance)
+{
+    float crit = rand()/(float)RAND_MAX;
+    return crit < crit_chance;
+}
+
+float calculater_damage_modifier(Move move, Field field, Pokemon attacker, int num_targets)
+{
+    float damage_modifier = 1;
+
+    if(num_targets > 1)
+        damage_modifier *= 0.75;
+
+    if((field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::WATER) || (field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::FIRE))
+        damage_modifier *= 1.5;
+
+    if((field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::FIRE) || (field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::WATER))
+        damage_modifier *= 0.5;
+
+    if((move.get_type() == attacker.get_type()[0]) || (move.get_type() == attacker.get_type()[1]))
+        damage_modifier *= 1.5;
+
+    damage_modifier *= calculate_type_damage_modifier(attacker.get_type(), move.get_type());
+
+
+
+    return damage_modifier;
 }

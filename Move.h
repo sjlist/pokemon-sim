@@ -23,6 +23,7 @@ public:
     STATUS get_status_effect();
     void load_move(std::string move_name);
     void print_move();
+    std::string get_damage_type();
 
 private:
     std::string name;

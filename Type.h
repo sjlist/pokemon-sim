@@ -33,7 +33,7 @@ enum PokeTypes
 
 float calculate_damage_modifier_single(PokeTypes pokemon_type, PokeTypes move_type);
 
-float calculate_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_type);
+float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_type);
 
 PokeTypes string_to_type(std::string type);
 

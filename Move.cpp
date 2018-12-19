@@ -65,6 +65,11 @@ PokeTypes Move::get_type()
     return Move::type;
 }
 
+std::string Move::get_damage_type()
+{
+    return Move::damage_type;
+}
+
 STATUS Move::get_status_effect()
 {
     return Move::status_effect;

@@ -8,6 +8,14 @@
 #include "Pokemon.h"
 #include "Players.h"
 
+enum FIELD_POSITION
+{
+    PLAYER_1_0 = 0,
+    PLAYER_1_1,
+    PLAYER_2_0,
+    PLAYER_2_1
+};
+
 enum Terrain
 {
     NO_TERRAIN = 0,

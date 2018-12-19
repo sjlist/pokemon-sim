@@ -36,8 +36,8 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 
     Pokemon::level = poke_ptree.get<int>("level", 0);
 
-    boost::property_tree::ptree  evs_ptree = poke_ptree.get_child("evs");
-    boost::property_tree::ptree  ivs_ptree = poke_ptree.get_child("ivs");
+    boost::property_tree::ptree evs_ptree = poke_ptree.get_child("evs");
+    boost::property_tree::ptree ivs_ptree = poke_ptree.get_child("ivs");
 
     for(int i = 0; i < STAT::NUM_STATS; i++)
     {
@@ -46,6 +46,19 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     }
 
     Pokemon::set_stats(base, iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<std::string>("nature")));
+
+    boost::property_tree::ptree moves_ptree = poke_ptree.get_child("moves");
+
+    std::string move_name;
+    for(int i = 0; i < 4; i++)
+    {
+        move_name = moves_ptree.get<std::string>("MOVE" + std::to_string(i));
+        if(move_name != "")
+        {
+            Pokemon::moves[i].load_move(move_name);
+        }
+    }
+
 }
 
 int* Pokemon::load_species(std::string species_name)

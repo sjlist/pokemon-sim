@@ -57,7 +57,7 @@ float calculate_damage_modifier_single(PokeTypes pokemon_type, PokeTypes move_ty
     return type_effectiveness[move_type][pokemon_type];
 }
 
-float calculate_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_type)
+float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_type)
 {
     return calculate_damage_modifier_single(pokemon_type[0], move_type) * calculate_damage_modifier_single(pokemon_type[1], move_type);
 }
