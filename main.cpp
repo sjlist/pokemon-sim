@@ -14,7 +14,14 @@ int main()
     battle.load_battle();
     battle.init();
 
-    battle.attack(Players::PLAYER_ONE, 0, FIELD_POSITION::PLAYER_2_0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.attack(Players::PLAYER_ONE, 0);
+    battle.active_field.print_field();
+
 
     return 1;
 }

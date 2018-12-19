@@ -4,6 +4,7 @@
 
 #include "Battle.h"
 #include "Pokemon.h"
+#include "Type.h"
 #include "loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
@@ -89,14 +90,21 @@ void Battle::init()
     std::srand(time(NULL));
     Battle::send_out(Players::PLAYER_ONE, 0);
     Battle::send_out(Players::PLAYER_TWO, 0);
-    Battle::active_field.print_field();
+    Battle::active_field.print_field(true);
 }
 
-void Battle::attack(Players player, int move, FIELD_POSITION target)
+bool Battle::attack(Players player, int move_number)
 {
+    int eff_atk, eff_def, damage_dealt;
+    float damage_mod;
 
-    int eff_atk, eff_def;
-    if(move.get_damage_type() == "physical")
+    Battle::active_field.active_pokes[player].use_move(move_number);
+    std::cout << Battle::active_field.active_pokes[player].get_species() << " is attacking " << Battle::active_field.active_pokes[!player].get_species() << " with " << Battle::active_field.active_pokes[player].moves[move_number].get_name() << "\n";
+
+    if(!Battle::roll_acc(Battle::active_field.active_pokes[player].moves[move_number].get_acc()))
+        return false;
+
+    if(Battle::active_field.active_pokes[player].moves[move_number].get_damage_type() == "physical")
     {
         eff_atk = Battle::active_field.active_pokes[player].get_stat(STAT::ATK);
         eff_def = Battle::active_field.active_pokes[!player].get_stat(STAT::DEF);
@@ -107,8 +115,22 @@ void Battle::attack(Players player, int move, FIELD_POSITION target)
         eff_def = Battle::active_field.active_pokes[!player].get_stat(STAT::SPD);
     }
 
+    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[player].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[player], Battle::active_field.active_pokes[!player], 1);
+    damage_dealt = Battle::calculate_damaage_dealt(Battle::active_field.active_pokes[player].get_level(), Battle::active_field.active_pokes[player].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
 
+    if(!Battle::active_field.active_pokes[!player].deal_damage(damage_dealt))
+        std::cout << "YOU FAINTED" << "\n";
 
+    return true;
+
+}
+
+int Battle::calculate_damaage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
+{
+    int base_damage = ((((2 * attacker_level / 5) + 2) * move_power * atk / def / 50) + 2) * damage_modifier;
+    float damage_adjustment = (rand()/(float)RAND_MAX * 0.15) + 0.85;
+
+    return (float)base_damage * damage_adjustment;
 }
 
 bool Battle::roll_acc(float acc)
@@ -122,7 +144,7 @@ bool Battle::roll_crit(float crit_chance)
     return crit < crit_chance;
 }
 
-float calculater_damage_modifier(Move move, Field field, Pokemon attacker, int num_targets)
+float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets)
 {
     float damage_modifier = 1;
 
@@ -135,12 +157,10 @@ float calculater_damage_modifier(Move move, Field field, Pokemon attacker, int n
     if((field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::FIRE) || (field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::WATER))
         damage_modifier *= 0.5;
 
-    if((move.get_type() == attacker.get_type()[0]) || (move.get_type() == attacker.get_type()[1]))
+    if(is_stab(attacker.get_type(), move.get_type()))
         damage_modifier *= 1.5;
 
-    damage_modifier *= calculate_type_damage_modifier(attacker.get_type(), move.get_type());
-
-
+    damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
 
     return damage_modifier;
 }

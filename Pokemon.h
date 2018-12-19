@@ -13,13 +13,18 @@
 class Pokemon {
 public:
     Pokemon();
+
     PokeTypes* get_type();
     int get_level();
     int get_stat(STAT stat);
     bool is_active();
-    void set_active(bool state);
-    void print_pokemon();
+    std::string get_species();
+
     bool use_move(int move_number);
+    void set_active(bool state);
+    bool deal_damage(int damage);
+
+    void print_pokemon(bool detailed=false);
 
     void load_pokemon(boost::property_tree::ptree poke_ptree);
     void set_stats(int* base_stats, int* ivs, int* evs, int level, Natures nature);

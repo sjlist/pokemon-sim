@@ -93,6 +93,7 @@ int* Pokemon::load_species(std::string species_name)
     return base_ptr;
 }
 
+
 bool Pokemon::is_active()
 {
     return Pokemon::active;
@@ -118,15 +119,35 @@ PokeTypes* Pokemon::get_type()
     return Pokemon::type;
 }
 
+std::string Pokemon::get_species()
+{
+    return Pokemon::species;
+}
+
+
+//
+
 bool Pokemon::use_move(int move_number)
 {
     return Pokemon::moves[move_number].use();
 }
 
+bool Pokemon::deal_damage(int damage)
+{
+    Pokemon::current_hp = Pokemon::current_hp - damage;
+
+    if(Pokemon::current_hp <= 0)
+    {
+        Pokemon::current_hp = 0;
+        return false;
+    }
+    return true;
+}
+
+//
+
 int Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
-    int temp = 0;
-
     return std::floor(((2 * base_hp + iv_hp + std::floor((float)(ev_hp / 4))) * level) / 100) + level + 10;
 }
 
@@ -155,16 +176,19 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
     }
 }
 
-void Pokemon::print_pokemon()
+void Pokemon::print_pokemon(bool detailed)
 {
     std::cout << Pokemon::species << "\n";
-    std::cout << "HP: " << Pokemon::base_stats[STAT::HP] << "\n";
-    std::cout << "ATK: " << Pokemon::base_stats[STAT::ATK] << "\n";
-    std::cout << "DEF: " << Pokemon::base_stats[STAT::DEF] << "\n";
-    std::cout << "SPA: " << Pokemon::base_stats[STAT::SPA] << "\n";
-    std::cout << "SPD: " << Pokemon::base_stats[STAT::SPD] << "\n";
-    std::cout << "SPE: " << Pokemon::base_stats[STAT::SPE] << "\n";
-    std::cout << "Level: " << Pokemon::level << "\n";
+    if(detailed)
+    {
+        std::cout << "HP: " << Pokemon::base_stats[STAT::HP] << "\n";
+        std::cout << "ATK: " << Pokemon::base_stats[STAT::ATK] << "\n";
+        std::cout << "DEF: " << Pokemon::base_stats[STAT::DEF] << "\n";
+        std::cout << "SPA: " << Pokemon::base_stats[STAT::SPA] << "\n";
+        std::cout << "SPD: " << Pokemon::base_stats[STAT::SPD] << "\n";
+        std::cout << "SPE: " << Pokemon::base_stats[STAT::SPE] << "\n";
+        std::cout << "Level: " << Pokemon::level << "\n";
+    }
     std::cout << "Current HP:" << Pokemon::current_hp << "\n";
     std::cout << "ACTIVE: " << Pokemon::active << "\n";
 }
