@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_FIELD_H
 #define POKEMON_SIM_FIELD_H
 
-#include "Pokemon.h"
+#include "Pokemon/Pokemon.h"
 #include "Players.h"
 
 enum FIELD_POSITION

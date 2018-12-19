@@ -10,7 +10,7 @@
 #include "Pokemon.h"
 #include "Move.h"
 #include "Natures.h"
-#include "loadJSON.h"
+#include "fileIO/loadJSON.h"
 #include "Type.h"
 #include <boost/property_tree/ptree.hpp>
 #include <vector>

@@ -3,25 +3,16 @@
 //
 
 #include <iostream>
-#include "Type.h"
-#include "Pokemon.h"
-#include "Battle.h"
-#include "Move.h"
+#include "Pokemon/Type.h"
+#include "Pokemon/Pokemon.h"
+#include "Battle/Battle.h"
+#include "Battle/BattleStateMachine.h"
+#include "Pokemon/Move.h"
 
 int main()
 {
-    Battle battle;
-    battle.load_battle();
-    battle.init();
-
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.attack(Players::PLAYER_ONE, 0);
-    battle.active_field.print_field();
-
+    BattleStateMachine BSM;
+    BSM.run();
 
     return 1;
 }

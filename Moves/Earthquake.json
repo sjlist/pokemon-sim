@@ -1,0 +1,9 @@
+{
+  "power": 100,
+  "pp": 16,
+  "type": "GROUND",
+  "priority": 1,
+  "acc": 100,
+  "crit_chance": 5,
+  "damage_type": "physical"
+}

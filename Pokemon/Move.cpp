@@ -4,7 +4,7 @@
 
 #include "Move.h"
 #include "Status.h"
-#include "loadJSON.h"
+#include "fileIO/loadJSON.h"
 #include "Type.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
@@ -22,9 +22,7 @@ void Move::load_move(std::string move_name)
     boost::property_tree::ptree tmp_tree = load_json_file("Moves/" + move_name + ".json");
     move_tree = tmp_tree;
 
-    std::string move_type = move_tree.get<std::string>("type");
-
-    Move::type = PokeTypes::FIRE;
+    Move::type = string_to_type(move_tree.get<std::string>("type"));
 
     Move::power = move_tree.get<int>("power", 0);
     Move::acc = (float)move_tree.get<int>("acc", 0) / 100;

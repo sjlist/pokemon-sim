@@ -7,25 +7,29 @@ include_directories(.
         ../libs/boost)
 
 add_executable(pokemon_sim
-    Battle.cpp
-    Battle.h
+        Battle/Battle.cpp
+        Battle/Battle.h
+        Battle/BattleActor.cpp
+        Battle/BattleActor.h
+        Battle/BattleStateMachine.cpp
+        Battle/BattleStateMachine.h
     Config.h
-    Field.cpp
-    Field.h
-    loadJSON.cpp
-    loadJSON.h
+        Battle/Field.cpp
+        Battle/Field.h
+        fileIO/loadJSON.cpp
+        fileIO/loadJSON.h
     main.cpp
-    Move.cpp
-    Move.h
-    Natures.cpp
-    Natures.h
-    Players.h
-    Pokemon.cpp
-    Pokemon.h
-    Stats.h
-    Status.cpp
-    Status.h
-    Type.cpp
-    Type.h)
+        Pokemon/Move.cpp
+        Pokemon/Move.h
+        Pokemon/Natures.cpp
+        Pokemon/Natures.h
+        Battle/Players.h
+        Pokemon/Pokemon.cpp
+        Pokemon/Pokemon.h
+        Pokemon/Stats.h
+        Pokemon/Status.cpp
+        Pokemon/Status.h
+        Pokemon/Type.cpp
+        Pokemon/Type.h)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

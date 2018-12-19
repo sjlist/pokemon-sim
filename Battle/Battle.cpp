@@ -2,10 +2,11 @@
 // Created by slist on 12/13/18.
 //
 
-#include "Battle.h"
-#include "Pokemon.h"
-#include "Type.h"
-#include "loadJSON.h"
+#include "Battle/Battle.h"
+#include "Pokemon/Pokemon.h"
+#include "Pokemon/Type.h"
+
+#include "fileIO/loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <vector>
@@ -84,25 +85,24 @@ void Battle::send_out(Players player, int poke_position)
     }
 }
 
-// Battle init occurs after teams are loaded in
-void Battle::init()
-{
-    std::srand(time(NULL));
-    Battle::send_out(Players::PLAYER_ONE, 0);
-    Battle::send_out(Players::PLAYER_TWO, 0);
-    Battle::active_field.print_field(true);
-}
-
-bool Battle::attack(Players player, int move_number)
+Attack_Result Battle::attack(Players player, int move_number)
 {
     int eff_atk, eff_def, damage_dealt;
     float damage_mod;
 
-    Battle::active_field.active_pokes[player].use_move(move_number);
+    if(!Battle::active_field.active_pokes[player].use_move(move_number))
+    {
+        std::cout << "Not enough PP\n";
+        return Attack_Result::NO_PP;
+    }
+
     std::cout << Battle::active_field.active_pokes[player].get_species() << " is attacking " << Battle::active_field.active_pokes[!player].get_species() << " with " << Battle::active_field.active_pokes[player].moves[move_number].get_name() << "\n";
 
     if(!Battle::roll_acc(Battle::active_field.active_pokes[player].moves[move_number].get_acc()))
-        return false;
+    {
+        std::cout << Battle::active_field.active_pokes[player].moves[move_number].get_name() << " missed\n";
+        return Attack_Result::MISS;
+    }
 
     if(Battle::active_field.active_pokes[player].moves[move_number].get_damage_type() == "physical")
     {
@@ -119,9 +119,12 @@ bool Battle::attack(Players player, int move_number)
     damage_dealt = Battle::calculate_damaage_dealt(Battle::active_field.active_pokes[player].get_level(), Battle::active_field.active_pokes[player].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
 
     if(!Battle::active_field.active_pokes[!player].deal_damage(damage_dealt))
-        std::cout << "YOU FAINTED" << "\n";
+    {
+        std::cout << Battle::active_field.active_pokes[!player].get_species() << " FAINTED" << "\n";
+        return Attack_Result::FAINT;
+    }
 
-    return true;
+    return Attack_Result::HIT;
 
 }
 
@@ -135,13 +138,13 @@ int Battle::calculate_damaage_dealt(int attacker_level, int move_power, int atk,
 
 bool Battle::roll_acc(float acc)
 {
-    return true;
+    return Battle::roll_chance(acc);
 }
 
-bool Battle::roll_crit(float crit_chance)
+bool Battle::roll_chance(float chance)
 {
-    float crit = rand()/(float)RAND_MAX;
-    return crit < crit_chance;
+    float  c = rand()/(float)RAND_MAX;
+    return c < chance;
 }
 
 float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets)
@@ -163,4 +166,9 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
     damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
 
     return damage_modifier;
+}
+
+void Battle::print_battle(bool detailed)
+{
+    Battle::active_field.print_field(detailed);
 }
