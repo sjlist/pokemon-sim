@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "Pokemon.h"
+#include "Stats.h"
 #include "Move.h"
 #include "Natures.h"
 #include "fileIO/loadJSON.h"
@@ -15,10 +16,96 @@
 #include <boost/property_tree/ptree.hpp>
 #include <vector>
 
+static int MAX_STAGES = 6;
+
 Pokemon::Pokemon()
 {
     Pokemon::active = false;
+    Pokemon::status = STATUS::NO_STATUS;
+    Pokemon::stat_modifiers[5] = 0;
 }
+
+// STATE CHECKING FUNCTIONS
+bool Pokemon::is_active()
+{
+    return Pokemon::active;
+}
+
+int Pokemon::get_stat(STAT stat)
+{
+    return Pokemon::base_stats[stat];
+}
+
+int Pokemon::get_level()
+{
+    return Pokemon::level;
+}
+
+PokeTypes* Pokemon::get_type()
+{
+    return Pokemon::type;
+}
+
+std::string Pokemon::get_species()
+{
+    return Pokemon::species;
+}
+
+
+// STATE CHANGE FUNCTIONS
+
+bool Pokemon::use_move(int move_number)
+{
+    return Pokemon::moves[move_number].use();
+}
+
+bool Pokemon::deal_damage(int damage)
+{
+    Pokemon::current_hp = Pokemon::current_hp - damage;
+
+    if(Pokemon::current_hp <= 0)
+    {
+        Pokemon::current_hp = 0;
+        return false;
+    }
+    return true;
+}
+
+void Pokemon::set_status(STATUS new_status)
+{
+    Pokemon::status = new_status;
+}
+
+void Pokemon::set_active(bool state)
+{
+    Pokemon::active = state;
+}
+
+void Pokemon::stat_change(STAT stat, int stages)
+{
+    if(stages < 0)
+        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " dropped by " << std::to_string(abs(stages)) << " stage(s)\n";
+
+    if(stages > 0)
+        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " rose by" << std::to_string(stages) << " stage(s)\n";
+
+    Pokemon::stat_modifiers[stat] = Pokemon::stat_modifiers[stat] + stages;
+
+    if(Pokemon::stat_modifiers[stat] < (-1 * MAX_STAGES))
+    {
+        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " can't go lower\n";
+        Pokemon::stat_modifiers[stat] = -1 * MAX_STAGES;
+    }
+
+    if(Pokemon::stat_modifiers[stat] > MAX_STAGES)
+    {
+        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " can't go higher\n";
+        Pokemon::stat_modifiers[stat] = MAX_STAGES;
+    }
+}
+//
+
+// LOADING POKEMON FUNCTIONS
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
@@ -93,59 +180,6 @@ int* Pokemon::load_species(std::string species_name)
     return base_ptr;
 }
 
-
-bool Pokemon::is_active()
-{
-    return Pokemon::active;
-}
-
-void Pokemon::set_active(bool state)
-{
-    Pokemon::active = state;
-}
-
-int Pokemon::get_stat(STAT stat)
-{
-    return Pokemon::base_stats[stat];
-}
-
-int Pokemon::get_level()
-{
-    return Pokemon::level;
-}
-
-PokeTypes* Pokemon::get_type()
-{
-    return Pokemon::type;
-}
-
-std::string Pokemon::get_species()
-{
-    return Pokemon::species;
-}
-
-
-//
-
-bool Pokemon::use_move(int move_number)
-{
-    return Pokemon::moves[move_number].use();
-}
-
-bool Pokemon::deal_damage(int damage)
-{
-    Pokemon::current_hp = Pokemon::current_hp - damage;
-
-    if(Pokemon::current_hp <= 0)
-    {
-        Pokemon::current_hp = 0;
-        return false;
-    }
-    return true;
-}
-
-//
-
 int Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
     return std::floor(((2 * base_hp + iv_hp + std::floor((float)(ev_hp / 4))) * level) / 100) + level + 10;
@@ -175,20 +209,22 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
         }
     }
 }
+//
+
 
 void Pokemon::print_pokemon(bool detailed)
 {
     std::cout << Pokemon::species << "\n";
     if(detailed)
     {
-        std::cout << "HP: " << Pokemon::base_stats[STAT::HP] << "\n";
-        std::cout << "ATK: " << Pokemon::base_stats[STAT::ATK] << "\n";
-        std::cout << "DEF: " << Pokemon::base_stats[STAT::DEF] << "\n";
-        std::cout << "SPA: " << Pokemon::base_stats[STAT::SPA] << "\n";
-        std::cout << "SPD: " << Pokemon::base_stats[STAT::SPD] << "\n";
-        std::cout << "SPE: " << Pokemon::base_stats[STAT::SPE] << "\n";
+        std::cout << "HP:  "  << Pokemon::base_stats[STAT::HP] << " Modifier: " << Pokemon::stat_modifiers[STAT::HP]  << "\n";
+        std::cout << "ATK: " << Pokemon::base_stats[STAT::ATK] << " Modifier: " << Pokemon::stat_modifiers[STAT::ATK] << "\n";
+        std::cout << "DEF: " << Pokemon::base_stats[STAT::DEF] << " Modifier: " << Pokemon::stat_modifiers[STAT::DEF] << "\n";
+        std::cout << "SPA: " << Pokemon::base_stats[STAT::SPA] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPA] << "\n";
+        std::cout << "SPD: " << Pokemon::base_stats[STAT::SPD] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPD] << "\n";
+        std::cout << "SPE: " << Pokemon::base_stats[STAT::SPE] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPE] << "\n";
         std::cout << "Level: " << Pokemon::level << "\n";
     }
-    std::cout << "Current HP:" << Pokemon::current_hp << "\n";
+    std::cout << "Current HP: " << Pokemon::current_hp << "\n";
     std::cout << "ACTIVE: " << Pokemon::active << "\n";
 }

@@ -4,6 +4,9 @@
 
 #ifndef POKEMON_SIM_STATS_H
 #define POKEMON_SIM_STATS_H
+
+#include <string>
+
 enum STAT
 {
     HP = 0,
@@ -14,5 +17,7 @@ enum STAT
     SPE,
     NUM_STATS
 };
+
+std::string stat_to_string(STAT stat);
 
 #endif //POKEMON_SIM_STATS_H

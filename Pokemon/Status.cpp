@@ -9,6 +9,7 @@
 std::map<std::string, STATUS> string_status_map = {
         { "PARALYZED", STATUS::PARALYZED },
         { "POISONED", STATUS::POISONED },
+        { "BADLY_POISONED", STATUS::BADLY_POISONED },
         { "FROZEN", STATUS::FROZEN },
         { "ASLEEP", STATUS::ASLEEP },
         { "BURNED", STATUS::BURNED },

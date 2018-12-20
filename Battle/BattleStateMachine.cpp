@@ -23,11 +23,13 @@ void BattleStateMachine::init()
 {
     BattleStateMachine::battle.load_battle();
     std::srand(time(NULL));
+    BattleStateMachine::battle.print_battle(true);
 }
 
 void BattleStateMachine::run()
 {
     BattleState state = BattleState::BATTLE_INIT;
+    int sendout_choice [2] = {0, 0};
 
     while(state != BattleState::BATTLE_END)
     {
@@ -39,7 +41,6 @@ void BattleStateMachine::run()
                 break;;
             case BattleState::BATTLE_START:
                 //get pokemon to send out
-                int sendout_choice [2] = {0, 0};
 
                 BattleStateMachine::battle.send_out(Players::PLAYER_ONE, sendout_choice[Players::PLAYER_ONE]);
                 BattleStateMachine::battle.send_out(Players::PLAYER_TWO, sendout_choice[Players::PLAYER_TWO]);

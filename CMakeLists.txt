@@ -26,6 +26,7 @@ add_executable(pokemon_sim
         Battle/Players.h
         Pokemon/Pokemon.cpp
         Pokemon/Pokemon.h
+        Pokemon/Stats.cpp
         Pokemon/Stats.h
         Pokemon/Status.cpp
         Pokemon/Status.h

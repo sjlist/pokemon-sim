@@ -45,13 +45,19 @@ public:
     bool send_out(Players player, Pokemon poke);
 
     Pokemon active_pokes [2];
-    bool stealth_rocks, toxic_spikes, trick_room;
-    int spikes;
+
+    //entrance hazards
+    bool stealth_rocks [2], sticky_web [2];
+    int spikes [2], toxic_spikes [2];
+
+    bool trick_room;
     Weather weather_state;
     Terrain terrain;
 
     void print_field(bool detailed=false);
 private:
+    void handle_entrance(Players player);
+    void handle_hazard_entrance(Players player);
     bool active_open(Players player);
 };
 

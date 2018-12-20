@@ -23,6 +23,8 @@ public:
     bool use_move(int move_number);
     void set_active(bool state);
     bool deal_damage(int damage);
+    void set_status(STATUS new_status);
+    void stat_change(STAT stat, int stages);
 
     void print_pokemon(bool detailed=false);
 
@@ -37,6 +39,7 @@ private:
     std::string name;
     int base_stats [6];
     int stat_modifiers [5];
+    STATUS status;
     std::string species;
 
     int* load_species(std::string species_name);
