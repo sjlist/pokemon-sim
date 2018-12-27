@@ -122,14 +122,20 @@ void BattleStateMachine::run()
             case BattleState::TURN_END:
                 if(battle.handle_end_turn_field_status())
                 {
-                    if(battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_TWO))
+                    if(battle.has_lost(Players::PLAYER_ONE))
                     {
-                        std::cout << "A player has lost the battle\n";
+                        std::cout << "Player One has lost the battle\n";
+                        state = BattleState::BATTLE_END;
+                    }
+                    if(battle.has_lost(Players::PLAYER_TWO))
+                    {
+                        std::cout << "Player Two has lost the battle\n";
                         state = BattleState::BATTLE_END;
                     }
                 }
                 if(state == BattleState::TURN_END)
-                    state = BattleState::TURN_START;        }
+                    state = BattleState::TURN_START;
+        }
     }
 }
 

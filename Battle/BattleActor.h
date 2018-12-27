@@ -7,12 +7,12 @@
 
 #include "Players.h"
 #include "Field.h"
+#include "Battle.h"
 
 enum class Actions
 {
     CHOOSE_POKEMON = 0,
     CHOOSE_MOVE,
-    CHOOSE_TARGET,
     CHOOSE_ACTION,
     NUM_ACTIONS
 };
@@ -21,17 +21,6 @@ enum Commands
 {
     COMMAND_ATTACK = 0,
     COMMAND_SWAP
-};
-
-class BattleActor
-{
-public:
-    BattleActor();
-
-    int choose_action();
-    int choose_pokemon();
-    int choose_target();
-    int choose_move();
 };
 
 class BattleMessage
@@ -46,5 +35,23 @@ public:
     //Swap commands
     int reserve_poke;
     FIELD_POSITION active_pos;
+};
+
+class BattleActor
+{
+public:
+    BattleActor();
+
+    BattleMessage choose_action(Players player, Battle battle, Actions action=Actions::CHOOSE_ACTION);
+
+private:
+    FIELD_POSITION get_active(Players player);
+    FIELD_POSITION choose_target(Players player);
+    int choose_pokemon(Party party);
+    int choose_move();
+
+    bool roll_chance(float chance);
+
+
 };
 #endif //POKEMON_SIM_BATTLEACTOR_H
