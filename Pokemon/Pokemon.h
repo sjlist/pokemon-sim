@@ -17,6 +17,7 @@ public:
     PokeTypes* get_type();
     int get_level();
     int get_stat(STAT stat);
+    STATUS get_status();
     bool is_active();
     std::string get_species();
     bool is_alive();
@@ -28,6 +29,7 @@ public:
     void stat_change(STAT stat, int stages);
     void faint_poke();
 
+    int status_turns;
 
     void print_pokemon(bool detailed=false);
 

@@ -26,7 +26,7 @@ void BattleStateMachine::init()
 {
     BattleStateMachine::battle.load_battle();
     std::srand(time(NULL));
-    //BattleStateMachine::battle.print_battle(true);
+    BattleStateMachine::battle.print_battle(true);
 }
 
 void BattleStateMachine::run()
@@ -62,13 +62,15 @@ void BattleStateMachine::run()
                 BattleStateMachine::battle.send_out(Players::PLAYER_ONE, sendout_choice[Players::PLAYER_ONE]);
                 BattleStateMachine::battle.send_out(Players::PLAYER_TWO, sendout_choice[Players::PLAYER_TWO]);
                 BattleStateMachine::battle.print_battle(true);
+                std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
                 break;;
             case BattleState::TURN_START:
+                BattleStateMachine::battle.print_battle();
                 //get action choice
 
                 //determine attack order
-                prio = BattleStateMachine::update_priority_list(messages);
+                prio = BattleStateMachine::create_priority_list(messages);
 
                 state = BattleState::TURN_EXECUTE;
                 break;
@@ -77,49 +79,61 @@ void BattleStateMachine::run()
                 for(int i = 0; i < BattleStateMachine::num_players; i++)
                 {
                     if(prio.at(i) != FIELD_POSITION::NO_POSITION)
-                        atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].move_num);
+                        atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
+                    else
+                        atk_r = Attack_Result::NO_ATTACK;
 
-                    if(atk_r == Attack_Result::FAINT)
+                    switch(atk_r)
                     {
-                        //determine the fainted side
-                        if(i == PLAYER_ONE)
-                        {
-                            faint_player = PLAYER_TWO;
-                        }
-                        else
-                        {
-                            faint_player = PLAYER_ONE;
-                        }
+                        case Attack_Result::FAINT:
+                            std::cout << "Handling faint\n";
+                            //determine the fainted side
+                            faint_player = get_player_from_position(messages[prio.at(i)].target_pos);
 
-                        // lose if no pokes left
-                        if(battle.has_lost(faint_player))
-                        {
-                            std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
-                            state = BattleState::BATTLE_END;
-                            break;;
-                        }
-
-                        // remove next action in turn if there is one left. use no_player
-                        for(int j = (i + 1); j < BattleStateMachine::num_players; j++)
-                        {
-                            if(messages[prio.at(i)].target_pos == prio.at(j))
+                            // lose if no pokes left
+                            if(battle.has_lost(faint_player))
                             {
-                                prio.at(j) = FIELD_POSITION::NO_POSITION;
+                                std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
+                                state = BattleState::BATTLE_END;
                             }
-                        }
 
+                            // remove next action in turn if there is one left. use no_player
+                            prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
+                            break;;
+
+                        case Attack_Result::FLINCHED:
+                            prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
+                            break;;
+
+                        case Attack_Result::HIT:
+                        case Attack_Result::NO_PP:
+                        case Attack_Result::MISS:
+                        case Attack_Result::NO_ATTACK:
+                            break;;
+                        default:
+                            std::cout << "Unhandled attack result\n";
+                            assert(0);
                     }
                 }
+
                 if(state == BattleState::TURN_EXECUTE)
                     state = BattleState::TURN_END;
                 break;;
             case BattleState::TURN_END:
-                state = BattleState::BATTLE_END;
-        }
+                if(battle.handle_end_turn_field_status())
+                {
+                    if(battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_TWO))
+                    {
+                        std::cout << "A player has lost the battle\n";
+                        state = BattleState::BATTLE_END;
+                    }
+                }
+                if(state == BattleState::TURN_END)
+                    state = BattleState::TURN_START;        }
     }
 }
 
-std::vector<FIELD_POSITION> BattleStateMachine::update_priority_list(BattleMessage* messages)
+std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessage* messages)
 {
     std::vector<FIELD_POSITION> prio_list (BattleStateMachine::num_players);
     int move_prio;
@@ -164,4 +178,23 @@ std::vector<FIELD_POSITION> BattleStateMachine::update_priority_list(BattleMessa
     }
 
     return prio_list;
+}
+
+std::vector<FIELD_POSITION> BattleStateMachine::remove_priority_list(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
+{
+    for(int j = (current_action + 1); j < BattleStateMachine::num_players; j++)
+    {
+        if(pos == prio_list.at(j))
+        {
+            prio_list.at(j) = FIELD_POSITION::NO_POSITION;
+            break;
+        }
+    }
+    return prio_list;
+}
+
+
+Battle BattleStateMachine::get_battle()
+{
+    return BattleStateMachine::battle;
 }

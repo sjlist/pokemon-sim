@@ -24,6 +24,11 @@ Party::Party()
 
 }
 
+Party Battle::get_party(Players player)
+{
+    return Parties[player];
+}
+
 void Battle::load_battle()
 {
     Battle::load_teams(Battle::select_teams());
@@ -76,6 +81,9 @@ std::vector<std::string> Battle::select_teams()
 
 void Battle::send_out(Players player, int poke_position)
 {
+    if(Parties[Players::PLAYER_ONE].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
+        Parties[Players::PLAYER_ONE].party_pokes[poke_position].status_turns = 0;
+
     switch(player)
     {
         case Players::PLAYER_ONE:
@@ -91,55 +99,75 @@ void Battle::send_out(Players player, int poke_position)
     }
 }
 
-Attack_Result Battle::attack(FIELD_POSITION pos, int move_number)
+Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
     int eff_atk, eff_def, damage_dealt;
     float damage_mod;
 
-    if(!Battle::active_field.active_pokes[pos].use_move(move_number))
+    // Check if there is enough pp to use the move
+    if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
     {
         std::cout << "Not enough PP\n";
         return Attack_Result::NO_PP;
     }
 
-    std::cout << Battle::active_field.active_pokes[pos].get_species() << " is attacking " << Battle::active_field.active_pokes[!pos].get_species() << " with " << Battle::active_field.active_pokes[pos].moves[move_number].get_name() << "\n";
+    if(!Battle::handle_pre_attack_status(atk_pos))
+        return Attack_Result::NO_ATTACK;
 
-    if(!Battle::roll_acc(Battle::active_field.active_pokes[pos].moves[move_number].get_acc()))
+    std::cout << Battle::active_field.active_pokes[atk_pos].get_species() << " is attacking " << Battle::active_field.active_pokes[def_pos].get_species() << " with " << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << "\n";
+
+    // roll for hit
+    if(!Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_acc()))
     {
-        std::cout << Battle::active_field.active_pokes[pos].moves[move_number].get_name() << " missed\n";
+        std::cout << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << " missed\n";
         return Attack_Result::MISS;
     }
 
-    if(Battle::active_field.active_pokes[pos].moves[move_number].get_damage_type() == "physical")
+    // determine the effective stats to use
+    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type() == "physical")
     {
-        eff_atk = Battle::active_field.active_pokes[pos].get_stat(STAT::ATK);
-        eff_def = Battle::active_field.active_pokes[!pos].get_stat(STAT::DEF);
+        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ATK);
+        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::DEF);
     }
     else
     {
-        eff_atk = Battle::active_field.active_pokes[pos].get_stat(STAT::SPA);
-        eff_def = Battle::active_field.active_pokes[!pos].get_stat(STAT::SPD);
+        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPA);
+        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPD);
     }
 
-    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[pos].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[pos], Battle::active_field.active_pokes[!pos], 1);
-    damage_dealt = Battle::calculate_damaage_dealt(Battle::active_field.active_pokes[pos].get_level(), Battle::active_field.active_pokes[pos].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
+    // calculate damage dealt
+    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[atk_pos].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], 1);
+    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), Battle::active_field.active_pokes[atk_pos].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
 
-    if(!Battle::active_field.active_pokes[!pos].deal_damage(damage_dealt))
+    // Deal damage and handle fainting
+    if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
     {
-        Battle::active_field.active_pokes[!pos].faint_poke();
-        Battle::update_party(get_player_from_position(!pos));
-        std::cout << Battle::active_field.active_pokes[!pos].get_species() << " FAINTED" << "\n";
+        Battle::handle_faint(def_pos);
         return Attack_Result::FAINT;
     }
 
-    return Attack_Result::HIT;
+    // handle status effects
+    if((Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect() != STATUS::NO_STATUS) && Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_chance()))
+    {
+        std::cout << Battle::active_field.active_pokes[def_pos].get_species() << " is now " << status_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect()) << "\n";
+        Battle::active_field.active_pokes[def_pos].set_status(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect());
+    }
 
+    return Attack_Result::HIT;
+}
+
+void Battle::handle_faint(FIELD_POSITION pos)
+{
+    Battle::active_field.active_pokes[pos].faint_poke();
+    Battle::update_party(get_player_from_position(pos));
+    std::cout << Battle::active_field.active_pokes[pos].get_species() << " FAINTED" << "\n";
 }
 
 bool Battle::has_lost(Players player)
 {
     if(Battle::active_field.active_pokes[player].is_alive())
     {
+        std::cout << 1;
         return false;
     }
 
@@ -147,6 +175,7 @@ bool Battle::has_lost(Players player)
     {
         if(Battle::Parties[player].party_pokes[i].is_alive())
         {
+            std::cout << 2;
             return false;
         }
     }
@@ -166,12 +195,102 @@ void Battle::update_party(Players player)
     }
 }
 
-int Battle::calculate_damaage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
+int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
 {
     int base_damage = ((((2 * attacker_level / 5) + 2) * move_power * atk / def / 50) + 2) * damage_modifier;
     float damage_adjustment = (rand()/(float)RAND_MAX * 0.15) + 0.85;
 
     return (float)base_damage * damage_adjustment;
+}
+
+bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
+{
+    switch(Battle::active_field.active_pokes[pos].get_status())
+    {
+        case STATUS::ASLEEP:
+            if(Battle::active_field.active_pokes[pos].status_turns == 0)
+            {
+                Battle::active_field.active_pokes[pos].status_turns++;
+                return false;
+            }
+            else if(Battle::active_field.active_pokes[pos].status_turns < 3)
+            {
+                if(Battle::roll_chance((float)2/3))
+                {
+                    Battle::active_field.active_pokes[pos].status_turns++;
+                    return false;
+                }
+                else
+                {
+                    std::cout << Battle::active_field.active_pokes[pos].get_species() << " woke up!\n";
+                    Battle::active_field.active_pokes[pos].set_status(STATUS::NO_STATUS);
+                }
+            }
+            else
+            {
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " woke up!\n";
+                Battle::active_field.active_pokes[pos].set_status(STATUS::NO_STATUS);
+            }
+            return true;
+        case STATUS::PARALYZED:
+            if(Battle::roll_chance(0.25))
+            {
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " is paralyzed\n";
+                return false;
+            }
+
+            return true;
+        case STATUS::FROZEN:
+            if(Battle::roll_chance(0.8))
+            {
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " is frozen\n";
+                return false;
+            }
+
+            std::cout << Battle::active_field.active_pokes[pos].get_species() << " thawed!\n";
+            Battle::active_field.active_pokes[pos].set_status(STATUS::NO_STATUS);
+            return true;
+        default:
+            return true;
+    }
+}
+
+bool Battle::handle_end_turn_field_status()
+{
+    bool fainted = false;
+    if(Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_1_0))
+    {
+        Battle::handle_faint(FIELD_POSITION::PLAYER_1_0);
+        fainted = true;
+    }
+
+    if(Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_2_0))
+    {
+        Battle::handle_faint(FIELD_POSITION::PLAYER_2_0);
+        fainted = true;
+    }
+
+    return fainted;
+}
+
+bool Battle::handle_end_turn_status(FIELD_POSITION pos)
+{
+    int damage = 0;
+    switch(Battle::active_field.active_pokes[pos].get_status())
+    {
+        case STATUS::BURNED:
+            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
+            break;;
+        case STATUS::POISONED:
+            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
+            break;;
+        case STATUS::BADLY_POISONED:
+            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16 * Battle::active_field.active_pokes[pos].status_turns;
+            break;;
+        default:
+            return false;
+    }
+    return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
 bool Battle::roll_acc(float acc)
@@ -201,6 +320,9 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
     if(is_stab(attacker.get_type(), move.get_type()))
         damage_modifier *= 1.5;
 
+    if(move.get_damage_type() == "physical" && attacker.get_status() == STATUS::BURNED)
+        damage_modifier *= 0.5;
+
     damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
 
     return damage_modifier;
@@ -209,4 +331,17 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
 void Battle::print_battle(bool detailed)
 {
     Battle::active_field.print_field(detailed);
+    if(detailed)
+    {
+        std::cout << "Player ONE party pokemon:\n";
+        for (int i = 0; i < 6; i++) {
+            if (!Battle::Parties[PLAYER_ONE].party_pokes[i].is_active())
+                Battle::Parties[PLAYER_ONE].party_pokes[i].print_pokemon();
+        }
+        std::cout << "\nPlayer TWO party pokemon:\n";
+        for (int i = 0; i < 6; i++) {
+            if (!Battle::Parties[PLAYER_TWO].party_pokes[i].is_active())
+                Battle::Parties[PLAYER_TWO].party_pokes[i].print_pokemon();
+        }
+    }
 }

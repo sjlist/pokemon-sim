@@ -20,5 +20,6 @@ enum STATUS
 };
 
 STATUS string_to_status(std::string status_string);
+std::string status_to_string(STATUS status);
 
 #endif //POKEMON_SIM_STATUS_H

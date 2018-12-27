@@ -11,6 +11,7 @@
 #include "Stats.h"
 #include "Move.h"
 #include "Natures.h"
+#include "Status.h"
 #include "fileIO/loadJSON.h"
 #include "Type.h"
 #include <boost/property_tree/ptree.hpp>
@@ -37,7 +38,27 @@ bool Pokemon::is_active()
 
 int Pokemon::get_stat(STAT stat) //TODO: Implement dynamic stat adjustment
 {
-    return Pokemon::base_stats[stat];
+    int mod = Pokemon::stat_modifiers[stat];
+    float adjustment = 1;
+
+    if(stat == STAT::SPE && Pokemon::status == STATUS::PARALYZED)
+        adjustment *= 0.5;
+
+    if(mod < 0)
+    {
+        adjustment *= 2.0 / (2 - mod);
+    }
+    else if(mod > 0)
+    {
+        adjustment *= (2.0 + mod) / 2;
+    }
+
+    return Pokemon::base_stats[stat] * adjustment;
+}
+
+STATUS Pokemon::get_status()
+{
+    return Pokemon::status;
 }
 
 int Pokemon::get_level()
@@ -69,6 +90,7 @@ bool Pokemon::use_move(int move_number)
 
 bool Pokemon::deal_damage(int damage)
 {
+    std::cout << "Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage\n";
     Pokemon::current_hp = Pokemon::current_hp - damage;
 
     if(Pokemon::current_hp <= 0)
@@ -81,6 +103,36 @@ bool Pokemon::deal_damage(int damage)
 
 void Pokemon::set_status(STATUS new_status)
 {
+    if(Pokemon::status == STATUS::NO_STATUS)
+    {
+        std::cout << Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status);
+        return;
+    }
+
+    switch(new_status)
+    {
+        case STATUS::ASLEEP:
+            Pokemon::status_turns = 0;
+            break;;
+        case STATUS::BURNED:
+            if(Pokemon::type[0] == PokeTypes::FIRE || Pokemon::type[1] == PokeTypes::FIRE)
+                return;
+        case STATUS::FROZEN:
+            if(Pokemon::type[0] == PokeTypes::ICE || Pokemon::type[1] == PokeTypes::ICE)
+                return;
+        case STATUS::PARALYZED:
+            if(Pokemon::type[0] == PokeTypes::ELECTRIC || Pokemon::type[1] == PokeTypes::ELECTRIC)
+                return;
+        case STATUS::BADLY_POISONED:
+            Pokemon::status_turns = 0;
+        case STATUS::POISONED:
+            if(Pokemon::type[0] == PokeTypes::STEEL || Pokemon::type[1] == PokeTypes::STEEL || Pokemon::type[0] == PokeTypes::POISON || Pokemon::type[1] == PokeTypes::POISON)
+                return;
+        default:
+            std::cout << "Unhandled status " << new_status << "\n";
+            assert(0);
+    }
+
     Pokemon::status = new_status;
 }
 
@@ -100,7 +152,7 @@ void Pokemon::stat_change(STAT stat, int stages)
         std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " dropped by " << std::to_string(abs(stages)) << " stage(s)\n";
 
     if(stages > 0)
-        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " rose by" << std::to_string(stages) << " stage(s)\n";
+        std::cout << Pokemon::species << "'s " << stat_to_string(stat) << " rose by " << std::to_string(stages) << " stage(s)\n";
 
     Pokemon::stat_modifiers[stat] = Pokemon::stat_modifiers[stat] + stages;
 
@@ -161,6 +213,8 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     }
 
     Pokemon::alive = true;
+    Pokemon::status = STATUS::NO_STATUS;
+    Pokemon::status_turns = 0;
 }
 
 int* Pokemon::load_species(std::string species_name)
@@ -229,18 +283,22 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
 
 void Pokemon::print_pokemon(bool detailed)
 {
+    if(Pokemon::species.empty())
+        return;
+
     std::cout << Pokemon::species << "\n";
     if(detailed)
     {
         std::cout << "HP:  "  << Pokemon::base_stats[STAT::HP] << " Modifier: " << Pokemon::stat_modifiers[STAT::HP]  << "\n";
-        std::cout << "ATK: " << Pokemon::base_stats[STAT::ATK] << " Modifier: " << Pokemon::stat_modifiers[STAT::ATK] << "\n";
-        std::cout << "DEF: " << Pokemon::base_stats[STAT::DEF] << " Modifier: " << Pokemon::stat_modifiers[STAT::DEF] << "\n";
-        std::cout << "SPA: " << Pokemon::base_stats[STAT::SPA] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPA] << "\n";
-        std::cout << "SPD: " << Pokemon::base_stats[STAT::SPD] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPD] << "\n";
-        std::cout << "SPE: " << Pokemon::base_stats[STAT::SPE] << " Modifier: " << Pokemon::stat_modifiers[STAT::SPE] << "\n";
+        std::cout << "ATK: " << Pokemon::get_stat(STAT::ATK) << " Modifier: " << Pokemon::stat_modifiers[STAT::ATK] << "\n";
+        std::cout << "DEF: " << Pokemon::get_stat(STAT::DEF) << " Modifier: " << Pokemon::stat_modifiers[STAT::DEF] << "\n";
+        std::cout << "SPA: " << Pokemon::get_stat(STAT::SPA) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPA] << "\n";
+        std::cout << "SPD: " << Pokemon::get_stat(STAT::SPD) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPD] << "\n";
+        std::cout << "SPE: " << Pokemon::get_stat(STAT::SPE) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPE] << "\n";
         std::cout << "Level: " << Pokemon::level << "\n";
     }
     std::cout << "Current HP: " << Pokemon::current_hp << "\n";
     std::cout << "ACTIVE: " << Pokemon::active << "\n";
     std::cout << "ALIVE: " << Pokemon::alive << "\n";
+    std::cout << "STATUS: " << status_to_string(Pokemon::status) << "\n";
 }
