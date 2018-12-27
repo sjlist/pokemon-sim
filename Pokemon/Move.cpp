@@ -32,12 +32,19 @@ void Move::load_move(std::string move_name)
     Move::crit_chance = (float)move_tree.get<int>("crit_chance", 0) / 100;
     Move::damage_type = move_tree.get<std::string>("damage_type");
 
-    tmp_tree = move_tree.get_child("status");
-    Move::status_effect = string_to_status(tmp_tree.get<std::string>("status"));
-    Move::status_chance = (float)tmp_tree.get<int>("chance") / 100;
-
+    try
+    {
+        tmp_tree = move_tree.get_child("status");
+        Move::status_effect = string_to_status(tmp_tree.get<std::string>("status"));
+        Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
+    }
+    catch(...)
+    {
+        //do nothing on failed status read TODO: MAKE OPTIONAL READS
+    }
 }
 
+//GET FUNCS
 std::string Move::get_name()
 {
     return Move::name;
@@ -76,6 +83,11 @@ STATUS Move::get_status_effect()
 float Move::get_status_chance()
 {
     return Move::status_chance;
+}
+
+int Move::get_priority()
+{
+    return Move::priority;
 }
 
 bool Move::use()

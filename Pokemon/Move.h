@@ -9,6 +9,8 @@
 #include "Type.h"
 #include "Status.h"
 
+static const int MAX_PRIO = 5;
+
 class Move {
 public:
     Move();
@@ -21,6 +23,8 @@ public:
     std::string get_name();
     float get_status_chance();
     STATUS get_status_effect();
+    int get_priority();
+
     void load_move(std::string move_name);
     void print_move();
     std::string get_damage_type();

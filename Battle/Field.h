@@ -11,9 +11,11 @@
 enum FIELD_POSITION
 {
     PLAYER_1_0 = 0,
-    PLAYER_1_1,
+    //PLAYER_1_1,
     PLAYER_2_0,
-    PLAYER_2_1
+    //PLAYER_2_1,
+    NUM_POSITIONS,
+    NO_POSITION
 };
 
 enum Terrain
@@ -61,5 +63,6 @@ private:
     bool active_open(Players player);
 };
 
+Players get_player_from_position(int pos);
 
 #endif //POKEMON_SIM_FIELD_H

@@ -12,10 +12,10 @@ Field::Field()
     Field::spikes[Players::PLAYER_TWO] = 0;
     Field::toxic_spikes[Players::PLAYER_ONE] = 0;
     Field::toxic_spikes[Players::PLAYER_TWO] = 0;
-    Field::stealth_rocks[Players::PLAYER_ONE] = true;
+    Field::stealth_rocks[Players::PLAYER_ONE] = false;
     Field::stealth_rocks[Players::PLAYER_TWO] = false;
     Field::sticky_web[Players::PLAYER_ONE] = false;
-    Field::sticky_web[Players::PLAYER_TWO] = true;
+    Field::sticky_web[Players::PLAYER_TWO] = false;
     Field::trick_room = false;
     Field::terrain = Terrain::NO_TERRAIN;
     Field::weather_state = Weather::CLEAR_SKIES;
@@ -109,4 +109,16 @@ void Field::print_field(bool detailed)
         if(Field::weather_state != Weather::CLEAR_SKIES)
             std::cout << Field::terrain << " weather is active\n";
     }
+}
+
+
+
+
+
+Players get_player_from_position(int pos)
+{
+    if(pos == FIELD_POSITION::PLAYER_1_0)
+        return Players::PLAYER_ONE;
+    if(pos == FIELD_POSITION::PLAYER_2_0)
+        return Players::PLAYER_TWO;
 }

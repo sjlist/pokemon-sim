@@ -8,7 +8,9 @@
 enum Players
 {
     PLAYER_ONE = 0,
-    PLAYER_TWO
+    PLAYER_TWO,
+    NUM_PLAYERS,
+    NO_PLAYER
 };
 
 #endif /* POKEMON_SIM_PLAYERS_H */

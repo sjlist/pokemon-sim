@@ -22,7 +22,11 @@ Pokemon::Pokemon()
 {
     Pokemon::active = false;
     Pokemon::status = STATUS::NO_STATUS;
-    Pokemon::stat_modifiers[5] = 0;
+    for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
+    {
+        Pokemon::stat_modifiers[stat] = 0;
+    }
+    Pokemon::alive = false;
 }
 
 // STATE CHECKING FUNCTIONS
@@ -31,7 +35,7 @@ bool Pokemon::is_active()
     return Pokemon::active;
 }
 
-int Pokemon::get_stat(STAT stat)
+int Pokemon::get_stat(STAT stat) //TODO: Implement dynamic stat adjustment
 {
     return Pokemon::base_stats[stat];
 }
@@ -51,6 +55,10 @@ std::string Pokemon::get_species()
     return Pokemon::species;
 }
 
+bool Pokemon::is_alive()
+{
+    return Pokemon::alive;
+}
 
 // STATE CHANGE FUNCTIONS
 
@@ -79,6 +87,11 @@ void Pokemon::set_status(STATUS new_status)
 void Pokemon::set_active(bool state)
 {
     Pokemon::active = state;
+}
+
+void Pokemon::faint_poke()
+{
+    Pokemon::alive = false;
 }
 
 void Pokemon::stat_change(STAT stat, int stages)
@@ -136,6 +149,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 
     boost::property_tree::ptree moves_ptree = poke_ptree.get_child("moves");
 
+
     std::string move_name;
     for(int i = 0; i < 4; i++)
     {
@@ -146,6 +160,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
         }
     }
 
+    Pokemon::alive = true;
 }
 
 int* Pokemon::load_species(std::string species_name)
@@ -227,4 +242,5 @@ void Pokemon::print_pokemon(bool detailed)
     }
     std::cout << "Current HP: " << Pokemon::current_hp << "\n";
     std::cout << "ACTIVE: " << Pokemon::active << "\n";
+    std::cout << "ALIVE: " << Pokemon::alive << "\n";
 }
