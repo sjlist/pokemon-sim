@@ -81,6 +81,7 @@ std::vector<std::string> Battle::select_teams()
 
 void Battle::send_out(Players player, int poke_position)
 {
+    Battle::print_battle(true);
     if(Parties[Players::PLAYER_ONE].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
         Parties[Players::PLAYER_ONE].party_pokes[poke_position].status_turns = 0;
 
@@ -146,6 +147,15 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         return Attack_Result::FAINT;
     }
 
+    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect() != MOVE_EFFECTS::NO_MOVE_EFFECT && Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_chance()))
+    {
+        if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect() == MOVE_EFFECTS::FLINCH)
+        {
+            std::cout << Battle::active_field.active_pokes[def_pos].get_species() << " flinched\n";
+            return Attack_Result::FLINCHED;
+        }
+    }
+
     // handle status effects
     if((Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect() != STATUS::NO_STATUS) && Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_chance()))
     {
@@ -167,7 +177,6 @@ bool Battle::has_lost(Players player)
 {
     if(Battle::active_field.active_pokes[player].is_alive())
     {
-        std::cout << 1;
         return false;
     }
 
@@ -175,7 +184,6 @@ bool Battle::has_lost(Players player)
     {
         if(Battle::Parties[player].party_pokes[i].is_alive())
         {
-            std::cout << 2;
             return false;
         }
     }

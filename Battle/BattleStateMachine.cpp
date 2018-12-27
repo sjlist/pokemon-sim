@@ -43,7 +43,7 @@ void BattleStateMachine::run()
     messages[FIELD_POSITION::PLAYER_1_0].target_pos = FIELD_POSITION::PLAYER_2_0;
 
     messages[FIELD_POSITION::PLAYER_2_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_2_0].move_num = 0;
+    messages[FIELD_POSITION::PLAYER_2_0].move_num = 1;
     messages[FIELD_POSITION::PLAYER_2_0].target_pos = FIELD_POSITION::PLAYER_1_0;
 
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);

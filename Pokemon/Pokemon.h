@@ -44,7 +44,7 @@ private:
     int current_hp;
     std::string name;
     int base_stats [6];
-    int stat_modifiers [5];
+    int stat_modifiers [6] = {0, 0, 0, 0, 0, 0};
     STATUS status;
     std::string species;
 

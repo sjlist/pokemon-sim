@@ -42,6 +42,17 @@ void Move::load_move(std::string move_name)
     {
         //do nothing on failed status read TODO: MAKE OPTIONAL READS
     }
+
+    try
+    {
+        tmp_tree = move_tree.get_child("effect");
+        Move::effect = string_to_move_effect(tmp_tree.get<std::string>("effect"));
+        Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
+    }
+    catch(...)
+    {
+        //do nothing on failed status read TODO: MAKE OPTIONAL READS
+    }
 }
 
 //GET FUNCS
@@ -79,6 +90,13 @@ STATUS Move::get_status_effect()
 {
     return Move::status_effect;
 }
+
+MOVE_EFFECTS Move::get_move_effect()
+{
+    return Move::effect;
+}
+
+
 
 float Move::get_status_chance()
 {

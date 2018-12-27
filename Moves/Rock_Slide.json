@@ -1,0 +1,14 @@
+{
+  "power": 75,
+  "pp": 16,
+  "type": "ROCK",
+  "priority": 1,
+  "acc": 190,
+  "crit_chance": 5,
+  "damage_type": "physical",
+  "effect":
+  {
+    "status": "FLINCH",
+    "chance": 30
+  }
+}

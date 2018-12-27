@@ -14,7 +14,7 @@ Field::Field()
     Field::toxic_spikes[Players::PLAYER_TWO] = 0;
     Field::stealth_rocks[Players::PLAYER_ONE] = false;
     Field::stealth_rocks[Players::PLAYER_TWO] = false;
-    Field::sticky_web[Players::PLAYER_ONE] = false;
+    Field::sticky_web[Players::PLAYER_ONE] = true;
     Field::sticky_web[Players::PLAYER_TWO] = false;
     Field::trick_room = false;
     Field::terrain = Terrain::NO_TERRAIN;

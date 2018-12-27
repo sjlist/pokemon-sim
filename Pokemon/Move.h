@@ -8,6 +8,7 @@
 #include <string>
 #include "Type.h"
 #include "Status.h"
+#include "Effect.h"
 
 static const int MAX_PRIO = 5;
 
@@ -19,6 +20,7 @@ public:
     int get_pp();
     int get_power();
     float get_acc();
+    MOVE_EFFECTS get_move_effect();
     PokeTypes get_type();
     std::string get_name();
     float get_status_chance();
@@ -36,6 +38,7 @@ private:
     float acc;
     int priority;
     STATUS status_effect;
+    MOVE_EFFECTS effect;
     float status_chance;
     float crit_chance;
     PokeTypes type;

@@ -13,17 +13,19 @@ add_executable(pokemon_sim
         Battle/BattleActor.h
         Battle/BattleStateMachine.cpp
         Battle/BattleStateMachine.h
-    Config.h
         Battle/Field.cpp
         Battle/Field.h
+        Battle/Players.h
+    Config.h
         fileIO/loadJSON.cpp
         fileIO/loadJSON.h
     main.cpp
+        Pokemon/Effect.cpp
+        Pokemon/Effect.h
         Pokemon/Move.cpp
         Pokemon/Move.h
         Pokemon/Natures.cpp
         Pokemon/Natures.h
-        Battle/Players.h
         Pokemon/Pokemon.cpp
         Pokemon/Pokemon.h
         Pokemon/Stats.cpp

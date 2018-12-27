@@ -36,7 +36,7 @@ bool Pokemon::is_active()
     return Pokemon::active;
 }
 
-int Pokemon::get_stat(STAT stat) //TODO: Implement dynamic stat adjustment
+int Pokemon::get_stat(STAT stat)
 {
     int mod = Pokemon::stat_modifiers[stat];
     float adjustment = 1;
@@ -103,7 +103,7 @@ bool Pokemon::deal_damage(int damage)
 
 void Pokemon::set_status(STATUS new_status)
 {
-    if(Pokemon::status == STATUS::NO_STATUS)
+    if(Pokemon::status == new_status)
     {
         std::cout << Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status);
         return;
@@ -128,6 +128,8 @@ void Pokemon::set_status(STATUS new_status)
         case STATUS::POISONED:
             if(Pokemon::type[0] == PokeTypes::STEEL || Pokemon::type[1] == PokeTypes::STEEL || Pokemon::type[0] == PokeTypes::POISON || Pokemon::type[1] == PokeTypes::POISON)
                 return;
+        case STATUS::NO_STATUS:
+            break;
         default:
             std::cout << "Unhandled status " << new_status << "\n";
             assert(0);
