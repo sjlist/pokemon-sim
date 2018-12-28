@@ -1,11 +1,14 @@
 {
-  "power": 75,
-  "pp": 16,
+  "damage_type": "physical",
   "type": "ROCK",
   "priority": 0,
-  "acc": 190,
-  "crit_chance": 5,
-  "damage_type": "physical",
+  "pp": 16,
+  "acc": 90,
+  "damage_info":
+  {
+    "power": 75,
+    "crit_chance": 5
+  },
   "effect":
   {
     "effect": "FLINCH",

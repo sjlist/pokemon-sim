@@ -114,6 +114,7 @@ void Field::print_field(bool detailed)
         if(Field::weather_state != Weather::CLEAR_SKIES)
             std::cout << Field::terrain << " weather is active\n";
     }
+    std::cout << "\n";
 }
 
 

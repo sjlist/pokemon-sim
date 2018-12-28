@@ -24,13 +24,22 @@ void Move::load_move(std::string move_name)
 
     Move::type = string_to_type(move_tree.get<std::string>("type"));
 
-    Move::power = move_tree.get<int>("power", 0);
     Move::acc = (float)move_tree.get<int>("acc", 0) / 100;
     Move::max_pp = move_tree.get<int>("pp", 0);
     Move::current_pp = Move::max_pp;
     Move::priority = move_tree.get<int>("priority", 0);
-    Move::crit_chance = (float)move_tree.get<int>("crit_chance", 0) / 100;
     Move::damage_type = move_tree.get<std::string>("damage_type");
+
+    try
+    {
+        tmp_tree = move_tree.get_child("damage_info");
+        Move::power = tmp_tree.get<int>("power");
+        Move::crit_chance = (float) tmp_tree.get<int>("crit_chance") / 100;
+    }
+    catch(...)
+    {
+        //do nothing on failed effect read TODO: MAKE OPTIONAL READS
+    }
 
     try
     {
@@ -51,7 +60,7 @@ void Move::load_move(std::string move_name)
     }
     catch(...)
     {
-        //do nothing on failed status read TODO: MAKE OPTIONAL READS
+        //do nothing on failed effect read TODO: MAKE OPTIONAL READS
     }
 }
 

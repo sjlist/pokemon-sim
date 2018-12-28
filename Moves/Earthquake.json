@@ -1,9 +1,12 @@
 {
-  "power": 100,
-  "pp": 16,
+  "damage_type": "physical",
   "type": "GROUND",
-  "priority": 1,
+  "priority": 0,
+  "pp": 16,
   "acc": 100,
-  "crit_chance": 5,
-  "damage_type": "physical"
+  "damage_info":
+  {
+    "power": 100,
+    "crit_chance": 5
+  }
 }

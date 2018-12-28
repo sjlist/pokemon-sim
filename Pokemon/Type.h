@@ -9,7 +9,8 @@
 
 enum PokeTypes
 {
-    NORMAL = 0,
+    NO_TYPE = 0,
+    NORMAL,
     FIRE,
     WATER,
     GRASS,
@@ -27,7 +28,6 @@ enum PokeTypes
     DARK,
     STEEL,
     FAIRY,
-    NO_TYPE,
     NUM_TYPES
 };
 

@@ -1,11 +1,14 @@
 {
-  "power": 90,
-  "pp": 24,
+  "damage_type": "special",
   "type": "FIRE",
   "priority": 0,
+  "pp": 24,
   "acc": 100,
-  "crit_chance": 5,
-  "damage_type": "special",
+  "damage_info":
+  {
+    "power": 90,
+    "crit_chance": 5
+  },
   "status":
   {
     "status": "BURN",

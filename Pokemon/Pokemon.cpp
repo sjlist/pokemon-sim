@@ -308,9 +308,12 @@ void Pokemon::print_pokemon(bool detailed)
         std::cout << "SPD: " << Pokemon::get_stat(STAT::SPD) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPD] << "\n";
         std::cout << "SPE: " << Pokemon::get_stat(STAT::SPE) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPE] << "\n";
         std::cout << "Level: " << Pokemon::level << "\n";
+        std::cout << "ACTIVE: " << Pokemon::active << "\n";
+        std::cout << "ALIVE: " << Pokemon::alive << "\n";
+        Pokemon::moves[0].print_move();
+        Pokemon::moves[1].print_move();
     }
     std::cout << "Current HP: " << round((float)Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n";
-    std::cout << "ACTIVE: " << Pokemon::active << "\n";
-    std::cout << "ALIVE: " << Pokemon::alive << "\n";
+
     std::cout << "STATUS: " << status_to_string(Pokemon::status) << "\n";
 }

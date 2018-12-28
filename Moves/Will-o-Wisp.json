@@ -1,0 +1,12 @@
+{
+  "damage_type": "status",
+  "type": "FIRE",
+  "priority": 0,
+  "pp": 15,
+  "acc": 85,
+  "status":
+  {
+    "status": "BURN",
+    "chance": 10
+  }
+}

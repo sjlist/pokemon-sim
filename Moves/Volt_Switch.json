@@ -1,11 +1,14 @@
 {
-  "power": 70,
-  "pp": 32,
+  "damage_type": "special",
   "type": "ELECTRIC",
   "priority": 0,
+  "pp": 32,
   "acc": 100,
-  "crit_chance": 5,
-  "damage_type": "special",
+  "damage_info":
+  {
+    "power": 70,
+    "crit_chance": 5
+  },
   "effect":
   {
     "effect": "SWAP",

@@ -14,6 +14,7 @@ public:
     Battle get_battle();
 private:
     int num_players = 2;
+    int turn_count;
     Battle battle;
     void init();
     std::vector<FIELD_POSITION> create_priority_list(BattleMessage* messages);

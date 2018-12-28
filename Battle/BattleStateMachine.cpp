@@ -36,6 +36,7 @@ void BattleStateMachine::run()
     Players faint_player;
 
     int sendout_choice [2] = {0, 0};
+    BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [BattleStateMachine::num_players];
     messages[FIELD_POSITION::PLAYER_1_0].move_command = Commands::COMMAND_ATTACK;
@@ -65,6 +66,8 @@ void BattleStateMachine::run()
                 state = BattleState::TURN_START;
                 break;;
             case BattleState::TURN_START:
+                BattleStateMachine::turn_count++;
+                std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
                 BattleStateMachine::battle.print_battle();
                 //get action choice
 
@@ -85,7 +88,7 @@ void BattleStateMachine::run()
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                         atk_r = Attack_Result::SWAP;
                     //TODO: IMPLEMENT NON DAMAGING ATTACKS
-                    //default to a normal damaging attack
+                    //default to a attack
                     else
                         atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
 
@@ -114,7 +117,6 @@ void BattleStateMachine::run()
                                 break;;
 
                         case Attack_Result::FAINT:
-                            std::cout << "Handling faint\n";
                             //determine the fainted side
                             faint_player = get_player_from_position(messages[prio.at(i)].target_pos);
 
