@@ -79,8 +79,9 @@ std::vector<std::string> Battle::select_teams()
     return teams;
 }
 
-void Battle::send_out(Players player, int poke_position)
+void Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
+    Players player = get_player_from_position(pos);
     Battle::print_battle(true);
     if(Parties[Players::PLAYER_ONE].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
         Parties[Players::PLAYER_ONE].party_pokes[poke_position].status_turns = 0;
@@ -88,11 +89,11 @@ void Battle::send_out(Players player, int poke_position)
     switch(player)
     {
         case Players::PLAYER_ONE:
-            Battle::active_field.send_out(Players::PLAYER_ONE, Parties[Players::PLAYER_ONE].party_pokes[poke_position]);
+            Battle::active_field.send_out(pos, Parties[Players::PLAYER_ONE].party_pokes[poke_position]);
             Parties[Players::PLAYER_ONE].party_pokes[poke_position].set_active(true);
             break;;
         case Players::PLAYER_TWO:
-            Battle::active_field.send_out(Players::PLAYER_TWO, Parties[Players::PLAYER_TWO].party_pokes[poke_position]);
+            Battle::active_field.send_out(pos, Parties[Players::PLAYER_TWO].party_pokes[poke_position]);
             Parties[Players::PLAYER_TWO].party_pokes[poke_position].set_active(true);
             break;;
         default :

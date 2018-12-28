@@ -59,8 +59,8 @@ void BattleStateMachine::run()
             case BattleState::BATTLE_START:
                 //get pokemon to send out
 
-                BattleStateMachine::battle.send_out(Players::PLAYER_ONE, sendout_choice[Players::PLAYER_ONE]);
-                BattleStateMachine::battle.send_out(Players::PLAYER_TWO, sendout_choice[Players::PLAYER_TWO]);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, sendout_choice[Players::PLAYER_ONE]);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, sendout_choice[Players::PLAYER_TWO]);
                 BattleStateMachine::battle.print_battle(true);
                 std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
@@ -78,13 +78,21 @@ void BattleStateMachine::run()
             case BattleState::TURN_EXECUTE:
                 for(int i = 0; i < BattleStateMachine::num_players; i++)
                 {
-                    if(prio.at(i) != FIELD_POSITION::NO_POSITION)
-                        atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
-                    else
+                    if(prio.at(i) == FIELD_POSITION::NO_POSITION)
                         atk_r = Attack_Result::NO_ATTACK;
+                    else if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
+                        atk_r = Attack_Result::SWAP;
+                    else
+                        atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
+
 
                     switch(atk_r)
                     {
+                        case Attack_Result::SWAP:
+                            if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
+                            {
+
+                            }
                         case Attack_Result::FAINT:
                             std::cout << "Handling faint\n";
                             //determine the fainted side

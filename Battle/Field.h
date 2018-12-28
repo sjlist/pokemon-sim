@@ -44,7 +44,7 @@ enum Weather
 class Field {
 public:
     Field();
-    bool send_out(Players player, Pokemon poke);
+    bool send_out(FIELD_POSITION pos, Pokemon poke);
 
     Pokemon active_pokes [2];
 
@@ -58,9 +58,9 @@ public:
 
     void print_field(bool detailed=false);
 private:
-    void handle_entrance(Players player);
-    void handle_hazard_entrance(Players player);
-    bool active_open(Players player);
+    void handle_entrance(FIELD_POSITION pos);
+    void handle_hazard_entrance(FIELD_POSITION pos);
+    bool active_open(FIELD_POSITION pos);
 };
 
 Players get_player_from_position(int pos);

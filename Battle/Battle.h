@@ -16,6 +16,7 @@ enum class Attack_Result
     HIT,
     NO_PP,
     FLINCHED,
+    SWAP,
     NUM_ATTACK_RESLUTS,
     NO_ATTACK
 };
@@ -31,7 +32,7 @@ public:
     Battle();
     Field active_field;
     void load_battle();
-    void send_out(Players player, int poke_position);
+    void send_out(FIELD_POSITION pos, int poke_position);
 
     Party get_party(Players player);
 

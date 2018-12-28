@@ -21,63 +21,63 @@ Field::Field()
     Field::weather_state = Weather::CLEAR_SKIES;
 }
 
-bool Field::send_out(Players player, Pokemon poke)
+bool Field::send_out(FIELD_POSITION pos, Pokemon poke)
 {
-    if(Field::active_open(player))
+    if(Field::active_open(pos))
     {
-        Field::active_pokes[player] = poke;
-        Field::active_pokes[player].set_active(true);
-        Field::handle_entrance(player);
+        Field::active_pokes[pos] = poke;
+        Field::active_pokes[pos].set_active(true);
+        Field::handle_entrance(pos);
         return true;
     }
     else
         return false;
 }
 
-void Field::handle_entrance(Players player)
+void Field::handle_entrance(FIELD_POSITION pos)
 {
-    handle_hazard_entrance(player);
+    handle_hazard_entrance(pos);
 }
 
-void Field::handle_hazard_entrance(Players player_num)
+void Field::handle_hazard_entrance(FIELD_POSITION pos)
 {
-    int player = (int)player_num;
-    int hp = Field::active_pokes[player].get_stat(STAT::HP);
+    Players player = get_player_from_position(pos);
+    int hp = Field::active_pokes[pos].get_stat(STAT::HP);
     int damage;
     if(Field::spikes[player] > 0)
     {
         damage = 0.0625 * Field::spikes[player] * hp;
-        std::cout << Field::active_pokes[player].get_species() << " is taking " << damage << " damage from spikes\n";
-        Field::active_pokes[player].deal_damage(damage);
+        std::cout << Field::active_pokes[pos].get_species() << " is taking " << damage << " damage from spikes\n";
+        Field::active_pokes[pos].deal_damage(damage);
     }
 
     if(Field::toxic_spikes[player] == 1)
     {
-        Field::active_pokes[player].set_status(STATUS::POISONED);
+        Field::active_pokes[pos].set_status(STATUS::POISONED);
     }
 
     if(Field::toxic_spikes[player] > 1)
     {
-        Field::active_pokes[player].set_status(STATUS::BADLY_POISONED);
+        Field::active_pokes[pos].set_status(STATUS::BADLY_POISONED);
     }
 
     if(Field::stealth_rocks[player])
     {
-        damage = 0.125 * hp * calculate_type_damage_modifier(Field::active_pokes[player].get_type(), PokeTypes::ROCK);
-        std::cout << Field::active_pokes[player].get_species() << " is taking " << damage << " damage from stealth rocks\n";
-        Field::active_pokes[player].deal_damage(damage);
+        damage = 0.125 * hp * calculate_type_damage_modifier(Field::active_pokes[pos].get_type(), PokeTypes::ROCK);
+        std::cout << Field::active_pokes[pos].get_species() << " is taking " << damage << " damage from stealth rocks\n";
+        Field::active_pokes[pos].deal_damage(damage);
     }
 
     if(Field::sticky_web[player])
     {
-        Field::active_pokes[player].stat_change(STAT::SPE, -1);
+        Field::active_pokes[pos].stat_change(STAT::SPE, -1);
     }
 
 }
 
-bool Field::active_open(Players player)
+bool Field::active_open(FIELD_POSITION pos)
 {
-    return !Field::active_pokes[player].is_active();
+    return !Field::active_pokes[pos].is_active();
 }
 
 void Field::print_field(bool detailed)
