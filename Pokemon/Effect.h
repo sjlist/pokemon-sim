@@ -9,8 +9,9 @@
 
 enum MOVE_EFFECTS
 {
-    FLINCH = 0,
-    NO_MOVE_EFFECT,
+    NO_MOVE_EFFECT = 0,
+    FLINCH,
+    SWAP,
     NUM_MOVE_EFFECTS
 };
 

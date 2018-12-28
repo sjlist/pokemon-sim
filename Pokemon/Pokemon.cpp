@@ -148,6 +148,16 @@ void Pokemon::faint_poke()
     Pokemon::alive = false;
 }
 
+void Pokemon::clear_stat_mods()
+{
+    Pokemon::stat_modifiers[0] = 0;
+    Pokemon::stat_modifiers[1] = 0;
+    Pokemon::stat_modifiers[2] = 0;
+    Pokemon::stat_modifiers[3] = 0;
+    Pokemon::stat_modifiers[4] = 0;
+    Pokemon::stat_modifiers[5] = 0;
+}
+
 void Pokemon::stat_change(STAT stat, int stages)
 {
     if(stages < 0)
@@ -299,7 +309,7 @@ void Pokemon::print_pokemon(bool detailed)
         std::cout << "SPE: " << Pokemon::get_stat(STAT::SPE) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPE] << "\n";
         std::cout << "Level: " << Pokemon::level << "\n";
     }
-    std::cout << "Current HP: " << Pokemon::current_hp << "\n";
+    std::cout << "Current HP: " << round((float)Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n";
     std::cout << "ACTIVE: " << Pokemon::active << "\n";
     std::cout << "ALIVE: " << Pokemon::alive << "\n";
     std::cout << "STATUS: " << status_to_string(Pokemon::status) << "\n";

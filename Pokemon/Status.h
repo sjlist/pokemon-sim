@@ -9,13 +9,13 @@
 
 enum STATUS
 {
-    BURNED = 0,
+    NO_STATUS = 0,
+    BURNED,
     FROZEN,
     PARALYZED,
     POISONED,
     BADLY_POISONED,
     ASLEEP,
-    NO_STATUS,
     NUM_STATUSES
 };
 

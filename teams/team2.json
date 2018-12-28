@@ -25,8 +25,40 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Earthquake",
-      "MOVE1": "Rock_Slide",
+      "MOVE0": "Rock_Slide",
+      "MOVE1": "Earthquake",
+      "MOVE2": "",
+      "MOVE3": ""
+    }
+  },
+  "1":
+  {
+    "species": "Gengar",
+    "evs":
+    {
+      "0": 4,
+      "1": 0,
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Flamethrower",
+      "MOVE1": "Volt_Switch",
       "MOVE2": "",
       "MOVE3": ""
     }

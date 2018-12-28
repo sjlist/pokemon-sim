@@ -28,6 +28,7 @@ public:
     void set_status(STATUS new_status);
     void stat_change(STAT stat, int stages);
     void faint_poke();
+    void clear_stat_mods();
 
     int status_turns;
 

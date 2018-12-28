@@ -38,5 +38,7 @@ float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_typ
 bool is_stab(PokeTypes* pokemon_type, PokeTypes move_type);
 
 PokeTypes string_to_type(std::string type);
+std::string type_to_string(PokeTypes type);
+
 
 #endif //POKEMON_SIM_TYPE_H

@@ -2,7 +2,7 @@
   "power": 90,
   "pp": 24,
   "type": "FIRE",
-  "priority": 1,
+  "priority": 0,
   "acc": 100,
   "crit_chance": 5,
   "damage_type": "special",

@@ -26,7 +26,7 @@ void BattleStateMachine::init()
 {
     BattleStateMachine::battle.load_battle();
     std::srand(time(NULL));
-    BattleStateMachine::battle.print_battle(true);
+    //BattleStateMachine::battle.print_battle(true);
 }
 
 void BattleStateMachine::run()
@@ -43,7 +43,7 @@ void BattleStateMachine::run()
     messages[FIELD_POSITION::PLAYER_1_0].target_pos = FIELD_POSITION::PLAYER_2_0;
 
     messages[FIELD_POSITION::PLAYER_2_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_2_0].move_num = 1;
+    messages[FIELD_POSITION::PLAYER_2_0].move_num = 0;
     messages[FIELD_POSITION::PLAYER_2_0].target_pos = FIELD_POSITION::PLAYER_1_0;
 
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
@@ -61,7 +61,6 @@ void BattleStateMachine::run()
 
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, sendout_choice[Players::PLAYER_ONE]);
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, sendout_choice[Players::PLAYER_TWO]);
-                BattleStateMachine::battle.print_battle(true);
                 std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
                 break;;
@@ -78,10 +77,15 @@ void BattleStateMachine::run()
             case BattleState::TURN_EXECUTE:
                 for(int i = 0; i < BattleStateMachine::num_players; i++)
                 {
+                    //Determine what attack to do
+                    //if there is no attack to execute for that field position, aka it fainted earlier in the turn
                     if(prio.at(i) == FIELD_POSITION::NO_POSITION)
                         atk_r = Attack_Result::NO_ATTACK;
+                    //if there needs to be a swap
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                         atk_r = Attack_Result::SWAP;
+                    //TODO: IMPLEMENT NON DAMAGING ATTACKS
+                    //default to a normal damaging attack
                     else
                         atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
 
@@ -89,10 +93,26 @@ void BattleStateMachine::run()
                     switch(atk_r)
                     {
                         case Attack_Result::SWAP:
-                            if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
+                            if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
                             {
-
+                                std::cout << "No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n";
+                                break;
                             }
+                            // FOR ATTACKING MOVES THAT SWAP
+                            if(messages[prio.at(i)].move_command != Commands::COMMAND_SWAP)
+                            {
+                                assert(0);
+                                //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
+                                //KEEP MESSAGE COMMAND ATTACK
+                            }
+                            // TODO: HANDLE PURSUIT HERE
+                            BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos, messages[prio.at(i)].reserve_poke);
+                            if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
+                                break;;
+
+                            if(BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                break;;
+
                         case Attack_Result::FAINT:
                             std::cout << "Handling faint\n";
                             //determine the fainted side
@@ -107,6 +127,10 @@ void BattleStateMachine::run()
 
                             // remove next action in turn if there is one left. use no_player
                             prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
+
+                            //SWAP IN A NEW POKEMON by querying the battle actor
+                            BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos, 1);
+
                             break;;
 
                         case Attack_Result::FLINCHED:
@@ -114,6 +138,7 @@ void BattleStateMachine::run()
                             break;;
 
                         case Attack_Result::HIT:
+                        case Attack_Result::IMMUNE:
                         case Attack_Result::NO_PP:
                         case Attack_Result::MISS:
                         case Attack_Result::NO_ATTACK:

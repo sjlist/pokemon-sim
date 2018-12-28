@@ -7,7 +7,8 @@
 #include <string>
 
 std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
-        {"FLINCH", MOVE_EFFECTS::FLINCH}
+        {"FLINCH", MOVE_EFFECTS::FLINCH},
+        {"SWAP", MOVE_EFFECTS::SWAP}
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string effect_string)

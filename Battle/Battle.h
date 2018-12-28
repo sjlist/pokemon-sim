@@ -17,6 +17,7 @@ enum class Attack_Result
     NO_PP,
     FLINCHED,
     SWAP,
+    IMMUNE,
     NUM_ATTACK_RESLUTS,
     NO_ATTACK
 };
@@ -33,6 +34,10 @@ public:
     Field active_field;
     void load_battle();
     void send_out(FIELD_POSITION pos, int poke_position);
+    void return_poke(FIELD_POSITION pos);
+    void swap_poke(FIELD_POSITION pos, int poke_position);
+    bool can_swap(Players player);
+
 
     Party get_party(Players player);
 

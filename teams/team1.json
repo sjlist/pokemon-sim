@@ -26,7 +26,39 @@
     "moves":
     {
       "MOVE0": "Flamethrower",
-      "MOVE1": "",
+      "MOVE1": "Volt_Switch",
+      "MOVE2": "",
+      "MOVE3": ""
+    }
+  },
+  "1":
+  {
+    "species": "Garchomp",
+    "evs":
+    {
+      "0": 4,
+      "1": 252,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "JOLLY",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Rock_Slide",
+      "MOVE1": "Earthquake",
       "MOVE2": "",
       "MOVE3": ""
     }

@@ -52,6 +52,29 @@ static std::map<std::string, PokeTypes> string_types = {
         {"NONE",     PokeTypes::NO_TYPE}
 };
 
+static std::map<PokeTypes, std::string> type_strings = {
+        {PokeTypes::NORMAL,   "NORMAL"},
+        {PokeTypes::FIRE,     "FIRE"},
+        {PokeTypes::WATER,    "WATER"},
+        {PokeTypes::GRASS,    "GRASS"},
+        {PokeTypes::ELECTRIC, "ELECTRIC"},
+        {PokeTypes::ICE,      "ICE"},
+        {PokeTypes::FIGHTING, "FIGHTING"},
+        {PokeTypes::POISON,   "POISON"},
+        {PokeTypes::GROUND,   "GROUND"},
+        {PokeTypes::FLYING,   "FLYING"},
+        {PokeTypes::PSYCHIC,  "PSYCHIC"},
+        {PokeTypes::BUG,      "BUG"},
+        {PokeTypes::ROCK,     "ROCK"},
+        {PokeTypes::GHOST,    "GHOST"},
+        {PokeTypes::DRAGON,   "DRAGON"},
+        {PokeTypes::DARK,     "DARK"},
+        {PokeTypes::STEEL,    "STEEL"},
+        {PokeTypes::FAIRY,    "FAIRY"},
+        {PokeTypes::NO_TYPE,  "NONE"}
+};
+
+
 float calculate_damage_modifier_single(PokeTypes pokemon_type, PokeTypes move_type)
 {
     return type_effectiveness[move_type][pokemon_type];
@@ -65,6 +88,11 @@ float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_typ
 PokeTypes string_to_type(std::string type)
 {
     return string_types[type];
+}
+
+std::string type_to_string(PokeTypes type)
+{
+    return type_strings[type];
 }
 
 bool is_stab(PokeTypes* pokemon_type, PokeTypes move_type)

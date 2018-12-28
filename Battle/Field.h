@@ -45,6 +45,7 @@ class Field {
 public:
     Field();
     bool send_out(FIELD_POSITION pos, Pokemon poke);
+    void return_poke(FIELD_POSITION pos);
 
     Pokemon active_pokes [2];
 
