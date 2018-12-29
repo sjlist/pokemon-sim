@@ -12,6 +12,15 @@
 
 static const int MAX_PRIO = 5;
 
+enum move_damage_type
+{
+    NO_DAMAGE_TYPE = 0, //BAD, put here for poor move intiailization
+    MOVE_PHYSICAL,
+    MOVE_SPECIAL,
+    MOVE_STATUS,
+    NUM_MOVE_DAMAGE_TYPES
+};
+
 class Move {
 public:
     Move();
@@ -29,7 +38,7 @@ public:
 
     void load_move(std::string move_name);
     void print_move();
-    std::string get_damage_type();
+    move_damage_type get_damage_type();
 
 private:
     std::string name;
@@ -42,7 +51,7 @@ private:
     float status_chance;
     float crit_chance;
     PokeTypes type;
-    std::string damage_type;
+    move_damage_type damage_type;
 
     int current_pp;
 };

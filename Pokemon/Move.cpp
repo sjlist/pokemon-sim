@@ -9,8 +9,16 @@
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <algorithm>
+#include <map>
 
 #include <iostream>
+
+static std::map<std::string, move_damage_type> string_move_damage_type_map = {
+        { "NONE", move_damage_type::NO_DAMAGE_TYPE},
+        { "physical", move_damage_type::MOVE_PHYSICAL },
+        { "special", move_damage_type::MOVE_SPECIAL},
+        { "status", move_damage_type::MOVE_STATUS}
+};
 
 Move::Move()
 {}
@@ -28,39 +36,40 @@ void Move::load_move(std::string move_name)
     Move::max_pp = move_tree.get<int>("pp", 0);
     Move::current_pp = Move::max_pp;
     Move::priority = move_tree.get<int>("priority", 0);
-    Move::damage_type = move_tree.get<std::string>("damage_type");
+    Move::damage_type = string_move_damage_type_map[move_tree.get<std::string>("damage_type")];
 
-    try
+    if(move_tree.count("damage_info"))
     {
         tmp_tree = move_tree.get_child("damage_info");
         Move::power = tmp_tree.get<int>("power");
         Move::crit_chance = (float) tmp_tree.get<int>("crit_chance") / 100;
-    }
-    catch(...)
+    } else
     {
-        //do nothing on failed effect read TODO: MAKE OPTIONAL READS
+        Move::power = 0;
+        Move::crit_chance = 0;
     }
 
-    try
+
+    if(move_tree.count("status"))
     {
         tmp_tree = move_tree.get_child("status");
         Move::status_effect = string_to_status(tmp_tree.get<std::string>("status"));
         Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
     }
-    catch(...)
+    else
     {
-        //do nothing on failed status read TODO: MAKE OPTIONAL READS
+        Move::status_effect = STATUS::NO_STATUS;
     }
 
-    try
+    if(move_tree.count("effect"))
     {
         tmp_tree = move_tree.get_child("effect");
         Move::effect = string_to_move_effect(tmp_tree.get<std::string>("effect"));
         Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
     }
-    catch(...)
+    else
     {
-        //do nothing on failed effect read TODO: MAKE OPTIONAL READS
+        Move::effect = MOVE_EFFECTS::NO_MOVE_EFFECT;
     }
 }
 
@@ -90,7 +99,7 @@ PokeTypes Move::get_type()
     return Move::type;
 }
 
-std::string Move::get_damage_type()
+move_damage_type Move::get_damage_type()
 {
     return Move::damage_type;
 }
