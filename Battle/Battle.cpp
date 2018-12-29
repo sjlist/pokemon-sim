@@ -114,9 +114,7 @@ void Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
-    int eff_atk, eff_def, damage_dealt;
-    float damage_mod;
-
+    Attack_Result res;
     // Check if there is enough pp to use the move
     if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
     {
@@ -138,36 +136,20 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         return Attack_Result::MISS;
     }
 
-
-    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[atk_pos].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], 1);
-
-    if(damage_mod == 0)
+    switch(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type())
     {
-        std::cout << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
-                  << " is immune to " << type_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_type()) << " type moves\n";
-        return Attack_Result::IMMUNE;
+        case move_damage_type::MOVE_PHYSICAL:
+        case move_damage_type::MOVE_SPECIAL:
+            res = Battle::attack_damage(atk_pos, def_pos, move_number);
+            break;;
+        case move_damage_type::MOVE_STATUS:
+            res = Attack_Result::NO_ATTACK;
+            break;
+        default:
+            std::cout << "Unhandled attack type\n";
+            assert(0);
     }
 
-    // determine the effective stats to use
-    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type() == "physical")
-    {
-        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ATK);
-        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::DEF);
-    }
-    else
-    {
-        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPA);
-        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPD);
-    }
-
-    // calculate damage dealt
-    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), Battle::active_field.active_pokes[atk_pos].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
-
-    // Deal damage and handle fainting but DO NOT RETURN FAINT RESULT UNTIL AFTER SWAP HAS A CHANCE TO RETURN
-    if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
-    {
-        Battle::handle_faint(def_pos);
-    }
 
     // if attack is a swapping attack
     if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect() == MOVE_EFFECTS::SWAP)
@@ -193,6 +175,44 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
                   << " is now " << status_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect()) << "\n";
         Battle::active_field.active_pokes[def_pos].set_status(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect());
+    }
+
+    return Attack_Result::HIT;
+}
+
+Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
+{
+    int eff_atk, eff_def, damage_dealt;
+    float damage_mod;
+
+    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[atk_pos].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], 1);
+
+    if(damage_mod == 0)
+    {
+        std::cout << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
+                  << " is immune to " << type_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_type()) << " type moves\n";
+        return Attack_Result::IMMUNE;
+    }
+
+    // determine the effective stats to use
+    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type() == move_damage_type::MOVE_PHYSICAL)
+    {
+        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ATK);
+        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::DEF);
+    }
+    else
+    {
+        eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPA);
+        eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPD);
+    }
+
+    // calculate damage dealt
+    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), Battle::active_field.active_pokes[atk_pos].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
+
+    // Deal damage and handle fainting but DO NOT RETURN FAINT RESULT UNTIL AFTER SWAP HAS A CHANCE TO RETURN
+    if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
+    {
+        Battle::handle_faint(def_pos);
     }
 
     return Attack_Result::HIT;
@@ -382,7 +402,7 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
     if(is_stab(attacker.get_type(), move.get_type()))
         damage_modifier *= 1.5;
 
-    if(move.get_damage_type() == "physical" && attacker.get_status() == STATUS::BURNED)
+    if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker.get_status() == STATUS::BURNED)
         damage_modifier *= 0.5;
 
     damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());

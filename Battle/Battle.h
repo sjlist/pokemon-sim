@@ -53,6 +53,8 @@ private:
 
     void update_party(Players player);
 
+    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number);
+
     bool handle_end_turn_status(FIELD_POSITION pos);
     void handle_faint(FIELD_POSITION pos);
     bool handle_pre_attack_status(FIELD_POSITION pos);
