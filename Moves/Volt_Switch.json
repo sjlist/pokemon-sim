@@ -9,9 +9,12 @@
     "power": 70,
     "crit_chance": 5
   },
-  "effect":
+  "effects":
   {
-    "effect": "SWAP",
-    "chance": 30
+    "effect0":
+    {
+      "effect": "SWAP",
+      "chance": 100
+    }
   }
 }

@@ -4,9 +4,13 @@
   "priority": 0,
   "pp": 15,
   "acc": 85,
-  "status":
+  "effects":
   {
-    "status": "BURN",
-    "chance": 10
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "BURN",
+      "chance": 10
+    }
   }
 }

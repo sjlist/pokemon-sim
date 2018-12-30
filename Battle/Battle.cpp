@@ -141,41 +141,33 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         case move_damage_type::MOVE_PHYSICAL:
         case move_damage_type::MOVE_SPECIAL:
             res = Battle::attack_damage(atk_pos, def_pos, move_number);
+            if(res != Attack_Result::HIT)
+                return res;
             break;;
         case move_damage_type::MOVE_STATUS:
             res = Attack_Result::NO_ATTACK;
             break;
         default:
-            std::cout << "Unhandled attack type\n";
+            std::cout << "Unhandled attack type" << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type() << "\n";
             assert(0);
     }
 
 
-    // if attack is a swapping attack
-    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect() == MOVE_EFFECTS::SWAP)
+    // Handling move effects
+    for(int i = 0; i < MAX_EFFECTS; i++)
     {
-        return Attack_Result::SWAP;
+        if (Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
+        {
+            Attack_Result move_result = Battle::handle_move_effects(
+                    Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect(i), atk_pos, def_pos);
+            if (move_result == Attack_Result::SWAP)
+                return move_result;
+        }
     }
 
     // Handle returning faint if needed
     if(!Battle::active_field.active_pokes[def_pos].is_alive())
         return Attack_Result::FAINT;
-
-    // Handling move effects
-    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect() != MOVE_EFFECTS::NO_MOVE_EFFECT && Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_chance()))
-    {
-        Attack_Result move_result = Battle::handle_move_effects(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect(), def_pos);
-        if(move_result != Attack_Result::NO_ATTACK)
-            return move_result;
-    }
-
-    // handle status effects
-    if((Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect() != STATUS::NO_STATUS) && Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_chance()))
-    {
-        std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
-                  << " is now " << status_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect()) << "\n";
-        Battle::active_field.active_pokes[def_pos].set_status(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_status_effect());
-    }
 
     return Attack_Result::HIT;
 }
@@ -225,14 +217,31 @@ void Battle::handle_faint(FIELD_POSITION pos)
     std::cout << "P" << (get_player_from_position(pos) + 1) << "'s " << Battle::active_field.active_pokes[pos].get_species() << " FAINTED" << "\n";
 }
 
-Attack_Result Battle::handle_move_effects(MOVE_EFFECTS move_effect, FIELD_POSITION def_pos)
+Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos)
 {
-    switch(move_effect)
+    switch(move_effect.get_effect())
     {
+        case MOVE_EFFECTS::SWAP:
+            return Attack_Result::SWAP;
         case MOVE_EFFECTS::FLINCH:
-            std::cout << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species() << " flinched\n";
-            return Attack_Result::FLINCHED;
+            if(Battle::roll_chance(move_effect.get_effect_chance()))
+            {
+                std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
+                          << Battle::active_field.active_pokes[def_pos].get_species() << " flinched\n";
+                return Attack_Result::FLINCHED;
+            }
+            return Attack_Result::MISS;
+        case MOVE_EFFECTS::STATUS_EFFECT:
+            if(Battle::roll_chance(move_effect.get_effect_chance()))
+            {
+                std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
+                          << Battle::active_field.active_pokes[def_pos].get_species()
+                          << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
+                Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type());
+            }
+            return Attack_Result::HIT;
         default:
+            std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
             assert(0);
     }
 }

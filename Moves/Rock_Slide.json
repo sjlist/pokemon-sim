@@ -9,9 +9,12 @@
     "power": 75,
     "crit_chance": 5
   },
-  "effect":
+  "effects":
   {
-    "effect": "FLINCH",
-    "chance": 30
+    "effect0":
+    {
+      "effect": "FLINCH",
+      "chance": 30
+    }
   }
 }

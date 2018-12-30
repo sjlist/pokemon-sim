@@ -130,8 +130,14 @@ void BattleStateMachine::run()
                             // remove next action in turn if there is one left. use no_player
                             prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
 
-                            //SWAP IN A NEW POKEMON by querying the battle actor
-                            BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos, 1);
+                            if(BattleStateMachine::battle_over())
+                                state = BattleState::BATTLE_END;
+                            else
+                                //SWAP IN A NEW POKEMON by querying the battle actor
+                                BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos,
+                                                                     BattleStateMachine::actor.choose_pokemon(
+                                                                             BattleStateMachine::battle.get_party(
+                                                                                     get_player_from_position(prio.at(i)))));
 
                             break;;
 
@@ -149,6 +155,9 @@ void BattleStateMachine::run()
                             std::cout << "Unhandled attack result\n";
                             assert(0);
                     }
+
+                    if(state == BattleState::BATTLE_END)
+                        break;
                 }
 
                 if(state == BattleState::TURN_EXECUTE)
@@ -238,4 +247,9 @@ std::vector<FIELD_POSITION> BattleStateMachine::remove_priority_list(FIELD_POSIT
 Battle BattleStateMachine::get_battle()
 {
     return BattleStateMachine::battle;
+}
+
+bool BattleStateMachine::battle_over()
+{
+    return battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_ONE);
 }

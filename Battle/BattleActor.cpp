@@ -70,7 +70,6 @@ int BattleActor::choose_pokemon(Party party)
             num_pokes++;
         }
     }
-
     return pokes[rand() % num_pokes];
 }
 

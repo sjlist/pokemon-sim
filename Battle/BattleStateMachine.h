@@ -13,6 +13,8 @@ public:
     void run();
     Battle get_battle();
 private:
+    BattleActor actor;
+    bool battle_over();
     int num_players = 2;
     int turn_count;
     Battle battle;

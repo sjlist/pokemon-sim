@@ -9,9 +9,13 @@
     "power": 90,
     "crit_chance": 5
   },
-  "status":
+  "effects":
   {
-    "status": "BURN",
-    "chance": 10
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "BURNED",
+      "chance": 10
+    }
   }
 }

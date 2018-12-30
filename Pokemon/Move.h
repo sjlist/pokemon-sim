@@ -11,6 +11,7 @@
 #include "Effect.h"
 
 static const int MAX_PRIO = 5;
+static const int MAX_EFFECTS = 4;
 
 enum move_damage_type
 {
@@ -29,7 +30,7 @@ public:
     int get_pp();
     int get_power();
     float get_acc();
-    MOVE_EFFECTS get_move_effect();
+    Effect get_move_effect(int effect_num);
     PokeTypes get_type();
     std::string get_name();
     float get_status_chance();
@@ -46,9 +47,7 @@ private:
     int power;
     float acc;
     int priority;
-    STATUS status_effect;
-    MOVE_EFFECTS effect;
-    float status_chance;
+    Effect move_effects[MAX_EFFECTS];
     float crit_chance;
     PokeTypes type;
     move_damage_type damage_type;

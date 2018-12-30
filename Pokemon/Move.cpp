@@ -23,56 +23,6 @@ static std::map<std::string, move_damage_type> string_move_damage_type_map = {
 Move::Move()
 {}
 
-void Move::load_move(std::string move_name)
-{
-    Move::name = move_name;
-    boost::property_tree::ptree move_tree;
-    boost::property_tree::ptree tmp_tree = load_json_file("Moves/" + move_name + ".json");
-    move_tree = tmp_tree;
-
-    Move::type = string_to_type(move_tree.get<std::string>("type"));
-
-    Move::acc = (float)move_tree.get<int>("acc", 0) / 100;
-    Move::max_pp = move_tree.get<int>("pp", 0);
-    Move::current_pp = Move::max_pp;
-    Move::priority = move_tree.get<int>("priority", 0);
-    Move::damage_type = string_move_damage_type_map[move_tree.get<std::string>("damage_type")];
-
-    if(move_tree.count("damage_info"))
-    {
-        tmp_tree = move_tree.get_child("damage_info");
-        Move::power = tmp_tree.get<int>("power");
-        Move::crit_chance = (float) tmp_tree.get<int>("crit_chance") / 100;
-    } else
-    {
-        Move::power = 0;
-        Move::crit_chance = 0;
-    }
-
-
-    if(move_tree.count("status"))
-    {
-        tmp_tree = move_tree.get_child("status");
-        Move::status_effect = string_to_status(tmp_tree.get<std::string>("status"));
-        Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
-    }
-    else
-    {
-        Move::status_effect = STATUS::NO_STATUS;
-    }
-
-    if(move_tree.count("effect"))
-    {
-        tmp_tree = move_tree.get_child("effect");
-        Move::effect = string_to_move_effect(tmp_tree.get<std::string>("effect"));
-        Move::status_chance = (float) tmp_tree.get<int>("chance") / 100;
-    }
-    else
-    {
-        Move::effect = MOVE_EFFECTS::NO_MOVE_EFFECT;
-    }
-}
-
 //GET FUNCS
 std::string Move::get_name()
 {
@@ -104,28 +54,18 @@ move_damage_type Move::get_damage_type()
     return Move::damage_type;
 }
 
-STATUS Move::get_status_effect()
-{
-    return Move::status_effect;
-}
-
-MOVE_EFFECTS Move::get_move_effect()
-{
-    return Move::effect;
-}
-
-
-
-float Move::get_status_chance()
-{
-    return Move::status_chance;
-}
-
 int Move::get_priority()
 {
     return Move::priority;
 }
 
+Effect Move::get_move_effect(int effect_num)
+{
+    return Move::move_effects[effect_num];
+}
+
+
+// SET FUNCS
 bool Move::use()
 {
     if(Move::current_pp > 0)
@@ -139,6 +79,48 @@ bool Move::use()
     }
 }
 
+
+// Loading Moves
+void Move::load_move(std::string move_name)
+{
+    Move::name = move_name;
+    boost::property_tree::ptree move_tree;
+    boost::property_tree::ptree tmp_tree = load_json_file("Moves/" + move_name + ".json");
+    move_tree = tmp_tree;
+
+    Move::type = string_to_type(move_tree.get<std::string>("type"));
+
+    Move::acc = (float)move_tree.get<int>("acc", 0) / 100;
+    Move::max_pp = move_tree.get<int>("pp", 0);
+    Move::current_pp = Move::max_pp;
+    Move::priority = move_tree.get<int>("priority", 0);
+    Move::damage_type = string_move_damage_type_map[move_tree.get<std::string>("damage_type")];
+
+    if(move_tree.count("damage_info"))
+    {
+        tmp_tree = move_tree.get_child("damage_info");
+        Move::power = tmp_tree.get<int>("power");
+        Move::crit_chance = (float) tmp_tree.get<int>("crit_chance") / 100;
+    } else
+    {
+        Move::power = 0;
+        Move::crit_chance = 0;
+    }
+
+    if(move_tree.count("effects"))
+    {
+        tmp_tree = move_tree.get_child("effects");
+        int i = 0;
+        while(tmp_tree.count("effect" + std::to_string(i)))
+        {
+            Move::move_effects[i].load_effect(tmp_tree.get_child("effect" + std::to_string(i)));
+            i++;
+        }
+    }
+}
+
+
+//Printing moves
 void Move::print_move()
 {
     std::cout << "Name: " << Move::name << "\n";
@@ -148,7 +130,5 @@ void Move::print_move()
     std::cout << "Acc: " << Move::acc << "\n";
     std::cout << "PP: " << Move::current_pp << "/" << Move::max_pp << "\n";
     std::cout << "Priority: " << Move::priority << "\n";
-    std::cout << "Status effect: " << Move::status_effect << "\n";
-    std::cout << "Status chance: " << Move::status_chance << "\n";
     std::cout << "Crit chance: " << Move::crit_chance << "\n";
 }
