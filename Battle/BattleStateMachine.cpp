@@ -40,11 +40,11 @@ void BattleStateMachine::run()
 
     BattleMessage messages [BattleStateMachine::num_players];
     messages[FIELD_POSITION::PLAYER_1_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_1_0].move_num = 0;
+    messages[FIELD_POSITION::PLAYER_1_0].move_num = 2;
     messages[FIELD_POSITION::PLAYER_1_0].target_pos = FIELD_POSITION::PLAYER_2_0;
 
     messages[FIELD_POSITION::PLAYER_2_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_2_0].move_num = 0;
+    messages[FIELD_POSITION::PLAYER_2_0].move_num = 2;
     messages[FIELD_POSITION::PLAYER_2_0].target_pos = FIELD_POSITION::PLAYER_1_0;
 
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
@@ -70,6 +70,12 @@ void BattleStateMachine::run()
                 std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
                 BattleStateMachine::battle.print_battle();
                 //get action choice
+
+                if(BattleStateMachine::turn_count == 2)
+                {
+                    messages[FIELD_POSITION::PLAYER_1_0].move_num = 0;
+                    messages[FIELD_POSITION::PLAYER_2_0].move_num = 0;
+                }
 
                 //determine attack order
                 prio = BattleStateMachine::create_priority_list(messages);

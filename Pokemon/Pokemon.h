@@ -25,7 +25,7 @@ public:
     bool use_move(int move_number);
     void set_active(bool state);
     bool deal_damage(int damage);
-    void set_status(STATUS new_status);
+    bool set_status(STATUS new_status);
     void stat_change(STAT stat, int stages);
     void faint_poke();
     void clear_stat_mods();

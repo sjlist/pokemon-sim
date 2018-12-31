@@ -12,6 +12,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"FLINCH", MOVE_EFFECTS::FLINCH},
         {"SWAP", MOVE_EFFECTS::SWAP},
         {"STATUS", MOVE_EFFECTS::STATUS_EFFECT},
+        {"STAT_CHANGE", MOVE_EFFECTS::STAT_CHANGE},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -39,13 +40,37 @@ float Effect::get_effect_chance()
     return Effect::effect_chance;
 }
 
+STAT Effect::get_stat_changed()
+{
+    return Effect::stat_changed;
+}
+
+int Effect::get_stages_changed()
+{
+    return Effect::stages_changes;
+}
+
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
     Effect::effect_type = string_to_move_effect(effect_tree.get<std::string>("effect"));
-    if(effect_tree.count("status"))
-        Effect::status_effect = string_to_status(effect_tree.get<std::string>("status"));
-    Effect::effect_chance = (float)effect_tree.get<int>("chance") / 100;
+
+    if(effect_tree.count("chance"))
+        Effect::effect_chance = (float)effect_tree.get<int>("chance") / 100;
+    else
+        Effect::effect_chance = 100;
+
+    switch(Effect::effect_type)
+    {
+        case MOVE_EFFECTS::STATUS_EFFECT:
+            Effect::status_effect = string_to_status(effect_tree.get<std::string>("status"));
+            break;;
+        case MOVE_EFFECTS::STAT_CHANGE:
+            Effect::stat_changed = string_to_stat(effect_tree.get<std::string>("stat"));
+            Effect::stages_changes = effect_tree.get<int>("stages");
+            break;
+    }
+
 }
 
 

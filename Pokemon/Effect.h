@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Status.h"
+#include "Stats.h"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -20,6 +21,7 @@ enum MOVE_EFFECTS
     STATUS_EFFECT,
     FLINCH,
     SWAP,
+    STAT_CHANGE,
     NUM_MOVE_EFFECTS
 };
 
@@ -29,13 +31,21 @@ public:
     void load_effect(boost::property_tree::ptree effect_tree);
 
     MOVE_EFFECTS get_effect();
-    STATUS get_effect_status_type();
     float get_effect_chance();
 
+    STATUS get_effect_status_type();
+
+    STAT get_stat_changed();
+    int get_stages_changed();
 private:
     MOVE_EFFECTS effect_type;
-    STATUS status_effect;
     float effect_chance;
+
+    //Effect specific attributes
+    STATUS status_effect;
+
+    STAT stat_changed;
+    int stages_changes;
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);

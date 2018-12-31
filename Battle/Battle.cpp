@@ -210,12 +210,7 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     return Attack_Result::HIT;
 }
 
-void Battle::handle_faint(FIELD_POSITION pos)
-{
-    Battle::active_field.active_pokes[pos].faint_poke();
-    Battle::update_party(get_player_from_position(pos));
-    std::cout << "P" << (get_player_from_position(pos) + 1) << "'s " << Battle::active_field.active_pokes[pos].get_species() << " FAINTED" << "\n";
-}
+
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos)
 {
@@ -234,11 +229,14 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
-                std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
-                          << Battle::active_field.active_pokes[def_pos].get_species()
-                          << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
-                Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type());
+                if(Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type()))
+                    std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
+                              << Battle::active_field.active_pokes[def_pos].get_species()
+                              << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
             }
+            return Attack_Result::HIT;
+        case MOVE_EFFECTS::STAT_CHANGE:
+            Battle::active_field.active_pokes[atk_pos].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
             return Attack_Result::HIT;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
@@ -292,6 +290,13 @@ int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, 
     float damage_adjustment = (rand()/(float)RAND_MAX * 0.15) + 0.85;
 
     return (float)base_damage * damage_adjustment;
+}
+
+void Battle::handle_faint(FIELD_POSITION pos)
+{
+    Battle::active_field.active_pokes[pos].faint_poke();
+    Battle::update_party(get_player_from_position(pos));
+    std::cout << "P" << (get_player_from_position(pos) + 1) << "'s " << Battle::active_field.active_pokes[pos].get_species() << " FAINTED" << "\n";
 }
 
 bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
@@ -349,13 +354,13 @@ bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
 bool Battle::handle_end_turn_field_status()
 {
     bool fainted = false;
-    if(Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_1_0))
+    if(!Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_1_0))
     {
         Battle::handle_faint(FIELD_POSITION::PLAYER_1_0);
         fainted = true;
     }
 
-    if(Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_2_0))
+    if(!Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_2_0))
     {
         Battle::handle_faint(FIELD_POSITION::PLAYER_2_0);
         fainted = true;
@@ -379,12 +384,12 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
             damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16 * Battle::active_field.active_pokes[pos].status_turns;
             break;;
         default:
-            return false;
+            return true;
     }
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-bool Battle::roll_acc(float acc)
+bool Battle::roll_acc(float acc) //TODO: IMPLEMENT ACCURACY
 {
     return Battle::roll_chance(acc);
 }

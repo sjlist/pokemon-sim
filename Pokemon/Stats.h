@@ -19,5 +19,6 @@ enum STAT
 };
 
 std::string stat_to_string(STAT stat);
+STAT string_to_stat(std::string stat_string);
 
 #endif //POKEMON_SIM_STATS_H

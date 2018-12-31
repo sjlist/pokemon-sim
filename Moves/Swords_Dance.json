@@ -1,0 +1,16 @@
+{
+  "damage_type": "status",
+  "type": "NORMAL",
+  "priority": 0,
+  "pp": 32,
+  "acc": 100,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STAT_CHANGE",
+      "stat": "ATK",
+      "stages": 2
+    }
+  }
+}

@@ -13,8 +13,7 @@
   {
     "effect0":
     {
-      "effect": "SWAP",
-      "chance": 100
+      "effect": "SWAP"
     }
   }
 }

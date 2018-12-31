@@ -101,12 +101,12 @@ bool Pokemon::deal_damage(int damage)
     return true;
 }
 
-void Pokemon::set_status(STATUS new_status)
+bool Pokemon::set_status(STATUS new_status)
 {
     if(Pokemon::status == new_status)
     {
-        std::cout << Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status);
-        return;
+        std::cout << Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status) << "\n";
+        return false;
     }
 
     switch(new_status)
@@ -116,18 +116,22 @@ void Pokemon::set_status(STATUS new_status)
             break;;
         case STATUS::BURNED:
             if(Pokemon::type[0] == PokeTypes::FIRE || Pokemon::type[1] == PokeTypes::FIRE)
-                return;
+                return false;
+            break;;
         case STATUS::FROZEN:
             if(Pokemon::type[0] == PokeTypes::ICE || Pokemon::type[1] == PokeTypes::ICE)
-                return;
+                return false;
+            break;;
         case STATUS::PARALYZED:
             if(Pokemon::type[0] == PokeTypes::ELECTRIC || Pokemon::type[1] == PokeTypes::ELECTRIC)
-                return;
+                return false;
+            break;;
         case STATUS::BADLY_POISONED:
             Pokemon::status_turns = 0;
         case STATUS::POISONED:
             if(Pokemon::type[0] == PokeTypes::STEEL || Pokemon::type[1] == PokeTypes::STEEL || Pokemon::type[0] == PokeTypes::POISON || Pokemon::type[1] == PokeTypes::POISON)
-                return;
+                return false;
+            break;;
         case STATUS::NO_STATUS:
             break;
         default:
@@ -136,6 +140,7 @@ void Pokemon::set_status(STATUS new_status)
     }
 
     Pokemon::status = new_status;
+    return true;
 }
 
 void Pokemon::set_active(bool state)

@@ -9,8 +9,7 @@
     "effect0":
     {
       "effect": "STATUS",
-      "status": "BURN",
-      "chance": 10
+      "status": "BURNED"
     }
   }
 }

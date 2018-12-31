@@ -58,6 +58,7 @@ void Field::handle_hazard_entrance(FIELD_POSITION pos)
 
     if(Field::toxic_spikes[player] == 1)
     {
+        std::cout << Field::active_pokes[pos].get_species() << " was poisoned by toxic spikes\n";
         Field::active_pokes[pos].set_status(STATUS::POISONED);
     }
 

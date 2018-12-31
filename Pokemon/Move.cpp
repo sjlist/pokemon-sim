@@ -84,9 +84,17 @@ bool Move::use()
 void Move::load_move(std::string move_name)
 {
     Move::name = move_name;
-    boost::property_tree::ptree move_tree;
-    boost::property_tree::ptree tmp_tree = load_json_file("Moves/" + move_name + ".json");
-    move_tree = tmp_tree;
+    boost::property_tree::ptree move_tree, tmp_tree;
+
+    try
+    {
+        move_tree = load_json_file("Moves/" + move_name + ".json");
+        std::cout << "read move " << move_name << "\n";
+    }
+    catch(...)
+    {
+        assert(0);
+    }
 
     Move::type = string_to_type(move_tree.get<std::string>("type"));
 

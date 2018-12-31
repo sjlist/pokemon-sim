@@ -27,7 +27,7 @@
     {
       "MOVE0": "Rock_Slide",
       "MOVE1": "Earthquake",
-      "MOVE2": "",
+      "MOVE2": "Swords_Dance",
       "MOVE3": ""
     }
   },
@@ -59,7 +59,7 @@
     {
       "MOVE0": "Flamethrower",
       "MOVE1": "Volt_Switch",
-      "MOVE2": "",
+      "MOVE2": "Will-o-Wisp",
       "MOVE3": ""
     }
   }
