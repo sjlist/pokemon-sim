@@ -131,6 +131,7 @@ void BattleStateMachine::run()
                             {
                                 std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
                                 state = BattleState::BATTLE_END;
+                                break;;
                             }
 
                             // remove next action in turn if there is one left. use no_player
@@ -185,6 +186,9 @@ void BattleStateMachine::run()
                 }
                 if(state == BattleState::TURN_END)
                     state = BattleState::TURN_START;
+                break;;
+            default:
+                assert(0);
         }
     }
 }

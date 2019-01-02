@@ -61,7 +61,7 @@ private:
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
 
     bool roll_chance(float chance);
-    bool roll_acc(float acc);
+    bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier);
     float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets);
 

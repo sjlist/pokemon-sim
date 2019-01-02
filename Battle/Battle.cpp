@@ -130,7 +130,9 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
               << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << "\n";
 
     // roll for hit
-    if(!Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_acc()))
+    if(!Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_acc(),
+                         Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ACC),
+                         Battle::active_field.active_pokes[def_pos].get_stat(STAT::EVA)))
     {
         std::cout << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << " missed\n";
         return Attack_Result::MISS;
@@ -389,13 +391,16 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-bool Battle::roll_acc(float acc) //TODO: IMPLEMENT ACCURACY
+bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod) //TODO: IMPLEMENT ACCURACY
 {
     // if acc < 0 its an always hit
     if(acc < 0)
         return true;
     else
+    {
+
         return Battle::roll_chance(acc);
+    }
 }
 
 bool Battle::roll_chance(float chance)

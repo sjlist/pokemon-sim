@@ -15,6 +15,8 @@ enum STAT
     SPA,
     SPD,
     SPE,
+    ACC,
+    EVA,
     NUM_STATS
 };
 

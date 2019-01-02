@@ -7,6 +7,7 @@
 
 #include "Move.h"
 #include "Natures.h"
+#include "Stats.h"
 #include <string>
 #include <boost/property_tree/ptree.hpp>
 
@@ -16,7 +17,7 @@ public:
 
     PokeTypes* get_type();
     int get_level();
-    int get_stat(STAT stat);
+    float get_stat(STAT stat);
     STATUS get_status();
     bool is_active();
     std::string get_species();
@@ -44,10 +45,12 @@ private:
     PokeTypes type[2];
     int current_hp;
     std::string name;
-    int base_stats [6];
-    int stat_modifiers [6] = {0, 0, 0, 0, 0, 0};
+    int base_stats [STAT::NUM_STATS];
+    int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
     STATUS status;
     std::string species;
+
+    int get_stat_mod(STAT stat);
 
     int* load_species(std::string species_name);
     int calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);

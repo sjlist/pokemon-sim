@@ -36,24 +36,38 @@ bool Pokemon::is_active()
     return Pokemon::active;
 }
 
-int Pokemon::get_stat(STAT stat)
+int Pokemon::get_stat_mod(STAT stat)
 {
-    int mod = Pokemon::stat_modifiers[stat];
+    return Pokemon::stat_modifiers[stat];
+}
+
+float Pokemon::get_stat(STAT stat)
+{
+    int mod = Pokemon::get_stat_mod(stat);
     float adjustment = 1;
+    float equ_const;
+
+    if(stat == STAT::ACC || stat == STAT::EVA)
+        equ_const = 3.0;
+    else
+        equ_const = 2.0;
 
     if(stat == STAT::SPE && Pokemon::status == STATUS::PARALYZED)
         adjustment *= 0.5;
 
     if(mod < 0)
     {
-        adjustment *= 2.0 / (2 - mod);
+        adjustment *= equ_const / (equ_const - mod);
     }
     else if(mod > 0)
     {
-        adjustment *= (2.0 + mod) / 2;
+        adjustment *= (equ_const + mod) / equ_const;
     }
 
-    return Pokemon::base_stats[stat] * adjustment;
+    if(equ_const == 2.0)
+        return (int)(Pokemon::base_stats[stat] * adjustment);
+    else
+        return Pokemon::base_stats[stat] * adjustment;
 }
 
 STATUS Pokemon::get_status()
@@ -155,12 +169,15 @@ void Pokemon::faint_poke()
 
 void Pokemon::clear_stat_mods()
 {
-    Pokemon::stat_modifiers[0] = 0;
-    Pokemon::stat_modifiers[1] = 0;
-    Pokemon::stat_modifiers[2] = 0;
-    Pokemon::stat_modifiers[3] = 0;
-    Pokemon::stat_modifiers[4] = 0;
-    Pokemon::stat_modifiers[5] = 0;
+    Pokemon::stat_modifiers[STAT::HP]  = 0;
+    Pokemon::stat_modifiers[STAT::ATK] = 0;
+    Pokemon::stat_modifiers[STAT::DEF] = 0;
+    Pokemon::stat_modifiers[STAT::SPA] = 0;
+    Pokemon::stat_modifiers[STAT::SPD] = 0;
+    Pokemon::stat_modifiers[STAT::SPE] = 0;
+    Pokemon::stat_modifiers[STAT::ACC] = 0;
+    Pokemon::stat_modifiers[STAT::EVA] = 0;
+
 }
 
 void Pokemon::stat_change(STAT stat, int stages)
@@ -281,17 +298,26 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
     float nature_mod;
     for(int i = STAT::HP; i < STAT::NUM_STATS; i++)
     {
-        if(i != STAT::HP)
+        switch(i)
         {
-            nature_mod = get_nature_mod(nature, (STAT)i);
-            Pokemon::base_stats[i] = calculate_stat_single(level, base[i], evs[i], ivs[i], nature_mod);
-        }
-        else
-        {
-            //std::cout << evs[i] << " " << i << "\n";
-
-            Pokemon::base_stats[i] = calculate_hp(level, base[i], evs[i], ivs[i]);
-            Pokemon::current_hp = Pokemon::base_stats[i];
+            case STAT::HP:
+                Pokemon::base_stats[i] = calculate_hp(level, base[i], evs[i], ivs[i]);
+                Pokemon::current_hp = Pokemon::base_stats[i];
+                break;;
+            case STAT::ATK:
+            case STAT::DEF:
+            case STAT::SPA:
+            case STAT::SPD:
+            case STAT::SPE:
+                nature_mod = get_nature_mod(nature, (STAT)i);
+                Pokemon::base_stats[i] = calculate_stat_single(level, base[i], evs[i], ivs[i], nature_mod);
+                break;;
+            case STAT::ACC:
+            case STAT::EVA:
+                Pokemon::base_stats[i] = 1;
+                break;;
+            default:
+                assert(0);
         }
     }
 }
