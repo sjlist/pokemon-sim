@@ -25,7 +25,7 @@ Pokemon::Pokemon()
     Pokemon::status = STATUS::NO_STATUS;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
     {
-        Pokemon::stat_modifiers[stat] = 0;
+        Pokemon::stat_modifiers[stat] = 1;
     }
     Pokemon::alive = false;
 }
@@ -74,6 +74,17 @@ STATUS Pokemon::get_status()
 {
     return Pokemon::status;
 }
+
+bool Pokemon::is_volitile_status(VOLITILE_STATUS v_status)
+{
+    return Pokemon::volitile_status & v_status;
+}
+
+int Pokemon::get_volitile_status()
+{
+    return Pokemon::volitile_status;
+}
+
 
 int Pokemon::get_level()
 {
@@ -157,6 +168,20 @@ bool Pokemon::set_status(STATUS new_status)
     return true;
 }
 
+bool Pokemon::set_volitile_status(VOLITILE_STATUS v_status)
+{
+    if(!Pokemon::is_volitile_status(v_status))
+    {
+        Pokemon::volitile_status |= v_status;
+        return true;
+    }
+    else
+    {
+        std::cout << Pokemon::species << " is already " << v_status_to_string(v_status) << "\n";
+        return false;
+    }
+}
+
 void Pokemon::set_active(bool state)
 {
     Pokemon::active = state;
@@ -167,11 +192,24 @@ void Pokemon::faint_poke()
     Pokemon::alive = false;
 }
 
+//CLEARING FUNCTIONS
+
 void Pokemon::clear_stat_mods()
 {
     for(int i = 0; i < STAT::NUM_STATS; i++)
         Pokemon::stat_modifiers[i]  = 0;
 }
+
+void Pokemon::clear_volitile_status(VOLITILE_STATUS v_status)
+{
+    Pokemon::volitile_status &= ~(v_status);
+}
+
+void Pokemon::clear_volitile_statuses()
+{
+    Pokemon::volitile_status = 0;
+}
+//
 
 void Pokemon::stat_change(STAT stat, int stages)
 {
@@ -242,6 +280,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::alive = true;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
+    Pokemon::volitile_status = 0;
 }
 
 int* Pokemon::load_species(std::string species_name)

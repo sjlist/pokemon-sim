@@ -19,6 +19,8 @@ public:
     int get_level();
     float get_stat(STAT stat);
     STATUS get_status();
+    int get_volitile_status();
+    bool is_volitile_status(VOLITILE_STATUS v_status);
     bool is_active();
     std::string get_species();
     bool is_alive();
@@ -27,9 +29,13 @@ public:
     void set_active(bool state);
     bool deal_damage(int damage);
     bool set_status(STATUS new_status);
+    bool set_volitile_status(VOLITILE_STATUS v_status);
     void stat_change(STAT stat, int stages);
     void faint_poke();
+
     void clear_stat_mods();
+    void clear_volitile_status(VOLITILE_STATUS v_status);
+    void clear_volitile_statuses();
 
     int status_turns;
 
@@ -51,6 +57,8 @@ private:
     std::string species;
 
     int get_stat_mod(STAT stat);
+
+    int volitile_status;
 
     int* load_species(std::string species_name);
     int calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);

@@ -44,11 +44,11 @@ void BattleStateMachine::run()
 
     BattleMessage messages [BattleStateMachine::num_players];
     messages[FIELD_POSITION::PLAYER_1_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_1_0].move_num = 2;
+    messages[FIELD_POSITION::PLAYER_1_0].move_num = 3;
     messages[FIELD_POSITION::PLAYER_1_0].target_pos = FIELD_POSITION::PLAYER_2_0;
 
     messages[FIELD_POSITION::PLAYER_2_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_2_0].move_num = 2;
+    messages[FIELD_POSITION::PLAYER_2_0].move_num = 3;
     messages[FIELD_POSITION::PLAYER_2_0].target_pos = FIELD_POSITION::PLAYER_1_0;
 
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
@@ -77,8 +77,8 @@ void BattleStateMachine::run()
 
                 if(BattleStateMachine::turn_count == 2)
                 {
-                    messages[FIELD_POSITION::PLAYER_1_0].move_num = 0;
-                    messages[FIELD_POSITION::PLAYER_2_0].move_num = 0;
+                    messages[FIELD_POSITION::PLAYER_1_0].move_num = 3;
+                    messages[FIELD_POSITION::PLAYER_2_0].move_num = 3;
                 }
 
                 //determine attack order
@@ -97,7 +97,6 @@ void BattleStateMachine::run()
                     //if there needs to be a swap
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                         atk_r = Attack_Result::SWAP;
-                    //TODO: IMPLEMENT NON DAMAGING ATTACKS
                     //default to a attack
                     else
                         atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
@@ -178,7 +177,7 @@ void BattleStateMachine::run()
                             assert(0);
                     }
 
-                    if(state == BattleState::BATTLE_END)
+                    if(state != BattleState::TURN_EXECUTE)
                         break;
                 }
 

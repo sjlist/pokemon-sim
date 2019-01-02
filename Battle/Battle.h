@@ -48,17 +48,19 @@ public:
     void print_battle(bool detailed=false);
 private:
     std::vector<std::string> select_teams();
-
     void load_teams(std::vector<std::string> team_names);
-
-    void update_party(Players player);
 
     Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number);
 
-    bool handle_end_turn_status(FIELD_POSITION pos);
-    void handle_faint(FIELD_POSITION pos);
     bool handle_pre_attack_status(FIELD_POSITION pos);
+    bool handle_pre_attack_v_statuses(FIELD_POSITION pos);
+    bool handle_pre_attack_v_status(FIELD_POSITION pos, int v_status);
+    bool handle_end_turn_status(FIELD_POSITION pos);
+
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
+
+    void update_party(Players player);
+    void handle_faint(FIELD_POSITION pos);
 
     bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);

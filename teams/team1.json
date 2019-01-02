@@ -28,7 +28,7 @@
       "MOVE0": "Flamethrower",
       "MOVE1": "Volt_Switch",
       "MOVE2": "Will-o-Wisp",
-      "MOVE3": ""
+      "MOVE3": "Confusion"
     }
   },
   "1":
@@ -60,7 +60,7 @@
       "MOVE0": "Rock_Slide",
       "MOVE1": "Earthquake",
       "MOVE2": "Swords_Dance",
-      "MOVE3": ""
+      "MOVE3": "Flamethrower"
     }
   }
 }

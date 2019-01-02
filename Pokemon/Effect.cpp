@@ -11,7 +11,8 @@
 std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"FLINCH", MOVE_EFFECTS::FLINCH},
         {"SWAP", MOVE_EFFECTS::SWAP},
-        {"STATUS", MOVE_EFFECTS::STATUS_EFFECT},
+        {"STATUS", MOVE_EFFECTS::NON_VOLITILE_STATUS_EFFECT},
+        {"VOLITILE_STATUS", MOVE_EFFECTS::VOLITILE_STATUS_EFFECT},
         {"STAT_CHANGE", MOVE_EFFECTS::STAT_CHANGE},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
@@ -33,6 +34,11 @@ MOVE_EFFECTS Effect::get_effect()
 STATUS Effect::get_effect_status_type()
 {
     return Effect::status_effect;
+}
+
+VOLITILE_STATUS Effect::get_volitile_status_effect()
+{
+    return Effect::v_status_effect;
 }
 
 float Effect::get_effect_chance()
@@ -62,7 +68,10 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
 
     switch(Effect::effect_type)
     {
-        case MOVE_EFFECTS::STATUS_EFFECT:
+        case MOVE_EFFECTS::VOLITILE_STATUS_EFFECT:
+            Effect::v_status_effect = string_to_v_status(effect_tree.get<std::string>("status"));
+            break;
+        case MOVE_EFFECTS::NON_VOLITILE_STATUS_EFFECT:
             Effect::status_effect = string_to_status(effect_tree.get<std::string>("status"));
             break;;
         case MOVE_EFFECTS::STAT_CHANGE:

@@ -1,0 +1,21 @@
+{
+  "damage_type": "special",
+  "type": "PSYCHIC",
+  "priority": 0,
+  "pp": 40,
+  "acc": 100,
+  "damage_info":
+  {
+    "power": 75,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "VOLITILE_STATUS",
+      "status": "CONFUSION",
+      "chance": 100
+    }
+  }
+}

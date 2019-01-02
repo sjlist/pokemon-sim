@@ -100,6 +100,7 @@ void Battle::return_poke(FIELD_POSITION pos)
         {
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
+            Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volitile_statuses();
             Battle::active_field.return_poke(pos);
             break;;
         }
@@ -115,15 +116,19 @@ void Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
     Attack_Result res;
+
+    if(!Battle::handle_pre_attack_status(atk_pos))
+        return Attack_Result::NO_ATTACK;
+
+    if(!Battle::handle_pre_attack_v_statuses(atk_pos))
+        return Attack_Result::NO_ATTACK;
+
     // Check if there is enough pp to use the move
     if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
     {
         std::cout << "Not enough PP\n";
         return Attack_Result::NO_PP;
     }
-
-    if(!Battle::handle_pre_attack_status(atk_pos))
-        return Attack_Result::NO_ATTACK;
 
     std::cout << "P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos].get_species() << " is attacking "
               << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species() << " with "
@@ -165,6 +170,8 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
             if (res == Attack_Result::SWAP)
                 return res;
         }
+        else
+            break;
     }
 
     // Handle returning faint if needed
@@ -226,13 +233,25 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 return Attack_Result::FLINCHED;
             }
             return Attack_Result::MISS;
-        case MOVE_EFFECTS::STATUS_EFFECT:
+        case MOVE_EFFECTS::NON_VOLITILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
                 if(Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type()))
                     std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
                               << Battle::active_field.active_pokes[def_pos].get_species()
                               << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
+            }
+            return Attack_Result::HIT;
+        case MOVE_EFFECTS::VOLITILE_STATUS_EFFECT:
+            if(Battle::roll_chance(move_effect.get_effect_chance()))
+            {
+                if(Battle::active_field.active_pokes[def_pos].set_volitile_status(move_effect.get_volitile_status_effect()))
+                {
+                    std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
+                              << Battle::active_field.active_pokes[def_pos].get_species()
+                              << " is now " << v_status_to_string(move_effect.get_volitile_status_effect()) << "\n";
+                }
+                return Attack_Result::HIT;
             }
             return Attack_Result::HIT;
         case MOVE_EFFECTS::STAT_CHANGE:
@@ -392,15 +411,56 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod) //TODO: IMPLEMENT ACCURACY
+bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos)
+{
+    int temp_v_status = Battle::active_field.active_pokes[pos].get_volitile_status();
+    int current_v_status, i = 0;
+    while(temp_v_status > 0)
+    {
+        current_v_status = (1u << i);
+        if(current_v_status & temp_v_status)
+        {
+            temp_v_status &= ~(current_v_status);
+            Battle::handle_pre_attack_v_status(pos, current_v_status);
+        }
+        i++;
+    }
+    return true;
+}
+bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status)
+{
+    switch(v_status)
+    {
+        case VOLITILE_STATUS::CONFUSION:
+
+            break;;
+        case VOLITILE_STATUS::BOUND:
+        case VOLITILE_STATUS::CANT_ESCAPE:
+        case VOLITILE_STATUS::CURSE:
+        case VOLITILE_STATUS::EMBARGO:
+        case VOLITILE_STATUS::ENCORE:
+        case VOLITILE_STATUS::FLINCHED:
+        case VOLITILE_STATUS::HEALBLOCK:
+        case VOLITILE_STATUS::IDENTIFIED:
+        case VOLITILE_STATUS::INFATUATION:
+        case VOLITILE_STATUS::NIGHTMARE:
+        case VOLITILE_STATUS::PERISHSONG:
+        case VOLITILE_STATUS::TAUNT:
+        case VOLITILE_STATUS::TELEKINESIS:
+        case VOLITILE_STATUS::TORMENT:
+            assert(0);
+    }
+    return true;
+}
+
+bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod)
 {
     // if acc < 0 its an always hit
     if(acc < 0)
         return true;
     else
     {
-
-        return Battle::roll_chance(acc);
+        return Battle::roll_chance(acc*atk_acc_mod*(1/def_eva_mod));
     }
 }
 
