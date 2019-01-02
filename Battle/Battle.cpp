@@ -391,7 +391,11 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 
 bool Battle::roll_acc(float acc) //TODO: IMPLEMENT ACCURACY
 {
-    return Battle::roll_chance(acc);
+    // if acc < 0 its an always hit
+    if(acc < 0)
+        return true;
+    else
+        return Battle::roll_chance(acc);
 }
 
 bool Battle::roll_chance(float chance)

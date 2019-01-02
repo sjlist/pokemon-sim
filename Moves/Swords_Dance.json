@@ -3,7 +3,7 @@
   "type": "NORMAL",
   "priority": 0,
   "pp": 32,
-  "acc": 100,
+  "acc": -1,
   "effects":
   {
     "effect0":
