@@ -60,7 +60,7 @@ int BattleActor::choose_move()
 
 int BattleActor::choose_pokemon(Party party)
 {
-    int num_pokes = 0;
+    int num_pokes = 0, selection;
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
@@ -70,7 +70,8 @@ int BattleActor::choose_pokemon(Party party)
             num_pokes++;
         }
     }
-    return pokes[rand() % num_pokes];
+    selection = pokes[rand() % num_pokes];
+    return selection;
 }
 
 FIELD_POSITION BattleActor::choose_target(Players player)

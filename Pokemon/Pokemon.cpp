@@ -169,15 +169,8 @@ void Pokemon::faint_poke()
 
 void Pokemon::clear_stat_mods()
 {
-    Pokemon::stat_modifiers[STAT::HP]  = 0;
-    Pokemon::stat_modifiers[STAT::ATK] = 0;
-    Pokemon::stat_modifiers[STAT::DEF] = 0;
-    Pokemon::stat_modifiers[STAT::SPA] = 0;
-    Pokemon::stat_modifiers[STAT::SPD] = 0;
-    Pokemon::stat_modifiers[STAT::SPE] = 0;
-    Pokemon::stat_modifiers[STAT::ACC] = 0;
-    Pokemon::stat_modifiers[STAT::EVA] = 0;
-
+    for(int i = 0; i < STAT::NUM_STATS; i++)
+        Pokemon::stat_modifiers[i]  = 0;
 }
 
 void Pokemon::stat_change(STAT stat, int stages)

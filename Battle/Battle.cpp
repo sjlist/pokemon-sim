@@ -160,10 +160,10 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     {
         if (Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
         {
-            Attack_Result move_result = Battle::handle_move_effects(
+            res = Battle::handle_move_effects(
                     Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_effect(i), atk_pos, def_pos);
-            if (move_result == Attack_Result::SWAP)
-                return move_result;
+            if (res == Attack_Result::SWAP)
+                return res;
         }
     }
 
@@ -171,7 +171,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     if(!Battle::active_field.active_pokes[def_pos].is_alive())
         return Attack_Result::FAINT;
 
-    return Attack_Result::HIT;
+    return res;
 }
 
 Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
@@ -223,8 +223,6 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::FLINCH:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
-                std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
-                          << Battle::active_field.active_pokes[def_pos].get_species() << " flinched\n";
                 return Attack_Result::FLINCHED;
             }
             return Attack_Result::MISS;
@@ -377,12 +375,15 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     switch(Battle::active_field.active_pokes[pos].get_status())
     {
         case STATUS::BURNED:
+            std::cout << "Burn ";
             damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
             break;;
         case STATUS::POISONED:
+            std::cout << "Poison ";
             damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
             break;;
         case STATUS::BADLY_POISONED:
+            std::cout << "Poison ";
             damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16 * Battle::active_field.active_pokes[pos].status_turns;
             break;;
         default:

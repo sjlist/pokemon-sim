@@ -35,7 +35,11 @@ void BattleStateMachine::run()
     Attack_Result atk_r;
     Players faint_player;
 
-    int sendout_choice [2] = {0, 0};
+    FIELD_POSITION pos;
+    Players player;
+    Party poke_party;
+
+    int sendout_choice [2] = {0, 0}, removed, poke_posistion;
     BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [BattleStateMachine::num_players];
@@ -135,21 +139,32 @@ void BattleStateMachine::run()
                             }
 
                             // remove next action in turn if there is one left. use no_player
-                            prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
+                            removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
+                            if( removed != -1 )
+                                prio = BattleStateMachine::remove_priority_list(removed, prio);
 
                             if(BattleStateMachine::battle_over())
                                 state = BattleState::BATTLE_END;
                             else
                                 //SWAP IN A NEW POKEMON by querying the battle actor
                                 BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos,
-                                                                     BattleStateMachine::actor.choose_pokemon(
-                                                                             BattleStateMachine::battle.get_party(
-                                                                                     get_player_from_position(prio.at(i)))));
+                                        BattleStateMachine::actor.choose_pokemon(
+                                                BattleStateMachine::battle.get_party(
+                                                        get_player_from_position(
+                                                                messages[prio.at(i)].target_pos
+                                                                ))));
 
                             break;;
 
                         case Attack_Result::FLINCHED:
-                            prio = BattleStateMachine::remove_priority_list(messages[prio.at(i)].target_pos, i, prio);
+                            removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
+                            if( removed != -1 )
+                            {
+                                std::cout << "P" << get_player_from_position(messages[prio.at(i)].target_pos) + 1 << "'s "
+                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].get_species() << " flinched\n";
+
+                                prio = BattleStateMachine::remove_priority_list(removed, prio);
+                            }
                             break;;
 
                         case Attack_Result::HIT:
@@ -240,16 +255,21 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     return prio_list;
 }
 
-std::vector<FIELD_POSITION> BattleStateMachine::remove_priority_list(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
+int BattleStateMachine::moves_later(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
 {
     for(int j = (current_action + 1); j < BattleStateMachine::num_players; j++)
     {
-        if(pos == prio_list.at(j))
+        if (pos == prio_list.at(j))
         {
-            prio_list.at(j) = FIELD_POSITION::NO_POSITION;
-            break;
+            return j;
         }
     }
+    return -1;
+}
+
+std::vector<FIELD_POSITION> BattleStateMachine::remove_priority_list(int action, std::vector<FIELD_POSITION> prio_list)
+{
+    prio_list.at(action) = FIELD_POSITION::NO_POSITION;
     return prio_list;
 }
 
