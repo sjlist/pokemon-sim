@@ -49,8 +49,9 @@ public:
 private:
     std::vector<std::string> select_teams();
     void load_teams(std::vector<std::string> team_names);
+    void load_status_moves();
 
-    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number);
+    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move);
 
     bool handle_pre_attack_status(FIELD_POSITION pos);
     bool handle_pre_attack_v_statuses(FIELD_POSITION pos);
@@ -68,6 +69,8 @@ private:
     float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets);
 
     Party Parties [2];
+    Move status_moves [NUM_VOLITILE_STATUS];
+    int status_turns [NUM_VOLITILE_STATUS];
 };
 
 

@@ -29,56 +29,6 @@ Party Battle::get_party(Players player)
     return Parties[player];
 }
 
-void Battle::load_battle()
-{
-    Battle::load_teams(Battle::select_teams());
-}
-
-void Battle::load_teams(std::vector<std::string> team_names)
-{
-    boost::property_tree::ptree team_1 = load_json_file("teams/" + team_names[Players::PLAYER_ONE] + ".json");
-    boost::property_tree::ptree team_2 = load_json_file("teams/"  + team_names[Players::PLAYER_TWO] + ".json");
-    int i = 0;
-    bool done [] = {false, false};
-
-    while(!(done[Players::PLAYER_ONE] && done[Players::PLAYER_TWO]) && i < 6)
-    {
-        if(!done[Players::PLAYER_ONE])
-        {
-            try
-            {
-                Parties[Players::PLAYER_ONE].party_pokes[i].load_pokemon(team_1.get_child(std::to_string(i)));
-            }
-            catch(...)
-            {
-                std::cout << "Finished importing " << team_names[Players::PLAYER_ONE] << "\n";
-                done[Players::PLAYER_ONE] = true;
-            }
-        }
-        if(!done[1])
-        {
-            try
-            {
-                Parties[Players::PLAYER_TWO].party_pokes[i].load_pokemon(team_2.get_child(std::to_string(i)));
-            }
-            catch(...)
-            {
-                std::cout << "Finished importing " << team_names[Players::PLAYER_TWO] << "\n";
-                done[Players::PLAYER_TWO] = true;
-            }
-        }
-        i++;
-    }
-}
-
-std::vector<std::string> Battle::select_teams()
-{
-    std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team1";
-    teams[Players::PLAYER_TWO] = "team2";
-    return teams;
-}
-
 void Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
     Players player = get_player_from_position(pos);
@@ -147,7 +97,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     {
         case move_damage_type::MOVE_PHYSICAL:
         case move_damage_type::MOVE_SPECIAL:
-            res = Battle::attack_damage(atk_pos, def_pos, move_number);
+            res = Battle::attack_damage(atk_pos, def_pos, Battle::active_field.active_pokes[atk_pos].moves[move_number]);
             if(res != Attack_Result::HIT)
                 return res;
             break;;
@@ -181,22 +131,22 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     return res;
 }
 
-Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
+Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move)
 {
     int eff_atk, eff_def, damage_dealt;
     float damage_mod;
 
-    damage_mod = Battle::calculate_damage_modifier(Battle::active_field.active_pokes[atk_pos].moves[move_number], Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], 1);
+    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], 1);
 
     if(damage_mod == 0)
     {
         std::cout << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
-                  << " is immune to " << type_to_string(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_type()) << " type moves\n";
+                  << " is immune to " << type_to_string(move.get_type()) << " type moves\n";
         return Attack_Result::IMMUNE;
     }
 
     // determine the effective stats to use
-    if(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_damage_type() == move_damage_type::MOVE_PHYSICAL)
+    if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL)
     {
         eff_atk = Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ATK);
         eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::DEF);
@@ -208,18 +158,17 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     }
 
     // calculate damage dealt
-    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), Battle::active_field.active_pokes[atk_pos].moves[move_number].get_power(), eff_atk, eff_def, damage_mod);
+    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), move.get_power(), eff_atk, eff_def, damage_mod);
 
     // Deal damage and handle fainting but DO NOT RETURN FAINT RESULT UNTIL AFTER SWAP HAS A CHANCE TO RETURN
     if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
     {
         Battle::handle_faint(def_pos);
+        return Attack_Result::FAINT;
     }
 
     return Attack_Result::HIT;
 }
-
-
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos)
 {
@@ -415,25 +364,61 @@ bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos)
 {
     int temp_v_status = Battle::active_field.active_pokes[pos].get_volitile_status();
     int current_v_status, i = 0;
+    bool can_attack = true;
     while(temp_v_status > 0)
     {
         current_v_status = (1u << i);
         if(current_v_status & temp_v_status)
         {
             temp_v_status &= ~(current_v_status);
-            Battle::handle_pre_attack_v_status(pos, current_v_status);
+            if(!Battle::handle_pre_attack_v_status(pos, current_v_status))
+                can_attack = false;
         }
         i++;
     }
-    return true;
+    return can_attack;
 }
+
 bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status)
 {
     switch(v_status)
     {
         case VOLITILE_STATUS::CONFUSION:
+            std::cout << Battle::active_field.active_pokes[pos].get_species() << " is confused\n";
+            switch(Battle::status_turns[NUM_CONFUSION])
+            {
+                case 0:
+                    Battle::status_turns[NUM_CONFUSION]++;
+                    break;;
+                case 1:
+                case 2:
+                case 3:
+                    if(Battle::roll_chance(0.25))
+                    {
+                        Battle::status_turns[NUM_CONFUSION] = 0;
+                        Battle::active_field.active_pokes[pos].clear_volitile_status(VOLITILE_STATUS::CONFUSION);
+                        std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
+                        return true;
+                    }
+                    Battle::status_turns[NUM_CONFUSION]++;
+                    break;;
+                case 4:
+                    Battle::status_turns[NUM_CONFUSION] = 0;
+                    Battle::active_field.active_pokes[pos].clear_volitile_status(VOLITILE_STATUS::CONFUSION);
+                    std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
+                    return true;
+                default:
+                    assert(0);
+            }
 
-            break;;
+            if(roll_chance(status_moves[NUM_CONFUSION].get_acc()))
+            {
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " hurt itself in its confusion\n";
+                Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION]);
+                return false;
+            }
+
+            return true;
         case VOLITILE_STATUS::BOUND:
         case VOLITILE_STATUS::CANT_ESCAPE:
         case VOLITILE_STATUS::CURSE:
@@ -492,6 +477,62 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
     damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
 
     return damage_modifier;
+}
+
+void Battle::load_battle()
+{
+    Battle::load_teams(Battle::select_teams());
+    Battle::load_status_moves();
+}
+
+void Battle::load_teams(std::vector<std::string> team_names)
+{
+    boost::property_tree::ptree team_1 = load_json_file("teams/" + team_names[Players::PLAYER_ONE] + ".json");
+    boost::property_tree::ptree team_2 = load_json_file("teams/"  + team_names[Players::PLAYER_TWO] + ".json");
+    int i = 0;
+    bool done [] = {false, false};
+
+    while(!(done[Players::PLAYER_ONE] && done[Players::PLAYER_TWO]) && i < 6)
+    {
+        if(!done[Players::PLAYER_ONE])
+        {
+            try
+            {
+                Parties[Players::PLAYER_ONE].party_pokes[i].load_pokemon(team_1.get_child(std::to_string(i)));
+            }
+            catch(...)
+            {
+                std::cout << "Finished importing " << team_names[Players::PLAYER_ONE] << "\n";
+                done[Players::PLAYER_ONE] = true;
+            }
+        }
+        if(!done[1])
+        {
+            try
+            {
+                Parties[Players::PLAYER_TWO].party_pokes[i].load_pokemon(team_2.get_child(std::to_string(i)));
+            }
+            catch(...)
+            {
+                std::cout << "Finished importing " << team_names[Players::PLAYER_TWO] << "\n";
+                done[Players::PLAYER_TWO] = true;
+            }
+        }
+        i++;
+    }
+}
+
+std::vector<std::string> Battle::select_teams()
+{
+    std::vector<std::string> teams(2);
+    teams[Players::PLAYER_ONE] = "team1";
+    teams[Players::PLAYER_TWO] = "team2";
+    return teams;
+}
+
+void Battle::load_status_moves()
+{
+    Battle::status_moves[NUM_CONFUSION].load_move("status_moves/Confusion");
 }
 
 void Battle::print_battle(bool detailed)

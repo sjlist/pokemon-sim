@@ -19,23 +19,42 @@ enum STATUS
     NUM_NON_VOLITILE_STATUSES
 };
 
+enum VOLITILE_STATUS_NUMBERS
+{
+    NUM_BOUND       = 0,
+    NUM_CANT_ESCAPE = 1,
+    NUM_CONFUSION   = 2,
+    NUM_CURSE       = 3,
+    NUM_EMBARGO     = 4,
+    NUM_ENCORE      = 5,
+    NUM_FLINCHED    = 6,
+    NUM_HEALBLOCK   = 7,
+    NUM_IDENTIFIED  = 8,
+    NUM_INFATUATION = 9,
+    NUM_NIGHTMARE   = 10,
+    NUM_PERISHSONG  = 11,
+    NUM_TAUNT       = 12,
+    NUM_TELEKINESIS = 13,
+    NUM_TORMENT     = 14
+};
+
 enum VOLITILE_STATUS
 {
-    BOUND       = (1u << 0),
-    CANT_ESCAPE = (1u << 1),
-    CONFUSION   = (1u << 2),
-    CURSE       = (1u << 3),
-    EMBARGO     = (1u << 4),
-    ENCORE      = (1u << 5),
-    FLINCHED    = (1u << 6),
-    HEALBLOCK   = (1u << 7),
-    IDENTIFIED  = (1u << 8),
-    INFATUATION = (1u << 9),
-    NIGHTMARE   = (1u << 10),
-    PERISHSONG  = (1u << 11),
-    TAUNT       = (1u << 12),
-    TELEKINESIS = (1u << 13),
-    TORMENT     = (1u << 14),
+    BOUND       = (1u << NUM_BOUND),
+    CANT_ESCAPE = (1u << NUM_CANT_ESCAPE),
+    CONFUSION   = (1u << NUM_CONFUSION),
+    CURSE       = (1u << NUM_CURSE),
+    EMBARGO     = (1u << NUM_EMBARGO),
+    ENCORE      = (1u << NUM_ENCORE),
+    FLINCHED    = (1u << NUM_FLINCHED),
+    HEALBLOCK   = (1u << NUM_HEALBLOCK),
+    IDENTIFIED  = (1u << NUM_IDENTIFIED),
+    INFATUATION = (1u << NUM_INFATUATION),
+    NIGHTMARE   = (1u << NUM_NIGHTMARE),
+    PERISHSONG  = (1u << NUM_PERISHSONG),
+    TAUNT       = (1u << NUM_TAUNT),
+    TELEKINESIS = (1u << NUM_TELEKINESIS),
+    TORMENT     = (1u << NUM_TORMENT),
     NUM_VOLITILE_STATUS
 };
 

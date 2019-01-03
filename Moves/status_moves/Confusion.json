@@ -1,0 +1,12 @@
+{
+  "damage_type": "physical",
+  "type": "NONE",
+  "priority": 0,
+  "pp":500,
+  "acc": 33,
+  "damage_info":
+  {
+    "power": 40,
+    "crit_chance": 0
+  }
+}
