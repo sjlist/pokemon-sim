@@ -32,6 +32,8 @@ class Battle {
 public:
     Battle();
     Field active_field;
+    Targets Battle_Targets;
+
     void load_battle();
     void send_out(FIELD_POSITION pos, int poke_position);
     void return_poke(FIELD_POSITION pos);
@@ -51,7 +53,8 @@ private:
     void load_teams(std::vector<std::string> team_names);
     void load_status_moves();
 
-    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move);
+    Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
+    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
 
     bool handle_pre_attack_status(FIELD_POSITION pos);
     bool handle_pre_attack_v_statuses(FIELD_POSITION pos);
@@ -66,7 +69,7 @@ private:
     bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier);
-    float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets);
+    float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit);
 
     Party Parties [2];
     Move status_moves [NUM_VOLITILE_STATUS];

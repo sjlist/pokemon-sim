@@ -4,6 +4,8 @@
   "priority": 0,
   "pp": 16,
   "acc": 100,
+  "targeting": "ALL_ALL",
+  "num_targets": 0,
   "damage_info":
   {
     "power": 100,

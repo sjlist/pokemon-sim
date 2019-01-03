@@ -1,0 +1,13 @@
+//
+// Created by slist on 1/3/19.
+//
+
+#ifndef POKEMON_SIM_BATTLECONFIG_H
+#define POKEMON_SIM_BATTLECONFIG_H
+
+#define SINGLE_BATTLE 0
+#define DOUBLE_BATTLE 1
+#define TRIPLE_BATTLE 2
+#define BATTLE_TYPE SINGLE_BATTLE
+
+#endif //POKEMON_SIM_BATTLECONFIG_H

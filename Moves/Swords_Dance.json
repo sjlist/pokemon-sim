@@ -4,6 +4,8 @@
   "priority": 0,
   "pp": 32,
   "acc": -1,
+  "targeting": "SELF",
+  "num_targets": 0,
   "effects":
   {
     "effect0":

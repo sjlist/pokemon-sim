@@ -122,8 +122,24 @@ void Field::print_field(bool detailed)
 
 Players get_player_from_position(int pos)
 {
-    if(pos == FIELD_POSITION::PLAYER_1_0)
+    if(pos == FIELD_POSITION::PLAYER_1_0
+#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
+    || pos == FIELD_POSITION::PLAYER_1_1
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    || pos == FIELD_POSITION::PLAYER_1_2
+#endif
+    )
         return Players::PLAYER_ONE;
-    if(pos == FIELD_POSITION::PLAYER_2_0)
+    if(pos == FIELD_POSITION::PLAYER_2_0
+#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
+    || pos == FIELD_POSITION::PLAYER_2_1
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    || pos == FIELD_POSITION::PLAYER_2_2
+#endif
+       )
         return Players::PLAYER_TWO;
+
+    assert(0);
 }

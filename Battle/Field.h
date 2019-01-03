@@ -7,16 +7,7 @@
 
 #include "Pokemon/Pokemon.h"
 #include "Players.h"
-
-enum FIELD_POSITION
-{
-    PLAYER_1_0 = 0,
-    //PLAYER_1_1,
-    PLAYER_2_0,
-    //PLAYER_2_1,
-    NUM_POSITIONS,
-    NO_POSITION
-};
+#include "Field_Positions.h"
 
 enum Terrain
 {
@@ -47,7 +38,7 @@ public:
     bool send_out(FIELD_POSITION pos, Pokemon poke);
     void return_poke(FIELD_POSITION pos);
 
-    Pokemon active_pokes [2];
+    Pokemon active_pokes [NUM_POSITIONS];
 
     //entrance hazards
     bool stealth_rocks [2], sticky_web [2];

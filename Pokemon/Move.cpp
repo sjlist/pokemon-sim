@@ -6,6 +6,7 @@
 #include "Status.h"
 #include "fileIO/loadJSON.h"
 #include "Type.h"
+#include "Battle/Targeting.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <algorithm>
@@ -44,6 +45,11 @@ float Move::get_acc()
     return Move::acc;
 }
 
+float Move::get_crit()
+{
+    return Move::crit_chance;
+}
+
 PokeTypes Move::get_type()
 {
     return Move::type;
@@ -64,6 +70,15 @@ Effect Move::get_move_effect(int effect_num)
     return Move::move_effects[effect_num];
 }
 
+TARGETS Move::get_move_targets()
+{
+    return Move::move_targets;
+}
+
+int Move::get_num_targets()
+{
+    return Move::num_targets;
+}
 
 // SET FUNCS
 bool Move::use()
@@ -78,7 +93,6 @@ bool Move::use()
         return false;
     }
 }
-
 
 // Loading Moves
 void Move::load_move(std::string move_name)
@@ -103,6 +117,9 @@ void Move::load_move(std::string move_name)
     Move::current_pp = Move::max_pp;
     Move::priority = move_tree.get<int>("priority", 0);
     Move::damage_type = string_move_damage_type_map[move_tree.get<std::string>("damage_type")];
+
+    Move::move_targets = string_to_target(move_tree.get<std::string>("targeting"));
+    Move::num_targets = move_tree.get<int>("num_targets");
 
     if(move_tree.count("damage_info"))
     {

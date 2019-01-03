@@ -9,6 +9,7 @@
 #include "Type.h"
 #include "Status.h"
 #include "Effect.h"
+#include "Battle/Targeting.h"
 
 static const int MAX_PRIO = 5;
 static const int MAX_EFFECTS = 4;
@@ -30,12 +31,14 @@ public:
     int get_pp();
     int get_power();
     float get_acc();
+    float get_crit();
     Effect get_move_effect(int effect_num);
     PokeTypes get_type();
     std::string get_name();
-    float get_status_chance();
-    STATUS get_status_effect();
     int get_priority();
+    TARGETS get_move_targets();
+    int get_num_targets();
+
 
     void load_move(std::string move_name);
     void print_move();
@@ -43,6 +46,8 @@ public:
 
 private:
     std::string name;
+    TARGETS move_targets;
+    int num_targets;
     int max_pp;
     int power;
     float acc;

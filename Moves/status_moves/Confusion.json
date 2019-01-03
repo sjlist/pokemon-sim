@@ -4,6 +4,8 @@
   "priority": 0,
   "pp":500,
   "acc": 33,
+  "targeting": "SELF",
+  "num_targets": 1,
   "damage_info":
   {
     "power": 40,

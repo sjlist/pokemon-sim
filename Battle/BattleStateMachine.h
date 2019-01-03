@@ -10,6 +10,7 @@
 
 class BattleStateMachine {
 public:
+    BattleStateMachine();
     void run();
     Battle get_battle();
 private:

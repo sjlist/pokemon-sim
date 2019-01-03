@@ -22,6 +22,9 @@ enum class BattleState
     NUM_BATTLE_STATES
 };
 
+BattleStateMachine::BattleStateMachine()
+{}
+
 void BattleStateMachine::init()
 {
     BattleStateMachine::battle.load_battle();
@@ -35,11 +38,7 @@ void BattleStateMachine::run()
     Attack_Result atk_r;
     Players faint_player;
 
-    FIELD_POSITION pos;
-    Players player;
-    Party poke_party;
-
-    int sendout_choice [2] = {0, 0}, removed, poke_posistion;
+    int removed;
     BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [BattleStateMachine::num_players];
@@ -64,8 +63,8 @@ void BattleStateMachine::run()
             case BattleState::BATTLE_START:
                 //get pokemon to send out
 
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, sendout_choice[Players::PLAYER_ONE]);
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, sendout_choice[Players::PLAYER_TWO]);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
                 std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
                 break;;
@@ -74,6 +73,13 @@ void BattleStateMachine::run()
                 std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
                 BattleStateMachine::battle.print_battle();
                 //get action choice
+                for(int i; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                {
+                    messages[i] = BattleStateMachine::actor.choose_action(
+                            static_cast<FIELD_POSITION>(i),
+                            BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
+                            BattleStateMachine::battle.active_field);
+                }
 
                 if(BattleStateMachine::turn_count == 2)
                 {
@@ -118,6 +124,10 @@ void BattleStateMachine::run()
                                 //KEEP MESSAGE COMMAND ATTACK
                             }
                             // TODO: HANDLE PURSUIT HERE
+                            messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                    static_cast<FIELD_POSITION>(i),
+                                    BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
+                                    BattleStateMachine::battle.active_field, Actions::CHOOSE_POKEMON);
                             BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos, messages[prio.at(i)].reserve_poke);
                             if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                                 break;;
@@ -127,32 +137,38 @@ void BattleStateMachine::run()
 
                         case Attack_Result::FAINT:
                             //determine the fainted side
-                            faint_player = get_player_from_position(messages[prio.at(i)].target_pos);
-
-                            // lose if no pokes left
-                            if(battle.has_lost(faint_player))
+                            for(int p = 0; p < FIELD_POSITION::NUM_POSITIONS; p++)
                             {
-                                std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
-                                state = BattleState::BATTLE_END;
-                                break;;
+                                if(!BattleStateMachine::battle.active_field.active_pokes[p].is_alive())
+                                    faint_player = get_player_from_position(static_cast<FIELD_POSITION>(p));
+                                else
+                                    continue;
+
+                                // lose if no pokes left
+                                if (battle.has_lost(faint_player)) {
+                                    std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
+                                    state = BattleState::BATTLE_END;
+                                    continue;
+                                }
+
+                                // remove next action in turn if there is one left. use no_player
+                                removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
+                                if (removed != -1)
+                                    prio = BattleStateMachine::remove_priority_list(removed, prio);
+
+                                if (BattleStateMachine::battle_over())
+                                    state = BattleState::BATTLE_END;
+                                else
+                                    //SWAP IN A NEW POKEMON by querying the battle actor
+                                    BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos,
+                                                                         BattleStateMachine::actor.choose_pokemon(
+                                                                                 BattleStateMachine::battle.get_party(
+                                                                                         get_player_from_position(
+                                                                                                 messages[prio.at(
+                                                                                                         i)].target_pos
+                                                                                         ))));
+                                contin:;
                             }
-
-                            // remove next action in turn if there is one left. use no_player
-                            removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
-                            if( removed != -1 )
-                                prio = BattleStateMachine::remove_priority_list(removed, prio);
-
-                            if(BattleStateMachine::battle_over())
-                                state = BattleState::BATTLE_END;
-                            else
-                                //SWAP IN A NEW POKEMON by querying the battle actor
-                                BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos,
-                                        BattleStateMachine::actor.choose_pokemon(
-                                                BattleStateMachine::battle.get_party(
-                                                        get_player_from_position(
-                                                                messages[prio.at(i)].target_pos
-                                                                ))));
-
                             break;;
 
                         case Attack_Result::FLINCHED:

@@ -19,9 +19,10 @@ BattleActor::BattleActor()
     srand (time(NULL));
 }
 
-BattleMessage BattleActor::choose_action(Players player, Battle battle, Actions action)
+BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party, Field field, Actions action)
 {
     BattleMessage message;
+    Players player = get_player_from_position(pos);
 
     if(action == Actions::CHOOSE_ACTION)
     {
@@ -39,23 +40,29 @@ BattleMessage BattleActor::choose_action(Players player, Battle battle, Actions 
     {
         case Actions::CHOOSE_MOVE:
             message.move_command = Commands::COMMAND_ATTACK;
-            message.move_num = BattleActor::choose_move();
-            message.target_pos = BattleActor::choose_target(player);
+            message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
+            message.target_pos = BattleActor::choose_target(pos, field.active_pokes[pos].moves[message.move_num]);
             break;;
 
         case Actions::CHOOSE_POKEMON:
             message.move_command = Commands::COMMAND_SWAP;
-            message.reserve_poke = BattleActor::choose_pokemon(battle.get_party(player));
-            message.active_pos = BattleActor::get_active(player);
+            message.reserve_poke = BattleActor::choose_pokemon(player_party);
+            message.active_pos = pos;
             break;;
     }
 
     return message;
 }
 
-int BattleActor::choose_move()
+int BattleActor::choose_move(Pokemon poke)
 {
-    return rand() % 4;
+    int choice = rand() % 4;
+    while(poke.moves[choice].get_pp() == 0)
+    {
+        std::cout << "Cannot use " << poke.moves[choice].get_name() << " not enough pp\n";
+        choice = rand() % 4;
+    }
+    return choice;
 }
 
 int BattleActor::choose_pokemon(Party party)
@@ -74,28 +81,19 @@ int BattleActor::choose_pokemon(Party party)
     return selection;
 }
 
-FIELD_POSITION BattleActor::choose_target(Players player)
+FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, Move move)
 {
-    if(player == Players::PLAYER_ONE)
+    if(move.get_num_targets() == 1)
     {
-        return FIELD_POSITION::PLAYER_2_0;
+        BattleActor::actor_targeting.get_valid_targets(move.get_move_targets(), atk_pos);
+        int rand_target = rand() % BattleActor::actor_targeting.get_num_valid_targets();
+        return BattleActor::actor_targeting.valid_targets[rand_target];
     }
-
-    if(player == Players::PLAYER_TWO)
-        return FIELD_POSITION::PLAYER_1_0;
-}
-
-FIELD_POSITION BattleActor::get_active(Players player)
-{
-    if(player == Players::PLAYER_ONE)
+    else
     {
-        return FIELD_POSITION::PLAYER_1_0;
+        return FIELD_POSITION::ALL_TARGETS;
     }
-
-    if(player == Players::PLAYER_TWO)
-        return FIELD_POSITION::PLAYER_2_0;
 }
-
 
 bool BattleActor::roll_chance(float chance)
 {

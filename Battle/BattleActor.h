@@ -43,12 +43,12 @@ public:
     BattleActor();
 
     int choose_pokemon(Party party);
-    BattleMessage choose_action(Players player, Battle battle, Actions action=Actions::CHOOSE_ACTION);
+    BattleMessage choose_action(FIELD_POSITION atk_pos, Party player_party, Field field, Actions action=Actions::CHOOSE_ACTION);
 
 private:
-    FIELD_POSITION get_active(Players player);
-    FIELD_POSITION choose_target(Players player);
-    int choose_move();
+    Targets actor_targeting;
+    FIELD_POSITION choose_target(FIELD_POSITION atk_pos, Move move);
+    int choose_move(Pokemon poke);
 
     bool roll_chance(float chance);
 

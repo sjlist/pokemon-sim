@@ -4,6 +4,8 @@
   "priority": 0,
   "pp": 15,
   "acc": 85,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
   "effects":
   {
     "effect0":

@@ -11,11 +11,15 @@ add_executable(pokemon_sim
         Battle/Battle.h
         Battle/BattleActor.cpp
         Battle/BattleActor.h
+        Battle/BattleConfig.h
         Battle/BattleStateMachine.cpp
         Battle/BattleStateMachine.h
         Battle/Field.cpp
         Battle/Field.h
+        Battle/Field_Positions.h
         Battle/Players.h
+        Battle/Targeting.cpp
+        Battle/Targeting.h
     Config.h
         fileIO/loadJSON.cpp
         fileIO/loadJSON.h

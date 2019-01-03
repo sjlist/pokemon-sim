@@ -4,6 +4,8 @@
   "priority": 0,
   "pp": 16,
   "acc": 90,
+  "targeting": "ALL_ENEMY",
+  "num_targets": 0,
   "damage_info":
   {
     "power": 75,
