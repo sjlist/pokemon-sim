@@ -118,11 +118,8 @@ void BattleStateMachine::run()
                                 //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
                                 //KEEP MESSAGE COMMAND ATTACK
                             }
+
                             // TODO: HANDLE PURSUIT HERE
-                            messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                    static_cast<FIELD_POSITION>(i),
-                                    BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
-                                    BattleStateMachine::battle.active_field, Actions::CHOOSE_POKEMON);
                             BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos, messages[prio.at(i)].reserve_poke);
                             if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                                 break;;
@@ -196,15 +193,24 @@ void BattleStateMachine::run()
             case BattleState::TURN_END:
                 if(battle.handle_end_turn_field_status())
                 {
-                    if(battle.has_lost(Players::PLAYER_ONE))
+                    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     {
-                        std::cout << "Player One has lost the battle\n";
-                        state = BattleState::BATTLE_END;
-                    }
-                    if(battle.has_lost(Players::PLAYER_TWO))
-                    {
-                        std::cout << "Player Two has lost the battle\n";
-                        state = BattleState::BATTLE_END;
+                        if(!BattleStateMachine::battle.active_field.active_pokes[static_cast<FIELD_POSITION>(i)].is_alive())
+                        {
+                            if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
+                            {
+                                std::cout << "Player " << get_player_from_position(static_cast<FIELD_POSITION>(i)) + 1 << " has lost the battle\n";
+                                state = BattleState::BATTLE_END;
+                            }
+                            else
+                            {
+                                BattleStateMachine::battle.swap_poke(prio.at(i),
+                                                                     BattleStateMachine::actor.choose_pokemon(
+                                                                             BattleStateMachine::battle.get_party(
+                                                                                     get_player_from_position(prio.at(i)
+                                                                                     ))));
+                            }
+                        }
                     }
                 }
                 if(state == BattleState::TURN_END)
@@ -224,7 +230,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
 
     for(int pos = FIELD_POSITION::PLAYER_1_0; pos < FIELD_POSITION ::NUM_POSITIONS; pos++)
     {
-        switch (messages[pos].move_command)
+        switch(messages[pos].move_command)
         {
             case Commands::COMMAND_SWAP:
                 move_prio = MAX_PRIO + 1;
@@ -244,10 +250,10 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(prio_map[Players::PLAYER_ONE] > prio_map[Players::PLAYER_TWO])
+    else if(prio_map[Players::PLAYER_ONE] < prio_map[Players::PLAYER_TWO])
     {
-        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
+        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
     else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) > BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
     {
@@ -256,8 +262,8 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     }
     else
     {
-        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
+        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
 
     return prio_list;

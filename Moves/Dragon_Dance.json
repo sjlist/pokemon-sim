@@ -12,7 +12,13 @@
     {
       "effect": "STAT_CHANGE",
       "stat": "ATK",
-      "stages": 2
+      "stages": 1
+    },
+    "effect0":
+    {
+    "effect": "STAT_CHANGE",
+    "stat": "SPE",
+    "stages": 1
     }
   }
 }

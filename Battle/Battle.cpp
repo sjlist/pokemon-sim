@@ -31,6 +31,8 @@ Party Battle::get_party(Players player)
 
 void Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
+    if(poke_position == -1)
+        assert(0);
     Players player = get_player_from_position(pos);
     std::cout << "Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n";
     //Battle::print_battle(true);
@@ -49,6 +51,7 @@ void Battle::return_poke(FIELD_POSITION pos)
         if(Battle::active_field.active_pokes[pos].get_species() == Battle::Parties[get_player_from_position(pos)].party_pokes[i].get_species())
         {
             std::cout << "Returning " << Battle::active_field.active_pokes[pos].get_species() << "\n";
+            Battle::Parties[get_player_from_position(pos)].party_pokes[i] = Battle::active_field.active_pokes[pos];
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volitile_statuses();
@@ -533,7 +536,7 @@ void Battle::load_teams(std::vector<std::string> team_names)
                 done[Players::PLAYER_ONE] = true;
             }
         }
-        if(!done[1])
+        if(!done[Players::PLAYER_TWO])
         {
             try
             {
@@ -553,7 +556,7 @@ std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
     teams[Players::PLAYER_ONE] = "team1";
-    teams[Players::PLAYER_TWO] = "team2";
+    teams[Players::PLAYER_TWO] = "team1";
     return teams;
 }
 

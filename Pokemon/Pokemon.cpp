@@ -128,7 +128,7 @@ bool Pokemon::deal_damage(int damage)
 
 bool Pokemon::set_status(STATUS new_status)
 {
-    if(Pokemon::status == new_status)
+    if(Pokemon::status != STATUS::NO_STATUS)
     {
         std::cout << Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status) << "\n";
         return false;

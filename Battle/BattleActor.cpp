@@ -12,7 +12,7 @@
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-float attack_swap_ratio [2] = {0.8, 0.8};
+float attack_swap_ratio [2] = {0.6, 0.6};
 
 BattleActor::BattleActor()
 {
@@ -53,6 +53,29 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
             message.target_pos = BattleActor::choose_target(pos, field.active_pokes[pos].moves[message.move_num]);
             break;;
     }
+
+    std::cout << "Player" << get_player_from_position(pos) + 1 << " chose action: ";
+    if(message.move_command == Commands::COMMAND_SWAP)
+    {
+        std::cout << "SWAP, sending out " << player_party.party_pokes[message.reserve_poke].get_species() << "\n";
+    }
+    else if(message.move_command == Commands::COMMAND_ATTACK)
+    {
+        std::cout << "ATTACK, targeting ";
+        if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
+        {
+            std::cout << "P" << get_player_from_position(message.target_pos) + 1 << "'s ";
+            std::cout << field.active_pokes[message.target_pos].get_species();
+        }
+        else
+        {
+            std::cout << "ALL TARGETS";
+        }
+
+        std::cout << " with " << field.active_pokes[pos].moves[message.move_num].get_name() << "\n";
+    }
+    else
+        assert(0);
 
     return message;
 }
