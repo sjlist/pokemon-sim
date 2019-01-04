@@ -115,7 +115,7 @@ bool Pokemon::use_move(int move_number)
 
 bool Pokemon::deal_damage(int damage)
 {
-    std::cout << "Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage\n";
+    std::cout << "Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::species << "\n";
     Pokemon::current_hp = Pokemon::current_hp - damage;
 
     if(Pokemon::current_hp <= 0)

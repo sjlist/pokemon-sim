@@ -48,6 +48,7 @@ void Battle::return_poke(FIELD_POSITION pos)
     {
         if(Battle::active_field.active_pokes[pos].get_species() == Battle::Parties[get_player_from_position(pos)].party_pokes[i].get_species())
         {
+            std::cout << "Returning " << Battle::active_field.active_pokes[pos].get_species() << "\n";
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volitile_statuses();
@@ -65,7 +66,7 @@ void Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
-    Attack_Result res;
+    Attack_Result res = Attack_Result::HIT;
     bool crit = false;
 
     if(!Battle::handle_pre_attack_status(atk_pos))
@@ -100,9 +101,15 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     {
         Battle::Battle_Targets.get_valid_targets(
                 Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_targets(), atk_pos);
-        for(int i = 0; i < Battle::active_field.active_pokes[atk_pos].moves[move_number].get_num_targets(); i++)
+        for(int i = 0; i < Battle::Battle_Targets.get_num_valid_targets(); i++)
         {
-            res = Battle::attack_target(atk_pos, Battle::Battle_Targets.valid_targets[i], Battle::active_field.active_pokes[atk_pos].moves[move_number], crit);
+            if(Battle::attack_target(
+                    atk_pos,
+                    Battle::Battle_Targets.valid_targets[i],
+                    Battle::active_field.active_pokes[atk_pos].moves[move_number],
+                    crit)
+                    == Attack_Result::FAINT)
+                res = Attack_Result::FAINT;
         }
     }
     else
@@ -147,6 +154,8 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     // Handle returning faint if needed
     if(!Battle::active_field.active_pokes[def_pos].is_alive())
         return Attack_Result::FAINT;
+
+    return res;
 }
 
 Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)

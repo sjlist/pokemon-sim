@@ -1,14 +1,12 @@
 {
   "damage_type": "physical",
-  "type": "GROUND",
+  "type": "DRAGON",
   "priority": 0,
-  "pp": 16,
+  "pp": 24,
   "acc": 100,
-  "targeting": "ADJACENT_ALL",
-  "num_targets": 0,
   "damage_info":
   {
-    "power": 100,
+    "power": 80,
     "crit_chance": 5
   }
 }

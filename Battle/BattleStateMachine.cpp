@@ -37,19 +37,12 @@ void BattleStateMachine::run()
     BattleState state = BattleState::BATTLE_INIT;
     Attack_Result atk_r;
     Players faint_player;
+    int MAX_TURN_COUNT = 100;
 
     int removed;
     BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [BattleStateMachine::num_players];
-    messages[FIELD_POSITION::PLAYER_1_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_1_0].move_num = 3;
-    messages[FIELD_POSITION::PLAYER_1_0].target_pos = FIELD_POSITION::PLAYER_2_0;
-
-    messages[FIELD_POSITION::PLAYER_2_0].move_command = Commands::COMMAND_ATTACK;
-    messages[FIELD_POSITION::PLAYER_2_0].move_num = 3;
-    messages[FIELD_POSITION::PLAYER_2_0].target_pos = FIELD_POSITION::PLAYER_1_0;
-
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
 
     while(state != BattleState::BATTLE_END)
@@ -70,21 +63,17 @@ void BattleStateMachine::run()
                 break;;
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
+                if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
+                    assert(0);
                 std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
                 BattleStateMachine::battle.print_battle();
                 //get action choice
-                for(int i; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
                     messages[i] = BattleStateMachine::actor.choose_action(
                             static_cast<FIELD_POSITION>(i),
                             BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
                             BattleStateMachine::battle.active_field);
-                }
-
-                if(BattleStateMachine::turn_count == 2)
-                {
-                    messages[FIELD_POSITION::PLAYER_1_0].move_num = 3;
-                    messages[FIELD_POSITION::PLAYER_2_0].move_num = 3;
                 }
 
                 //determine attack order
@@ -104,9 +93,10 @@ void BattleStateMachine::run()
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                         atk_r = Attack_Result::SWAP;
                     //default to a attack
-                    else
+                    else if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                         atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
-
+                    else
+                        assert(0);
 
                     switch(atk_r)
                     {
@@ -114,12 +104,17 @@ void BattleStateMachine::run()
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
                             {
                                 std::cout << "No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n";
+                                assert(0);
                                 break;
                             }
                             // FOR ATTACKING MOVES THAT SWAP
-                            if(messages[prio.at(i)].move_command != Commands::COMMAND_SWAP)
+                            if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
-                                assert(0);
+                                messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                        static_cast<FIELD_POSITION>(i),
+                                        BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
+                                        BattleStateMachine::battle.active_field,
+                                        Actions::CHOOSE_POKEMON);
                                 //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
                                 //KEEP MESSAGE COMMAND ATTACK
                             }
@@ -160,12 +155,10 @@ void BattleStateMachine::run()
                                     state = BattleState::BATTLE_END;
                                 else
                                     //SWAP IN A NEW POKEMON by querying the battle actor
-                                    BattleStateMachine::battle.swap_poke(messages[prio.at(i)].target_pos,
+                                    BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(p),
                                                                          BattleStateMachine::actor.choose_pokemon(
                                                                                  BattleStateMachine::battle.get_party(
-                                                                                         get_player_from_position(
-                                                                                                 messages[prio.at(
-                                                                                                         i)].target_pos
+                                                                                         get_player_from_position(p
                                                                                          ))));
                                 contin:;
                             }

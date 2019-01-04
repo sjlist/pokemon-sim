@@ -38,16 +38,19 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
 
     switch(action)
     {
-        case Actions::CHOOSE_MOVE:
-            message.move_command = Commands::COMMAND_ATTACK;
-            message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
-            message.target_pos = BattleActor::choose_target(pos, field.active_pokes[pos].moves[message.move_num]);
-            break;;
-
         case Actions::CHOOSE_POKEMON:
             message.move_command = Commands::COMMAND_SWAP;
             message.reserve_poke = BattleActor::choose_pokemon(player_party);
             message.active_pos = pos;
+            if((int)message.reserve_poke == -1)
+                action == Actions::CHOOSE_MOVE;
+            else
+                break;;
+
+        case Actions::CHOOSE_MOVE:
+            message.move_command = Commands::COMMAND_ATTACK;
+            message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
+            message.target_pos = BattleActor::choose_target(pos, field.active_pokes[pos].moves[message.move_num]);
             break;;
     }
 
@@ -71,12 +74,14 @@ int BattleActor::choose_pokemon(Party party)
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
-        if(party.party_pokes[i].is_alive())
+        if(party.party_pokes[i].is_alive() && !party.party_pokes[i].is_active())
         {
             pokes[num_pokes] = i;
             num_pokes++;
         }
     }
+    if(num_pokes == 0)
+        return -1;
     selection = pokes[rand() % num_pokes];
     return selection;
 }
