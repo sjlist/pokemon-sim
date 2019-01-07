@@ -26,6 +26,7 @@ enum Commands
 class BattleMessage
 {
 public:
+    BattleMessage();
     Commands move_command;
 
     //Attack fields
@@ -41,12 +42,17 @@ class BattleActor
 {
 public:
     BattleActor();
+    BattleActor(long seed);
 
     int choose_pokemon(Party party);
     BattleMessage choose_action(FIELD_POSITION atk_pos, Party player_party, Field field, Actions action=Actions::CHOOSE_ACTION);
 
 private:
+    std::mt19937 generator;
     Targets actor_targeting;
+
+    int make_choice(int min, int max);
+
     FIELD_POSITION choose_target(FIELD_POSITION atk_pos, Move move);
     int choose_move(Pokemon poke);
 

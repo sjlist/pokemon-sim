@@ -10,6 +10,7 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <random>
 
 enum class BattleState
 {
@@ -23,7 +24,21 @@ enum class BattleState
 };
 
 BattleStateMachine::BattleStateMachine()
-{}
+{
+    std::random_device rd;
+    BattleStateMachine::seed = rd();
+    std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
+    BattleStateMachine::choice = std::mt19937(seed);
+    BattleStateMachine::actor = BattleActor(seed);
+}
+
+BattleStateMachine::BattleStateMachine(long seed)
+{
+    BattleStateMachine::seed = seed;
+    std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
+    BattleStateMachine::choice = std::mt19937(seed);
+    BattleStateMachine::actor = BattleActor(seed);
+}
 
 void BattleStateMachine::init()
 {
@@ -56,8 +71,15 @@ void BattleStateMachine::run()
             case BattleState::BATTLE_START:
                 //get pokemon to send out
 
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
+                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                {
+                    BattleStateMachine::battle.send_out(
+                            static_cast<FIELD_POSITION>(i),
+                            actor.choose_pokemon(
+                                    BattleStateMachine::battle.get_party(
+                                            get_player_from_position(i)
+                                            )));
+                }
                 std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
                 break;;
@@ -297,3 +319,4 @@ bool BattleStateMachine::battle_over()
 {
     return battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_ONE);
 }
+

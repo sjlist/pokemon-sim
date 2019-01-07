@@ -5,7 +5,7 @@
   "pp": 24,
   "acc": 100,
   "targeting": "ADJACENT_ALL",
-  "num_targets": 0,
+  "num_targets": 1,
   "damage_info":
   {
     "power": 80,

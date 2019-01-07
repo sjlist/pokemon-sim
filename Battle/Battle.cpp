@@ -14,15 +14,14 @@
 #include <iostream>
 #include <cstdlib>
 
-Battle::Battle()
-{
+Battle::Battle() = default;
 
+Battle::Battle(long seed)
+{
+    Battle::generator = std::mt19937(seed);
 }
 
-Party::Party()
-{
-
-}
+Party::Party() = default;
 
 Party Battle::get_party(Players player)
 {
@@ -75,7 +74,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     if(!Battle::handle_pre_attack_status(atk_pos))
         return Attack_Result::NO_ATTACK;
 
-    if(!Battle::handle_pre_attack_v_statuses(atk_pos))
+    if(!Battle::handle_pre_attack_v_statuses(atk_pos, move_number))
         return Attack_Result::NO_ATTACK;
 
     // Check if there is enough pp to use the move
@@ -370,19 +369,25 @@ bool Battle::handle_end_turn_field_status()
 bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 {
     int damage = 0;
+    if(Battle::active_field.active_pokes[pos].get_status() != NO_STATUS)
+        std::cout << "P" << get_player_from_position(pos) + 1 << "'s " << Battle::active_field.active_pokes[pos].get_species() << " is";
+
     switch(Battle::active_field.active_pokes[pos].get_status())
     {
         case STATUS::BURNED:
+            std::cout << " burned\n";
             std::cout << "Burn ";
-            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
+            damage = Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16.0;
             break;;
         case STATUS::POISONED:
+            std::cout << " poisoned\n";
             std::cout << "Poison ";
-            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8;
+            damage = Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 8.0;
             break;;
         case STATUS::BADLY_POISONED:
+            std::cout << " badly poisoned\n";
             std::cout << "Poison ";
-            damage = (float)Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16 * Battle::active_field.active_pokes[pos].status_turns;
+            damage = Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16.0 * Battle::active_field.active_pokes[pos].status_turns;
             break;;
         default:
             return true;
@@ -390,7 +395,7 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos)
+bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num)
 {
     int temp_v_status = Battle::active_field.active_pokes[pos].get_volitile_status();
     int current_v_status, i = 0;
@@ -401,7 +406,7 @@ bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos)
         if(current_v_status & temp_v_status)
         {
             temp_v_status &= ~(current_v_status);
-            if(!Battle::handle_pre_attack_v_status(pos, current_v_status))
+            if(!Battle::handle_pre_attack_v_status(pos, current_v_status, move_num))
                 can_attack = false;
         }
         i++;
@@ -409,7 +414,7 @@ bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos)
     return can_attack;
 }
 
-bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status)
+bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num)
 {
     switch(v_status)
     {
@@ -449,6 +454,13 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status)
             }
 
             return true;
+        case VOLITILE_STATUS::TAUNT:
+            if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
+            {
+                std::cout << " is taunted\n";
+                return false;
+            }
+            return true;
         case VOLITILE_STATUS::BOUND:
         case VOLITILE_STATUS::CANT_ESCAPE:
         case VOLITILE_STATUS::CURSE:
@@ -460,7 +472,6 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status)
         case VOLITILE_STATUS::INFATUATION:
         case VOLITILE_STATUS::NIGHTMARE:
         case VOLITILE_STATUS::PERISHSONG:
-        case VOLITILE_STATUS::TAUNT:
         case VOLITILE_STATUS::TELEKINESIS:
         case VOLITILE_STATUS::TORMENT:
             assert(0);
@@ -481,13 +492,26 @@ bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod)
 
 bool Battle::roll_chance(float chance)
 {
-    float  c = rand()/(float)RAND_MAX;
+    float c = std::uniform_real_distribution<float>{0, 1}(Battle::generator);
     return c < chance;
 }
 
 float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit)
 {
     float damage_modifier = 1;
+
+    if(crit)
+    {
+        std::cout << "Critical Hit\n";
+        damage_modifier *= 1.5;
+    }
+
+    damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
+
+    if(damage_modifier >= 2)
+        std::cout << "It's super effective\n";
+    else if(damage_modifier > 0 && damage_modifier < 1)
+        std::cout << "It's not very effective\n";
 
     if(num_targets > 1)
         damage_modifier *= 0.75;
@@ -503,8 +527,6 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
 
     if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker.get_status() == STATUS::BURNED)
         damage_modifier *= 0.5;
-
-    damage_modifier *= calculate_type_damage_modifier(defender.get_type(), move.get_type());
 
     return damage_modifier;
 }

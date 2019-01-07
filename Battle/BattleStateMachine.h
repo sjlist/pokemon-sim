@@ -11,9 +11,13 @@
 class BattleStateMachine {
 public:
     BattleStateMachine();
+    BattleStateMachine(long seed);
+
     void run();
     Battle get_battle();
 private:
+    long seed;
+    std::mt19937 choice;
     BattleActor actor;
     bool battle_over();
     int num_players = 2;

@@ -12,12 +12,17 @@
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-float attack_swap_ratio [2] = {0.6, 0.6};
+float attack_swap_ratio [2] = {1.0, 1.0};
 
-BattleActor::BattleActor()
+BattleActor::BattleActor() = default;
+
+BattleActor::BattleActor(long seed)
 {
-    srand (time(NULL));
+    BattleActor::generator = std::mt19937(seed);
 }
+
+BattleMessage::BattleMessage() = default;
+
 
 BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party, Field field, Actions action)
 {
@@ -42,8 +47,8 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
             message.move_command = Commands::COMMAND_SWAP;
             message.reserve_poke = BattleActor::choose_pokemon(player_party);
             message.active_pos = pos;
-            if((int)message.reserve_poke == -1)
-                action == Actions::CHOOSE_MOVE;
+            if(message.reserve_poke == -1)
+                action = Actions::CHOOSE_MOVE;
             else
                 break;;
 
@@ -82,13 +87,19 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
 
 int BattleActor::choose_move(Pokemon poke)
 {
-    int choice = rand() % 4;
-    while(poke.moves[choice].get_pp() == 0)
+    int num_moves = 0, selection;
+    int moves [4];
+    for(int i = 0; i < 4; i++)
     {
-        std::cout << "Cannot use " << poke.moves[choice].get_name() << " not enough pp\n";
-        choice = rand() % 4;
+        if(poke.moves[i].get_pp() != 0)
+        {
+            moves[num_moves] = i;
+            num_moves++;
+        }
     }
-    return choice;
+
+    selection = BattleActor::make_choice(0, num_moves - 1);
+    return moves[selection];
 }
 
 int BattleActor::choose_pokemon(Party party)
@@ -105,8 +116,9 @@ int BattleActor::choose_pokemon(Party party)
     }
     if(num_pokes == 0)
         return -1;
-    selection = pokes[rand() % num_pokes];
-    return selection;
+
+    selection = BattleActor::make_choice(0, num_pokes - 1);
+    return pokes[selection];
 }
 
 FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, Move move)
@@ -114,7 +126,7 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, Move move)
     if(move.get_num_targets() == 1)
     {
         BattleActor::actor_targeting.get_valid_targets(move.get_move_targets(), atk_pos);
-        int rand_target = rand() % BattleActor::actor_targeting.get_num_valid_targets();
+        int rand_target = BattleActor::make_choice(0, BattleActor::actor_targeting.get_num_valid_targets() - 1);
         return BattleActor::actor_targeting.valid_targets[rand_target];
     }
     else
@@ -125,6 +137,11 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, Move move)
 
 bool BattleActor::roll_chance(float chance)
 {
-    float  c = rand()/(float)RAND_MAX;
+    float c = std::uniform_real_distribution<float>{0, 1}(BattleActor::generator);
     return c < chance;
+}
+
+int BattleActor::make_choice(int min, int max)
+{
+    return std::uniform_int_distribution<int>{min, max}(BattleActor::generator);
 }

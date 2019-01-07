@@ -31,6 +31,8 @@ public:
 class Battle {
 public:
     Battle();
+    Battle(long seed);
+
     Field active_field;
     Targets Battle_Targets;
 
@@ -57,8 +59,8 @@ private:
     Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
 
     bool handle_pre_attack_status(FIELD_POSITION pos);
-    bool handle_pre_attack_v_statuses(FIELD_POSITION pos);
-    bool handle_pre_attack_v_status(FIELD_POSITION pos, int v_status);
+    bool handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num);
+    bool handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num);
     bool handle_end_turn_status(FIELD_POSITION pos);
 
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
@@ -70,6 +72,8 @@ private:
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier);
     float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit);
+
+    std::mt19937 generator;
 
     Party Parties [2];
     Move status_moves [NUM_VOLITILE_STATUS];
