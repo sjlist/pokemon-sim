@@ -165,7 +165,7 @@ void BattleStateMachine::run()
                                 }
 
                                 // remove next action in turn if there is one left. use no_player
-                                removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
+                                removed = BattleStateMachine::moves_later(static_cast<FIELD_POSITION>(p), i, prio);
                                 if (removed != -1)
                                     prio = BattleStateMachine::remove_priority_list(removed, prio);
 
