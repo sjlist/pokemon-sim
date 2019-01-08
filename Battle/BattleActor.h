@@ -46,7 +46,7 @@ public:
 
     int choose_pokemon(Party party);
     BattleMessage choose_action(FIELD_POSITION atk_pos, Party player_party, Field field, Actions action=Actions::CHOOSE_ACTION);
-
+    void update_generator(long seed);
 private:
     std::mt19937 generator;
     Targets actor_targeting;

@@ -41,6 +41,7 @@ public:
 
     void print_pokemon(bool detailed=false);
 
+    void reset();
     void load_pokemon(boost::property_tree::ptree poke_ptree);
     void set_stats(int* base_stats, int* ivs, int* evs, int level, Natures nature);
     Move moves[4];

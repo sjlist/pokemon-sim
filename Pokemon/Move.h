@@ -41,6 +41,7 @@ public:
     TARGETS get_move_targets();
     int get_num_targets();
 
+    void reset();
 
     void load_move(std::string move_name);
     void print_move();

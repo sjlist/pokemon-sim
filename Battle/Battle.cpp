@@ -6,6 +6,7 @@
 #include "Pokemon/Pokemon.h"
 #include "Pokemon/Type.h"
 #include "Battle/Field.h"
+#include "Battle/Party.h"
 
 #include "fileIO/loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
@@ -21,8 +22,6 @@ Battle::Battle(long seed)
 {
     Battle::generator = std::mt19937(seed);
 }
-
-Party::Party() = default;
 
 Party Battle::get_party(Players player)
 {
@@ -286,7 +285,8 @@ float Battle::calculate_damage_dealt(int attacker_level, int move_power, float a
 {
     float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
 
-    float damage_adjustment = std::uniform_real_distribution<float>{0.85, 1.0}(Battle::generator);
+    float damage_adjustment = std::uniform_int_distribution<int>{85, 100}(Battle::generator) / 100.0;
+    std::cout << "Damage adjustment: " << damage_adjustment << std::endl;
 
     return base_damage * damage_adjustment;
 }
@@ -532,6 +532,19 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
         damage_modifier *= 0.5;
 
     return damage_modifier;
+}
+
+// LOADING AND RESETING
+void Battle::reset()
+{
+    Battle::active_field.reset();
+    Battle::Parties[Players::PLAYER_ONE].reset();
+    Battle::Parties[Players::PLAYER_TWO].reset();
+}
+
+void Battle::update_generator(long seed)
+{
+    Battle::generator = std::mt19937(seed);
 }
 
 void Battle::load_battle()

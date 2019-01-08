@@ -95,6 +95,11 @@ bool Move::use()
 }
 
 // Loading Moves
+void Move::reset()
+{
+    Move::current_pp = Move::max_pp;
+}
+
 void Move::load_move(std::string move_name)
 {
     Move::name = move_name;

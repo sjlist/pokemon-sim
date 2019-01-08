@@ -1,1 +1,2 @@
-Implement battle resets so you dont have to reload the game all the time
+Fix status turns to come from the pokemon not the battle
+Pass a pointer to random num gen and not the seed

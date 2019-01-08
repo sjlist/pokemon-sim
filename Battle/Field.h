@@ -35,6 +35,9 @@ enum Weather
 class Field {
 public:
     Field();
+
+    void reset();
+
     bool send_out(FIELD_POSITION pos, Pokemon poke);
     void return_poke(FIELD_POSITION pos);
 

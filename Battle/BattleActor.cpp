@@ -145,3 +145,8 @@ int BattleActor::make_choice(int min, int max)
 {
     return std::uniform_int_distribution<int>{min, max}(BattleActor::generator);
 }
+
+void BattleActor::update_generator(long seed)
+{
+    BattleActor::generator = std::mt19937(seed);
+}

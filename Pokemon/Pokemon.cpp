@@ -234,6 +234,26 @@ void Pokemon::stat_change(STAT stat, int stages)
 
 // LOADING POKEMON FUNCTIONS
 
+void Pokemon::reset()
+{
+    Pokemon::active = false;
+    for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
+    {
+        Pokemon::stat_modifiers[stat] = 0;
+    }
+    Pokemon::alive = true;
+    Pokemon::current_hp = Pokemon::base_stats[STAT::HP];
+    Pokemon::clear_volatile_statuses();
+    Pokemon::status = STATUS::NO_STATUS;
+    for(int i = 0; i < 4; i++)
+    {
+        if(Pokemon::moves[i].get_name().empty())
+            break;
+        else
+            Pokemon::moves[i].reset();
+    }
+}
+
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
 

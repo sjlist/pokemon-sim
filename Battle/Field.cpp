@@ -86,12 +86,38 @@ bool Field::active_open(FIELD_POSITION pos)
     return !Field::active_pokes[pos].is_active();
 }
 
+void Field::reset()
+{
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+        active_pokes[i].set_active(false);
+
+    Field::stealth_rocks[Players::PLAYER_ONE] = false;
+    Field::stealth_rocks[Players::PLAYER_TWO] = false;
+    Field::sticky_web[Players::PLAYER_ONE] = false;
+    Field::sticky_web[Players::PLAYER_TWO] = false;
+    Field::spikes[Players::PLAYER_ONE] = 0;
+    Field::spikes[Players::PLAYER_TWO] = 0;
+    Field::toxic_spikes[Players::PLAYER_ONE] = 0;
+    Field::toxic_spikes[Players::PLAYER_TWO] = 0;
+    Field::trick_room = false;
+    Field::weather_state = Weather::CLEAR_SKIES;
+    Field::terrain = Terrain::NO_TERRAIN;
+}
+
 void Field::print_field(bool detailed)
 {
     std::cout << "ACTIVE POKEMON: " << "\nPLAYER ONE\n";
-    Field::active_pokes[Players::PLAYER_ONE].print_pokemon(detailed);
+    if(Field::active_pokes[Players::PLAYER_ONE].is_active())
+        Field::active_pokes[Players::PLAYER_ONE].print_pokemon(detailed);
+    else
+        std::cout << "NONE\n";
+
     std::cout << "\nPLAYER TWO\n";
-    Field::active_pokes[Players::PLAYER_TWO].print_pokemon(detailed);
+    if(Field::active_pokes[Players::PLAYER_TWO].is_active())
+        Field::active_pokes[Players::PLAYER_TWO].print_pokemon(detailed);
+    else
+        std::cout << "NONE\n";
+
     if(detailed)
     {
         std::cout << "FIELD STATE P1:\n";

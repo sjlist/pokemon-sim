@@ -12,17 +12,6 @@
 #include <algorithm>
 #include <random>
 
-enum class BattleState
-{
-    BATTLE_INIT = 0,
-    BATTLE_START,
-    TURN_START,
-    TURN_EXECUTE,
-    TURN_END,
-    BATTLE_END,
-    NUM_BATTLE_STATES
-};
-
 BattleStateMachine::BattleStateMachine()
 {
     std::random_device rd;
@@ -30,6 +19,7 @@ BattleStateMachine::BattleStateMachine()
     std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
     BattleStateMachine::choice = std::mt19937(seed);
     BattleStateMachine::actor = BattleActor(seed);
+    BattleStateMachine::battle = Battle(seed);
 }
 
 BattleStateMachine::BattleStateMachine(long seed)
@@ -38,6 +28,7 @@ BattleStateMachine::BattleStateMachine(long seed)
     std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
     BattleStateMachine::choice = std::mt19937(seed);
     BattleStateMachine::actor = BattleActor(seed);
+    BattleStateMachine::battle = Battle(seed);
 }
 
 void BattleStateMachine::init()
@@ -46,9 +37,8 @@ void BattleStateMachine::init()
     //BattleStateMachine::battle.print_battle(true);
 }
 
-void BattleStateMachine::run()
+void BattleStateMachine::run(BattleState state)
 {
-    BattleState state = BattleState::BATTLE_INIT;
     Attack_Result atk_r;
     Players faint_player;
     int MAX_TURN_COUNT = 100;
@@ -125,7 +115,6 @@ void BattleStateMachine::run()
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
                             {
                                 std::cout << "No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n";
-                                assert(0);
                                 break;
                             }
                             // FOR ATTACKING MOVES THAT SWAP
@@ -225,10 +214,10 @@ void BattleStateMachine::run()
                             }
                             else
                             {
-                                BattleStateMachine::battle.swap_poke(prio.at(i),
+                                BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(i),
                                                                      BattleStateMachine::actor.choose_pokemon(
                                                                              BattleStateMachine::battle.get_party(
-                                                                                     get_player_from_position(prio.at(i)
+                                                                                     get_player_from_position(static_cast<FIELD_POSITION>(i)
                                                                                      ))));
                             }
                         }
@@ -319,3 +308,14 @@ bool BattleStateMachine::battle_over()
     return battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_ONE);
 }
 
+void BattleStateMachine::reset()
+{
+    std::cout << "------RESETTING BATTLE------\n";
+    std::random_device rd;
+    long seed = rd();
+    std::cout << "New random seed: " << seed << std::endl;
+    BattleStateMachine::turn_count = 0;
+    BattleStateMachine::battle.reset();
+    BattleStateMachine::battle.update_generator(seed);
+    BattleStateMachine::actor.update_generator(seed);
+}

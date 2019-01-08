@@ -7,6 +7,7 @@
 
 #include "Pokemon/Pokemon.h"
 #include "Field.h"
+#include "Battle/Party.h"
 
 #include <vector>
 #include <random>
@@ -25,26 +26,23 @@ enum class Attack_Result
     NO_ATTACK
 };
 
-class Party {
-public:
-    Party();
-    Pokemon party_pokes [6];
-};
-
 class Battle {
 public:
     Battle();
-    Battle(long seed);
+    explicit Battle(long seed);
 
     Field active_field;
     Targets Battle_Targets;
 
     void load_battle();
+    void reset();
+    void update_generator(long seed);
+
+
     void send_out(FIELD_POSITION pos, int poke_position);
     void return_poke(FIELD_POSITION pos);
     void swap_poke(FIELD_POSITION pos, int poke_position);
     bool can_swap(Players player);
-
 
     Party get_party(Players player);
 
@@ -80,7 +78,7 @@ private:
 
     Party Parties [2];
     Move status_moves [NUM_VOLATILE_STATUS];
-    int status_turns [NUM_VOLATILE_STATUS];
+    int status_turns [NUM_VOLATILE_STATUS]; //TODO: WRONG should be handled by the pokemon
 };
 
 
