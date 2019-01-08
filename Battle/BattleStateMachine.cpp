@@ -37,11 +37,13 @@ void BattleStateMachine::init()
     //BattleStateMachine::battle.print_battle(true);
 }
 
-void BattleStateMachine::run(BattleState state)
+int BattleStateMachine::run(BattleState state)
 {
     Attack_Result atk_r;
     Players faint_player;
     int MAX_TURN_COUNT = 100;
+
+    int winner = 0;
 
     int removed;
     BattleStateMachine::turn_count = 0;
@@ -230,6 +232,12 @@ void BattleStateMachine::run(BattleState state)
                 assert(0);
         }
     }
+    if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE))
+        winner += 1;
+    if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
+        winner -= 1;
+
+    return winner;
 }
 
 std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessage* messages)
@@ -301,6 +309,11 @@ std::vector<FIELD_POSITION> BattleStateMachine::remove_priority_list(int action,
 Battle BattleStateMachine::get_battle()
 {
     return BattleStateMachine::battle;
+}
+
+int BattleStateMachine::get_turn_count()
+{
+    return BattleStateMachine::turn_count;
 }
 
 bool BattleStateMachine::battle_over()

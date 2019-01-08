@@ -24,8 +24,9 @@ public:
     BattleStateMachine();
     BattleStateMachine(long seed);
 
-    void run(BattleState state=BattleState::BATTLE_INIT);
+    int run(BattleState state=BattleState::BATTLE_INIT);
     Battle get_battle();
+    int get_turn_count();
     void reset();
 private:
     void init();

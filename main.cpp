@@ -12,14 +12,21 @@
 
 int main()
 {
-    int num_runs = 0;
+    int wins [3] = {0, 0, 0}, max_runs = 10000;
+    int num_runs = 0, winner;
     BattleStateMachine BSM = *new BattleStateMachine();
-    BSM.run();
-    while(num_runs >= 10000)
+    winner = BSM.run() + 1;
+    wins[winner] += 1;
+    while(num_runs <= max_runs)
     {
         num_runs++;
         std::cout << "RUN: " << num_runs << std::endl;
         BSM.reset();
-        BSM.run(BattleState::BATTLE_START);
+        winner = BSM.run(BattleState::BATTLE_START) + 1;
+        wins[winner] += 1;
     }
+
+    std::cout << "Player 1 won " << wins[0] / (float)max_runs * 100 << "% of the time\n";
+    std::cout << "Player 2 won " << wins[2] / (float)max_runs * 100 << "% of the time\n";
+    std::cout << "Players tied " << wins[1] / (float)max_runs * 100 << "% of the time\n";
 }
