@@ -121,8 +121,8 @@ void BattleStateMachine::run(BattleState state)
                             if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
                                 messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                        static_cast<FIELD_POSITION>(i),
-                                        BattleStateMachine::battle.get_party(get_player_from_position(static_cast<FIELD_POSITION>(i))),
+                                        prio.at(i),
+                                        BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
                                         BattleStateMachine::battle.active_field,
                                         Actions::CHOOSE_POKEMON);
                                 //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
