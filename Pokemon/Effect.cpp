@@ -78,6 +78,11 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             Effect::stat_changed = string_to_stat(effect_tree.get<std::string>("stat"));
             Effect::stages_changes = effect_tree.get<int>("stages");
             break;
+        case MOVE_EFFECTS::SWAP:
+        case MOVE_EFFECTS::FLINCH:
+            break;
+        default:
+            assert(0);
     }
 
 }

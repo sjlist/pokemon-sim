@@ -1,0 +1,18 @@
+{
+  "damage_type": "status",
+  "type": "NORMAL",
+  "priority": 0,
+  "pp": 32,
+  "acc": -1,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "VOLATILE_STATUS",
+      "status": "TAUNT",
+      "chance": 100
+    }
+  }
+}

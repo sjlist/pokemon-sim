@@ -14,7 +14,6 @@
 /*
  * Effects are the general non damaging effects that a move can have, stat bufff, status application ...
  */
-//TODO: TRAP, CONFUSION, TERRAIN, WEATHER, ACC, EVASION, SOUND MOVES?, INFATUATION, TAUNT, ENCORE, TORMENT, DISABLE, CURSED BODY
 enum MOVE_EFFECTS
 {
     NO_MOVE_EFFECT = 0,

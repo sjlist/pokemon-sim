@@ -57,7 +57,7 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
+      "MOVE0": "Taunt",
       "MOVE1": "Earthquake",
       "MOVE2": "Dragon_Claw",
       "MOVE3": "Swords_Dance"
@@ -90,7 +90,7 @@
     "moves":
     {
       "MOVE0": "Rock_Slide",
-      "MOVE1": "Earthquake",
+      "MOVE1": "Dragon_Claw",
       "MOVE2": "Extreme_Speed",
       "MOVE3": "Dragon_Dance"
     }

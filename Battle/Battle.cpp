@@ -456,10 +456,10 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
             }
 
             return true;
-        case VOLATILE_STATUS::TAUNT:
+        case VOLATILE_STATUS::TAUNTED:
             if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
             {
-                std::cout << " is taunted\n";
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " is taunted and can't use " << Battle::active_field.active_pokes[pos].moves[move_num].get_name() << std::endl;
                 return false;
             }
             return true;
