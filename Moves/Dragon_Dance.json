@@ -14,7 +14,7 @@
       "stat": "ATK",
       "stages": 1
     },
-    "effect0":
+    "effect1":
     {
     "effect": "STAT_CHANGE",
     "stat": "SPE",
