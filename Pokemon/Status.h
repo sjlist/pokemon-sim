@@ -16,10 +16,10 @@ enum STATUS
     POISONED,
     BADLY_POISONED,
     ASLEEP,
-    NUM_NON_VOLITILE_STATUSES
+    NUM_NON_VOLATILE_STATUSES
 };
 
-enum VOLITILE_STATUS_NUMBERS
+enum VOLATILE_STATUS_NUMBERS
 {
     NUM_BOUND       = 0,
     NUM_CANT_ESCAPE = 1,
@@ -38,7 +38,7 @@ enum VOLITILE_STATUS_NUMBERS
     NUM_TORMENT     = 14
 };
 
-enum VOLITILE_STATUS
+enum VOLATILE_STATUS
 {
     BOUND       = (1u << NUM_BOUND),
     CANT_ESCAPE = (1u << NUM_CANT_ESCAPE),
@@ -55,13 +55,13 @@ enum VOLITILE_STATUS
     TAUNT       = (1u << NUM_TAUNT),
     TELEKINESIS = (1u << NUM_TELEKINESIS),
     TORMENT     = (1u << NUM_TORMENT),
-    NUM_VOLITILE_STATUS
+    NUM_VOLATILE_STATUS
 };
 
 STATUS string_to_status(std::string status_string);
 std::string status_to_string(STATUS status);
 
-VOLITILE_STATUS string_to_v_status(std::string status_string);
-std::string v_status_to_string(VOLITILE_STATUS v_status);
+VOLATILE_STATUS string_to_v_status(std::string status_string);
+std::string v_status_to_string(VOLATILE_STATUS v_status);
 
 #endif //POKEMON_SIM_STATUS_H

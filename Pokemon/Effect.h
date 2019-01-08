@@ -18,8 +18,8 @@
 enum MOVE_EFFECTS
 {
     NO_MOVE_EFFECT = 0,
-    NON_VOLITILE_STATUS_EFFECT,
-    VOLITILE_STATUS_EFFECT,
+    NON_VOLATILE_STATUS_EFFECT,
+    VOLATILE_STATUS_EFFECT,
     FLINCH,
     SWAP,
     STAT_CHANGE,
@@ -34,7 +34,7 @@ public:
     MOVE_EFFECTS get_effect();
     float get_effect_chance();
 
-    VOLITILE_STATUS get_volitile_status_effect();
+    VOLATILE_STATUS get_volatile_status_effect();
 
     STATUS get_effect_status_type();
 
@@ -47,7 +47,7 @@ private:
     //Effect specific attributes
     STATUS status_effect;
 
-    VOLITILE_STATUS v_status_effect;
+    VOLATILE_STATUS v_status_effect;
 
     STAT stat_changed;
     int stages_changes;

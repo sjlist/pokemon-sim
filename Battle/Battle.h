@@ -7,7 +7,10 @@
 
 #include "Pokemon/Pokemon.h"
 #include "Field.h"
+
 #include <vector>
+#include <random>
+
 
 enum class Attack_Result
 {
@@ -70,14 +73,14 @@ private:
 
     bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
-    int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier);
+    float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
     float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit);
 
     std::mt19937 generator;
 
     Party Parties [2];
-    Move status_moves [NUM_VOLITILE_STATUS];
-    int status_turns [NUM_VOLITILE_STATUS];
+    Move status_moves [NUM_VOLATILE_STATUS];
+    int status_turns [NUM_VOLATILE_STATUS];
 };
 
 

@@ -43,7 +43,6 @@ BattleStateMachine::BattleStateMachine(long seed)
 void BattleStateMachine::init()
 {
     BattleStateMachine::battle.load_battle();
-    std::srand(time(NULL));
     //BattleStateMachine::battle.print_battle(true);
 }
 

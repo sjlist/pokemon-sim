@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <random>
 
 Battle::Battle() = default;
 
@@ -53,7 +54,7 @@ void Battle::return_poke(FIELD_POSITION pos)
             Battle::Parties[get_player_from_position(pos)].party_pokes[i] = Battle::active_field.active_pokes[pos];
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
-            Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volitile_statuses();
+            Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volatile_statuses();
             Battle::active_field.return_poke(pos);
             break;;
         }
@@ -162,7 +163,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 
 Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
 {
-    int eff_atk, eff_def, damage_dealt;
+    float eff_atk, eff_def, damage_dealt;
     float damage_mod;
 
     damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move.get_num_targets(), crit);
@@ -211,7 +212,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 return Attack_Result::FLINCHED;
             }
             return Attack_Result::MISS;
-        case MOVE_EFFECTS::NON_VOLITILE_STATUS_EFFECT:
+        case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
                 if(Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type()))
@@ -220,14 +221,14 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                               << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
             }
             return Attack_Result::HIT;
-        case MOVE_EFFECTS::VOLITILE_STATUS_EFFECT:
+        case MOVE_EFFECTS::VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
-                if(Battle::active_field.active_pokes[def_pos].set_volitile_status(move_effect.get_volitile_status_effect()))
+                if(Battle::active_field.active_pokes[def_pos].set_volatile_status(move_effect.get_volatile_status_effect()))
                 {
                     std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
                               << Battle::active_field.active_pokes[def_pos].get_species()
-                              << " is now " << v_status_to_string(move_effect.get_volitile_status_effect()) << "\n";
+                              << " is now " << v_status_to_string(move_effect.get_volatile_status_effect()) << "\n";
                 }
                 return Attack_Result::HIT;
             }
@@ -281,12 +282,13 @@ void Battle::update_party(Players player)
     }
 }
 
-int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
+float Battle::calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier)
 {
-    int base_damage = ((((2 * attacker_level / 5) + 2) * move_power * atk / def / 50) + 2) * damage_modifier;
-    float damage_adjustment = (rand()/(float)RAND_MAX * 0.15) + 0.85;
+    float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
 
-    return (float)base_damage * damage_adjustment;
+    float damage_adjustment = std::uniform_real_distribution<float>{0.85, 1.0}(Battle::generator);
+
+    return base_damage * damage_adjustment;
 }
 
 void Battle::handle_faint(FIELD_POSITION pos)
@@ -397,7 +399,7 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 
 bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num)
 {
-    int temp_v_status = Battle::active_field.active_pokes[pos].get_volitile_status();
+    int temp_v_status = Battle::active_field.active_pokes[pos].get_volatile_status();
     int current_v_status, i = 0;
     bool can_attack = true;
     while(temp_v_status > 0)
@@ -418,7 +420,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
 {
     switch(v_status)
     {
-        case VOLITILE_STATUS::CONFUSION:
+        case VOLATILE_STATUS::CONFUSION:
             std::cout << Battle::active_field.active_pokes[pos].get_species() << " is confused\n";
             switch(Battle::status_turns[NUM_CONFUSION])
             {
@@ -431,7 +433,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
                     if(Battle::roll_chance(0.25))
                     {
                         Battle::status_turns[NUM_CONFUSION] = 0;
-                        Battle::active_field.active_pokes[pos].clear_volitile_status(VOLITILE_STATUS::CONFUSION);
+                        Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                         std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
                         return true;
                     }
@@ -439,7 +441,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
                     break;;
                 case 4:
                     Battle::status_turns[NUM_CONFUSION] = 0;
-                    Battle::active_field.active_pokes[pos].clear_volitile_status(VOLITILE_STATUS::CONFUSION);
+                    Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                     std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
                     return true;
                 default:
@@ -454,26 +456,26 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
             }
 
             return true;
-        case VOLITILE_STATUS::TAUNT:
+        case VOLATILE_STATUS::TAUNT:
             if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
             {
                 std::cout << " is taunted\n";
                 return false;
             }
             return true;
-        case VOLITILE_STATUS::BOUND:
-        case VOLITILE_STATUS::CANT_ESCAPE:
-        case VOLITILE_STATUS::CURSE:
-        case VOLITILE_STATUS::EMBARGO:
-        case VOLITILE_STATUS::ENCORE:
-        case VOLITILE_STATUS::FLINCHED:
-        case VOLITILE_STATUS::HEALBLOCK:
-        case VOLITILE_STATUS::IDENTIFIED:
-        case VOLITILE_STATUS::INFATUATION:
-        case VOLITILE_STATUS::NIGHTMARE:
-        case VOLITILE_STATUS::PERISHSONG:
-        case VOLITILE_STATUS::TELEKINESIS:
-        case VOLITILE_STATUS::TORMENT:
+        case VOLATILE_STATUS::BOUND:
+        case VOLATILE_STATUS::CANT_ESCAPE:
+        case VOLATILE_STATUS::CURSE:
+        case VOLATILE_STATUS::EMBARGO:
+        case VOLATILE_STATUS::ENCORE:
+        case VOLATILE_STATUS::FLINCHED:
+        case VOLATILE_STATUS::HEALBLOCK:
+        case VOLATILE_STATUS::IDENTIFIED:
+        case VOLATILE_STATUS::INFATUATION:
+        case VOLATILE_STATUS::NIGHTMARE:
+        case VOLATILE_STATUS::PERISHSONG:
+        case VOLATILE_STATUS::TELEKINESIS:
+        case VOLATILE_STATUS::TORMENT:
             assert(0);
     }
     return true;

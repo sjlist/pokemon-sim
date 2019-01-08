@@ -15,7 +15,7 @@
   {
     "effect0":
     {
-      "effect": "VOLITILE_STATUS",
+      "effect": "VOLATILE_STATUS",
       "status": "CONFUSION",
       "chance": 100
     }

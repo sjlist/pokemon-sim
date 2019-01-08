@@ -19,23 +19,23 @@ public:
     int get_level();
     float get_stat(STAT stat);
     STATUS get_status();
-    int get_volitile_status();
-    bool is_volitile_status(VOLITILE_STATUS v_status);
+    int get_volatile_status();
+    bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
     std::string get_species();
     bool is_alive();
 
     bool use_move(int move_number);
     void set_active(bool state);
-    bool deal_damage(int damage);
+    bool deal_damage(float damage);
     bool set_status(STATUS new_status);
-    bool set_volitile_status(VOLITILE_STATUS v_status);
+    bool set_volatile_status(VOLATILE_STATUS v_status);
     void stat_change(STAT stat, int stages);
     void faint_poke();
 
     void clear_stat_mods();
-    void clear_volitile_status(VOLITILE_STATUS v_status);
-    void clear_volitile_statuses();
+    void clear_volatile_status(VOLATILE_STATUS v_status);
+    void clear_volatile_statuses();
 
     int status_turns;
 
@@ -49,20 +49,20 @@ private:
     bool active;
     int level;
     PokeTypes type[2];
-    int current_hp;
+    float current_hp;
     std::string name;
-    int base_stats [STAT::NUM_STATS];
+    float base_stats [STAT::NUM_STATS];
     int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
     STATUS status;
     std::string species;
 
     int get_stat_mod(STAT stat);
 
-    int volitile_status;
+    int volatile_status;
 
     int* load_species(std::string species_name);
-    int calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
-    int calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
+    float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
+    float calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
 };
 
 

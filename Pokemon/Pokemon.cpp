@@ -75,14 +75,14 @@ STATUS Pokemon::get_status()
     return Pokemon::status;
 }
 
-bool Pokemon::is_volitile_status(VOLITILE_STATUS v_status)
+bool Pokemon::is_volatile_status(VOLATILE_STATUS v_status)
 {
-    return Pokemon::volitile_status & v_status;
+    return Pokemon::volatile_status & v_status;
 }
 
-int Pokemon::get_volitile_status()
+int Pokemon::get_volatile_status()
 {
-    return Pokemon::volitile_status;
+    return Pokemon::volatile_status;
 }
 
 
@@ -113,7 +113,7 @@ bool Pokemon::use_move(int move_number)
     return Pokemon::moves[move_number].use();
 }
 
-bool Pokemon::deal_damage(int damage)
+bool Pokemon::deal_damage(float damage)
 {
     std::cout << "Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::species << "\n";
     Pokemon::current_hp = Pokemon::current_hp - damage;
@@ -168,11 +168,11 @@ bool Pokemon::set_status(STATUS new_status)
     return true;
 }
 
-bool Pokemon::set_volitile_status(VOLITILE_STATUS v_status)
+bool Pokemon::set_volatile_status(VOLATILE_STATUS v_status)
 {
-    if(!Pokemon::is_volitile_status(v_status))
+    if(!Pokemon::is_volatile_status(v_status))
     {
-        Pokemon::volitile_status |= v_status;
+        Pokemon::volatile_status |= v_status;
         return true;
     }
     else
@@ -200,14 +200,14 @@ void Pokemon::clear_stat_mods()
         Pokemon::stat_modifiers[i]  = 0;
 }
 
-void Pokemon::clear_volitile_status(VOLITILE_STATUS v_status)
+void Pokemon::clear_volatile_status(VOLATILE_STATUS v_status)
 {
-    Pokemon::volitile_status &= ~(v_status);
+    Pokemon::volatile_status &= ~(v_status);
 }
 
-void Pokemon::clear_volitile_statuses()
+void Pokemon::clear_volatile_statuses()
 {
-    Pokemon::volitile_status = 0;
+    Pokemon::volatile_status = 0;
 }
 //
 
@@ -271,7 +271,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     for(int i = 0; i < 4; i++)
     {
         move_name = moves_ptree.get<std::string>("MOVE" + std::to_string(i));
-        if(move_name != "")
+        if(!move_name.empty())
         {
             Pokemon::moves[i].load_move(move_name);
         }
@@ -280,7 +280,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::alive = true;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
-    Pokemon::volitile_status = 0;
+    Pokemon::volatile_status = 0;
 }
 
 int* Pokemon::load_species(std::string species_name)
@@ -315,14 +315,14 @@ int* Pokemon::load_species(std::string species_name)
     return base_ptr;
 }
 
-int Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
+float Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
     return std::floor(((2 * base_hp + iv_hp + std::floor((float)(ev_hp / 4))) * level) / 100) + level + 10;
 }
 
-int Pokemon::calculate_stat_single(int level, int base, int ev, int iv, float nature_mod)
+float Pokemon::calculate_stat_single(int level, int base, int ev, int iv, float nature_mod)
 {
-    return (std::floor((float)std::floor((float)(ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod;
+    return (int)((std::floor(std::floor((float)((float)ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod);
 }
 
 void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature)
@@ -376,7 +376,7 @@ void Pokemon::print_pokemon(bool detailed)
         Pokemon::moves[0].print_move();
         Pokemon::moves[1].print_move();
     }
-    std::cout << "Current HP: " << round((float)Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n";
+    std::cout << "Current HP: " << round(Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n";
 
     std::cout << "STATUS: " << status_to_string(Pokemon::status) << "\n";
 }
