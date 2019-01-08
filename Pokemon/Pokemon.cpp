@@ -25,7 +25,7 @@ Pokemon::Pokemon()
     Pokemon::status = STATUS::NO_STATUS;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
     {
-        Pokemon::stat_modifiers[stat] = 1;
+        Pokemon::stat_modifiers[stat] = 0;
     }
     Pokemon::alive = false;
 }
@@ -64,10 +64,7 @@ float Pokemon::get_stat(STAT stat)
         adjustment *= (equ_const + mod) / equ_const;
     }
 
-    if(equ_const == 2.0)
-        return (int)(Pokemon::base_stats[stat] * adjustment);
-    else
-        return Pokemon::base_stats[stat] * adjustment;
+    return Pokemon::base_stats[stat] * adjustment;
 }
 
 STATUS Pokemon::get_status()

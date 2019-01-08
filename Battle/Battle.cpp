@@ -370,7 +370,7 @@ bool Battle::handle_end_turn_field_status()
 
 bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 {
-    int damage = 0;
+    float damage = 0;
     if(Battle::active_field.active_pokes[pos].get_status() != NO_STATUS)
         std::cout << "P" << get_player_from_position(pos) + 1 << "'s " << Battle::active_field.active_pokes[pos].get_species() << " is";
 
@@ -476,6 +476,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
         case VOLATILE_STATUS::PERISHSONG:
         case VOLATILE_STATUS::TELEKINESIS:
         case VOLATILE_STATUS::TORMENT:
+        default:
             assert(0);
     }
     return true;
