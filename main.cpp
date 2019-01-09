@@ -13,11 +13,11 @@
 int main()
 {
     int wins [3] = {0, 0, 0}, max_runs = 10000;
-    int num_runs = 0, winner;
+    int num_runs = 1, winner;
     BattleStateMachine BSM = *new BattleStateMachine();
     winner = BSM.run() + 1;
     wins[winner] += 1;
-    while(num_runs <= max_runs)
+    while(num_runs < max_runs)
     {
         num_runs++;
         std::cout << "RUN: " << num_runs << std::endl;

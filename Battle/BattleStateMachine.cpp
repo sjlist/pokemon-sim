@@ -292,12 +292,19 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else
+    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) < BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-
+    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) == BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    {
+        int choice = BattleStateMachine::make_choice(0, 1);
+        prio_list.at(0) = static_cast<FIELD_POSITION>(choice);
+        prio_list.at(1) = static_cast<FIELD_POSITION>(!choice);
+    }
+    else
+        assert(0);
     return prio_list;
 }
 
@@ -345,4 +352,9 @@ void BattleStateMachine::reset()
     BattleStateMachine::battle.reset();
     BattleStateMachine::battle.update_generator(seed);
     BattleStateMachine::actor.update_generator(seed);
+}
+
+int BattleStateMachine::make_choice(int min, int max)
+{
+    return std::uniform_int_distribution<int>{min, max}(BattleStateMachine::choice);
 }
