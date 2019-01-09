@@ -20,6 +20,8 @@ public:
     float get_stat(STAT stat);
     STATUS get_status();
     int get_volatile_status();
+    float get_current_hp();
+
     bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
     std::string get_species();

@@ -103,6 +103,11 @@ bool Pokemon::is_alive()
     return Pokemon::alive;
 }
 
+float Pokemon::get_current_hp()
+{
+    return Pokemon::current_hp;
+}
+
 // STATE CHANGE FUNCTIONS
 
 bool Pokemon::use_move(int move_number)

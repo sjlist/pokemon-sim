@@ -12,7 +12,7 @@
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-float attack_swap_ratio [2] = {1.0, 0.90};
+float attack_swap_ratio [2] = {0.90, 0.90};
 
 BattleActor::BattleActor() = default;
 

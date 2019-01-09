@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <random>
 
+#define DEBUGGING
+
 BattleStateMachine::BattleStateMachine()
 {
     std::random_device rd;
@@ -76,8 +78,15 @@ int BattleStateMachine::run(BattleState state)
                 break;;
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
+#ifdef DEBUGGING
+                if(BattleStateMachine::turn_count == 5)
+                    std::cout << "HERERE\n";
+                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                    if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
+                        assert(0);
                 if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
                     assert(0);
+#endif
                 std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
                 BattleStateMachine::battle.print_battle();
                 //get action choice
@@ -117,27 +126,32 @@ int BattleStateMachine::run(BattleState state)
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
                             {
                                 std::cout << "No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n";
-                                break;
                             }
-                            // FOR ATTACKING MOVES THAT SWAP
-                            if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
+                            else
                             {
-                                messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                        prio.at(i),
-                                        BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                        BattleStateMachine::battle.active_field,
-                                        Actions::CHOOSE_POKEMON);
-                                //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
-                                //KEEP MESSAGE COMMAND ATTACK
+                                // FOR ATTACKING MOVES THAT SWAP
+                                if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK) {
+                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
+                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                            prio.at(i),
+                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
+                                            BattleStateMachine::battle.active_field,
+                                            Actions::CHOOSE_POKEMON);
+                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
+                                    messages[prio.at(i)].target_pos = target;
+                                    //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
+                                    //KEEP MESSAGE COMMAND ATTACK
+                                }
+
+                                // TODO: HANDLE PURSUIT HERE
+                                BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos,
+                                                                     messages[prio.at(i)].reserve_poke);
+                                if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
+                                    break;;
+
+                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                    break;;
                             }
-
-                            // TODO: HANDLE PURSUIT HERE
-                            BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos, messages[prio.at(i)].reserve_poke);
-                            if(messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
-                                break;;
-
-                            if(BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
-                                break;;
 
                         case Attack_Result::FAINT:
                             //determine the fainted side
