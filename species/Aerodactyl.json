@@ -1,0 +1,13 @@
+{
+  "HP":80,
+  "ATK": 105,
+  "DEF": 65,
+  "SPA": 60,
+  "SPD": 75,
+  "SPE": 130,
+  "TYPES":
+  {
+    "TYPE0" : "ROCK",
+    "TYPE1" : "FLYING"
+  }
+}

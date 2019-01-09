@@ -17,6 +17,8 @@ add_executable(pokemon_sim
         Battle/Field.cpp
         Battle/Field.h
         Battle/Field_Positions.h
+        Battle/Field_Objects.cpp
+        Battle/Field_Objects.h
         Battle/Party.cpp
         Battle/Party.h
         Battle/Players.h

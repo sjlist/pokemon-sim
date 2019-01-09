@@ -24,7 +24,6 @@ enum move_damage_type
 };
 
 
-
 class Move {
 public:
     Move();

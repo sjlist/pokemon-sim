@@ -8,6 +8,7 @@
 #include "Pokemon/Pokemon.h"
 #include "Players.h"
 #include "Field_Positions.h"
+#include "Field_Objects.h"
 
 enum Terrain
 {
@@ -41,6 +42,8 @@ public:
     bool send_out(FIELD_POSITION pos, Pokemon poke);
     void return_poke(FIELD_POSITION pos);
 
+    void increase_field_obj(Field_Objects obj, FIELD_POSITION pos);
+
     Pokemon active_pokes [NUM_POSITIONS];
 
     //entrance hazards
@@ -53,8 +56,8 @@ public:
 
     void print_field(bool detailed=false);
 private:
-    void handle_entrance(FIELD_POSITION pos);
-    void handle_hazard_entrance(FIELD_POSITION pos);
+    bool handle_entrance(FIELD_POSITION pos);
+    bool handle_hazard_entrance(FIELD_POSITION pos);
     bool active_open(FIELD_POSITION pos);
 };
 

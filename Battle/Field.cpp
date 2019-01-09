@@ -21,14 +21,44 @@ Field::Field()
     Field::weather_state = Weather::CLEAR_SKIES;
 }
 
+void Field::increase_field_obj(Field_Objects obj, FIELD_POSITION pos)
+{
+    switch(obj)
+    {
+        case Field_Objects::STEALTH_ROCKS:
+            std::cout << "Rocks are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
+            Field::stealth_rocks[get_player_from_position(pos)] = true;
+            break;
+        case Field_Objects::STICKY_WEB:
+            std::cout << "Sticky web is scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
+            Field::sticky_web[get_player_from_position(pos)] = true;
+            break;
+        case Field_Objects::SPIKES:
+            std::cout << "Spikes are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
+            Field::spikes[get_player_from_position(pos)] += 1;
+
+            if(Field::spikes[get_player_from_position(pos)] > 3)
+                Field::spikes[get_player_from_position(pos)] = 3;
+
+            break;
+        case Field_Objects::TOXIC_SPIKES:
+            std::cout << "Toxic pikes are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
+            Field::toxic_spikes[get_player_from_position(pos)] += 1;
+            break;
+        case Field_Objects::WEATHER:
+        case Field_Objects::TRICK_ROOM:
+        default:
+            assert(0);
+    }
+}
+
 bool Field::send_out(FIELD_POSITION pos, Pokemon poke)
 {
     if(Field::active_open(pos))
     {
         Field::active_pokes[pos] = poke;
         Field::active_pokes[pos].set_active(true);
-        Field::handle_entrance(pos);
-        return true;
+        return Field::handle_entrance(pos);
     }
     else
         return false;
@@ -39,21 +69,21 @@ void Field::return_poke(FIELD_POSITION pos)
     Field::active_pokes[pos].set_active(false);
 }
 
-void Field::handle_entrance(FIELD_POSITION pos)
+bool Field::handle_entrance(FIELD_POSITION pos)
 {
-    handle_hazard_entrance(pos);
+    return handle_hazard_entrance(pos);
 }
 
-void Field::handle_hazard_entrance(FIELD_POSITION pos)
+bool Field::handle_hazard_entrance(FIELD_POSITION pos)
 {
     Players player = get_player_from_position(pos);
-    int hp = Field::active_pokes[pos].get_stat(STAT::HP);
-    int damage;
+    float hp = Field::active_pokes[pos].get_stat(STAT::HP), damage;
     if(Field::spikes[player] > 0)
     {
-        damage = 0.0625 * Field::spikes[player] * hp;
-        std::cout << Field::active_pokes[pos].get_species() << " is taking " << damage << " damage from spikes\n";
-        Field::active_pokes[pos].deal_damage(damage);
+        damage = 1.0 / (2 * (Field::spikes[player] + 1)) * hp;
+        std::cout << Field::active_pokes[pos].get_species() << " is taking damage from spikes\n";
+        if(!Field::active_pokes[pos].deal_damage(damage))
+            return false;
     }
 
     if(Field::toxic_spikes[player] == 1)
@@ -70,8 +100,9 @@ void Field::handle_hazard_entrance(FIELD_POSITION pos)
     if(Field::stealth_rocks[player])
     {
         damage = 0.125 * hp * calculate_type_damage_modifier(Field::active_pokes[pos].get_type(), PokeTypes::ROCK);
-        std::cout << Field::active_pokes[pos].get_species() << " is taking " << damage << " damage from stealth rocks\n";
-        Field::active_pokes[pos].deal_damage(damage);
+        std::cout << Field::active_pokes[pos].get_species() << " is taking damage from stealth rocks\n";
+        if(!Field::active_pokes[pos].deal_damage(damage))
+            return false;
     }
 
     if(Field::sticky_web[player])

@@ -14,6 +14,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"STATUS", MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT},
         {"VOLATILE_STATUS", MOVE_EFFECTS::VOLATILE_STATUS_EFFECT},
         {"STAT_CHANGE", MOVE_EFFECTS::STAT_CHANGE},
+        {"FIELD_CHANGE", MOVE_EFFECTS::FIELD_CHANGE},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -56,6 +57,11 @@ int Effect::get_stages_changed()
     return Effect::stages_changes;
 }
 
+Field_Objects Effect::get_field_obj_changed()
+{
+    return Effect::field_obj;
+}
+
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
@@ -77,6 +83,9 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
         case MOVE_EFFECTS::STAT_CHANGE:
             Effect::stat_changed = string_to_stat(effect_tree.get<std::string>("stat"));
             Effect::stages_changes = effect_tree.get<int>("stages");
+            break;
+        case MOVE_EFFECTS::FIELD_CHANGE:
+            Effect::field_obj = string_to_field_obj(effect_tree.get<std::string>("field_object"));
             break;
         case MOVE_EFFECTS::SWAP:
         case MOVE_EFFECTS::FLINCH:

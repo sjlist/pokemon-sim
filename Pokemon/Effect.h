@@ -10,6 +10,7 @@
 #include "Stats.h"
 
 #include <boost/property_tree/ptree.hpp>
+#include <Battle/Field_Objects.h>
 
 /*
  * Effects are the general non damaging effects that a move can have, stat bufff, status application ...
@@ -22,6 +23,7 @@ enum MOVE_EFFECTS
     FLINCH,
     SWAP,
     STAT_CHANGE,
+    FIELD_CHANGE,
     NUM_MOVE_EFFECTS
 };
 
@@ -37,6 +39,8 @@ public:
 
     STATUS get_effect_status_type();
 
+    Field_Objects get_field_obj_changed();
+
     STAT get_stat_changed();
     int get_stages_changed();
 private:
@@ -47,6 +51,8 @@ private:
     STATUS status_effect;
 
     VOLATILE_STATUS v_status_effect;
+
+    Field_Objects field_obj;
 
     STAT stat_changed;
     int stages_changes;

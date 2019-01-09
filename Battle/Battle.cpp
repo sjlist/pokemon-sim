@@ -38,7 +38,8 @@ void Battle::send_out(FIELD_POSITION pos, int poke_position)
     if(Parties[player].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
         Parties[player].party_pokes[poke_position].status_turns = 0;
 
-    Battle::active_field.send_out(pos, Parties[player].party_pokes[poke_position]);
+    if(!Battle::active_field.send_out(pos, Parties[player].party_pokes[poke_position]) && Battle::active_field.active_pokes[pos].get_current_hp() == 0)
+        Battle::handle_faint(pos);
     Parties[player].party_pokes[poke_position].set_active(true);
 
 }
@@ -83,7 +84,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
     {
         std::cout << "Not enough PP\n";
-        return Attack_Result::NO_PP;
+        assert(0);
     }
 
     std::cout << "P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos].get_species() << " used "
@@ -125,6 +126,14 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
 {
     Attack_Result res;
+
+    if(!Battle::active_field.active_pokes[def_pos].is_alive())
+    {
+        std::cout << "Attack Failed\n";
+        return Attack_Result::NO_ATTACK;
+    }
+
+
     switch(move.get_damage_type())
     {
         case move_damage_type::MOVE_PHYSICAL:
@@ -237,6 +246,9 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::STAT_CHANGE:
             Battle::active_field.active_pokes[atk_pos].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
             return Attack_Result::HIT;
+        case MOVE_EFFECTS::FIELD_CHANGE:
+            Battle::active_field.increase_field_obj(move_effect.get_field_obj_changed(), def_pos);
+            break;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
             assert(0);

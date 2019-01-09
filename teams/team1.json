@@ -94,5 +94,37 @@
       "MOVE2": "Extreme_Speed",
       "MOVE3": "Dragon_Dance"
     }
+  },
+  "3":
+  {
+    "species": "Aerodactyl",
+    "evs":
+    {
+      "0": 4,
+      "1": 252,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "JOLLY",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Rock_Slide",
+      "MOVE1": "Earthquake",
+      "MOVE2": "Taunt",
+      "MOVE3": "Stealth_Rocks"
+    }
   }
 }
