@@ -59,9 +59,9 @@ private:
     Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
     Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
 
-    bool handle_pre_attack_status(FIELD_POSITION pos);
-    bool handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num);
-    bool handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num);
+    Attack_Result  handle_pre_attack_status(FIELD_POSITION pos);
+    Attack_Result  handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num);
+    Attack_Result  handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num);
     bool handle_end_turn_status(FIELD_POSITION pos);
 
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos);

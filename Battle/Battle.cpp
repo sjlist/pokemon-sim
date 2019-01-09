@@ -68,14 +68,16 @@ void Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
-    Attack_Result res = Attack_Result::HIT;
+    Attack_Result res;
     bool crit = false;
 
-    if(!Battle::handle_pre_attack_status(atk_pos))
-        return Attack_Result::NO_ATTACK;
+    res = Battle::handle_pre_attack_status(atk_pos);
+    if(res != Attack_Result::HIT)
+        return res;
 
-    if(!Battle::handle_pre_attack_v_statuses(atk_pos, move_number))
-        return Attack_Result::NO_ATTACK;
+    res = Battle::handle_pre_attack_v_statuses(atk_pos, move_number);
+    if(res != Attack_Result::HIT)
+        return res;
 
     // Check if there is enough pp to use the move
     if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
@@ -298,7 +300,7 @@ void Battle::handle_faint(FIELD_POSITION pos)
     std::cout << "P" << (get_player_from_position(pos) + 1) << "'s " << Battle::active_field.active_pokes[pos].get_species() << " FAINTED" << "\n";
 }
 
-bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
+Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
 {
     switch(Battle::active_field.active_pokes[pos].get_status())
     {
@@ -306,14 +308,14 @@ bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
             if(Battle::active_field.active_pokes[pos].status_turns == 0)
             {
                 Battle::active_field.active_pokes[pos].status_turns++;
-                return false;
+                return Attack_Result::NO_ATTACK;
             }
             else if(Battle::active_field.active_pokes[pos].status_turns < 3)
             {
                 if(Battle::roll_chance((float)2/3))
                 {
                     Battle::active_field.active_pokes[pos].status_turns++;
-                    return false;
+                    return Attack_Result::NO_ATTACK;
                 }
                 else
                 {
@@ -326,27 +328,27 @@ bool Battle::handle_pre_attack_status(FIELD_POSITION pos)
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " woke up!\n";
                 Battle::active_field.active_pokes[pos].set_status(STATUS::NO_STATUS);
             }
-            return true;
+            return Attack_Result::HIT;
         case STATUS::PARALYZED:
             if(Battle::roll_chance(0.25))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " is paralyzed\n";
-                return false;
+                return Attack_Result::NO_ATTACK;
             }
 
-            return true;
+            return Attack_Result::HIT;
         case STATUS::FROZEN:
             if(Battle::roll_chance(0.8))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " is frozen\n";
-                return false;
+                return Attack_Result::NO_ATTACK;
             }
 
             std::cout << Battle::active_field.active_pokes[pos].get_species() << " thawed!\n";
             Battle::active_field.active_pokes[pos].set_status(STATUS::NO_STATUS);
-            return true;
+            return Attack_Result::HIT;
         default:
-            return true;
+            return Attack_Result::HIT;
     }
 }
 
@@ -397,26 +399,27 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-bool Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num)
+Attack_Result Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num)
 {
     int temp_v_status = Battle::active_field.active_pokes[pos].get_volatile_status();
     int current_v_status, i = 0;
-    bool can_attack = true;
+    Attack_Result res = Attack_Result::HIT;
     while(temp_v_status > 0)
     {
         current_v_status = (1u << i);
         if(current_v_status & temp_v_status)
         {
             temp_v_status &= ~(current_v_status);
-            if(!Battle::handle_pre_attack_v_status(pos, current_v_status, move_num))
-                can_attack = false;
+            res = Battle::handle_pre_attack_v_status(pos, current_v_status, move_num);
+            if(res != Attack_Result::HIT)
+                break;
         }
         i++;
     }
-    return can_attack;
+    return res;
 }
 
-bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num)
+Attack_Result Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num)
 {
     switch(v_status)
     {
@@ -435,7 +438,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
                         Battle::status_turns[NUM_CONFUSION] = 0;
                         Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                         std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
-                        return true;
+                        return Attack_Result::HIT;
                     }
                     Battle::status_turns[NUM_CONFUSION]++;
                     break;;
@@ -443,7 +446,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
                     Battle::status_turns[NUM_CONFUSION] = 0;
                     Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                     std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
-                    return true;
+                    return Attack_Result::HIT;
                 default:
                     assert(0);
             }
@@ -451,18 +454,20 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
             if(roll_chance(status_moves[NUM_CONFUSION].get_acc()))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " hurt itself in its confusion\n";
-                Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION], false);
-                return false;
+                if(Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION], false) == Attack_Result::FAINT)
+                    return Attack_Result::FAINT;
+                else
+                    return Attack_Result::NO_ATTACK;
             }
 
-            return true;
+            return Attack_Result::HIT;
         case VOLATILE_STATUS::TAUNTED:
             if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " is taunted and can't use " << Battle::active_field.active_pokes[pos].moves[move_num].get_name() << std::endl;
-                return false;
+                return Attack_Result::NO_ATTACK;
             }
-            return true;
+            return Attack_Result::HIT;
         case VOLATILE_STATUS::BOUND:
         case VOLATILE_STATUS::CANT_ESCAPE:
         case VOLATILE_STATUS::CURSE:
@@ -479,7 +484,7 @@ bool Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int mo
         default:
             assert(0);
     }
-    return true;
+    return Attack_Result::HIT;
 }
 
 bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod)
