@@ -44,16 +44,14 @@ int BattleStateMachine::run(BattleState state)
     Attack_Result atk_r;
     Players faint_player;
     int MAX_TURN_COUNT = 100;
+    int winner = 0, removed, count;
 
-    int winner = 0;
-
-    int removed;
     BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [BattleStateMachine::num_players];
     std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
 
-    while(state != BattleState::BATTLE_END)
+    while(true)
     {
         switch (state)
         {
@@ -79,7 +77,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 5)
+                if(BattleStateMachine::turn_count == 24)
                     std::cout << "HERERE\n";
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
@@ -144,8 +142,22 @@ int BattleStateMachine::run(BattleState state)
                                 }
 
                                 // TODO: HANDLE PURSUIT HERE
-                                BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos,
-                                                                     messages[prio.at(i)].reserve_poke);
+                                while(!BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos,
+                                                                     messages[prio.at(i)].reserve_poke))
+                                {
+                                    if(BattleStateMachine::battle_over())
+                                        return BattleStateMachine::end_battle();
+
+                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
+                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                            prio.at(i),
+                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
+                                            BattleStateMachine::battle.active_field,
+                                            Actions::CHOOSE_POKEMON);
+                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
+                                    messages[prio.at(i)].target_pos = target;
+                                }
+
                                 if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                                     break;;
 
@@ -164,7 +176,6 @@ int BattleStateMachine::run(BattleState state)
 
                                 // lose if no pokes left
                                 if (battle.has_lost(faint_player)) {
-                                    std::cout << "Player " << (faint_player + 1) << " has lost the battle!\n";
                                     state = BattleState::BATTLE_END;
                                     continue;
                                 }
@@ -178,13 +189,25 @@ int BattleStateMachine::run(BattleState state)
                                     state = BattleState::BATTLE_END;
                                 else
                                     //SWAP IN A NEW POKEMON by querying the battle actor
-                                    BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(p),
+                                    while(!BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(p),
                                                                          BattleStateMachine::actor.choose_pokemon(
                                                                                  BattleStateMachine::battle.get_party(
                                                                                          get_player_from_position(p
-                                                                                         ))));
+                                                                                         )))))
+                                    {
+                                        if(BattleStateMachine::battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(p))))
+                                            break;
+                                        messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                                prio.at(i),
+                                                BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
+                                                BattleStateMachine::battle.active_field,
+                                                Actions::CHOOSE_POKEMON);
+                                    }
+
                                 contin:;
                             }
+                            if(BattleStateMachine::battle_over())
+                                return BattleStateMachine::end_battle();
                             break;;
 
                         case Attack_Result::FLINCHED:
@@ -225,33 +248,67 @@ int BattleStateMachine::run(BattleState state)
                         {
                             if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
                             {
-                                std::cout << "Player " << get_player_from_position(static_cast<FIELD_POSITION>(i)) + 1 << " has lost the battle\n";
                                 state = BattleState::BATTLE_END;
                             }
                             else
                             {
-                                BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(i),
+                                while(!BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(i),
                                                                      BattleStateMachine::actor.choose_pokemon(
                                                                              BattleStateMachine::battle.get_party(
                                                                                      get_player_from_position(static_cast<FIELD_POSITION>(i)
-                                                                                     ))));
+                                                                                     )))))
+                                {
+                                    if(BattleStateMachine::battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
+                                    {
+                                        state = BattleState::BATTLE_END;
+                                        break;
+                                    }
+
+                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
+                                            prio.at(i),
+                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
+                                            BattleStateMachine::battle.active_field,
+                                            Actions::CHOOSE_POKEMON);
+
+                                }
+
+
+
                             }
                         }
                     }
                 }
+                if(BattleStateMachine::battle_over())
+                    state = BattleState::BATTLE_END;
+
                 if(state == BattleState::TURN_END)
                     state = BattleState::TURN_START;
                 break;;
+            case BattleState::BATTLE_END:
+                return BattleStateMachine::end_battle();
             default:
                 assert(0);
         }
     }
-    if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE))
-        winner += 1;
-    if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
-        winner -= 1;
 
-    return winner;
+}
+
+int BattleStateMachine::end_battle()
+{
+
+    int loser = 0;
+    if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE))
+        loser -= 1;
+    if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
+        loser += 1;
+
+    if(loser != 0)
+        std::cout << "Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n";
+    else
+        std::cout << "TIED\n";
+
+
+    return loser;
 }
 
 std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessage* messages)
@@ -337,16 +394,21 @@ int BattleStateMachine::get_turn_count()
     return BattleStateMachine::turn_count;
 }
 
+long BattleStateMachine::get_seed()
+{
+    return BattleStateMachine::seed;
+}
+
 bool BattleStateMachine::battle_over()
 {
-    return battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_ONE);
+    return battle.has_lost(Players::PLAYER_ONE) || battle.has_lost(Players::PLAYER_TWO);
 }
 
 void BattleStateMachine::reset()
 {
     std::cout << "------RESETTING BATTLE------\n";
     std::random_device rd;
-    long seed = rd();
+    BattleStateMachine::seed = rd();
     std::cout << "New random seed: " << seed << std::endl;
     BattleStateMachine::turn_count = 0;
     BattleStateMachine::battle.reset();

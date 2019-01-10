@@ -27,6 +27,7 @@ public:
     int run(BattleState state=BattleState::BATTLE_INIT);
     Battle get_battle();
     int get_turn_count();
+    long get_seed();
     void reset();
 private:
     void init();
@@ -39,6 +40,8 @@ private:
     Battle battle;
 
     bool battle_over();
+    int end_battle();
+
     int make_choice(int min, int max);
     std::vector<FIELD_POSITION> create_priority_list(BattleMessage* messages);
     std::vector<FIELD_POSITION> remove_priority_list(int action, std::vector<FIELD_POSITION> prio_list);

@@ -28,7 +28,7 @@ Party Battle::get_party(Players player)
     return Parties[player];
 }
 
-void Battle::send_out(FIELD_POSITION pos, int poke_position)
+bool Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
     if(poke_position == -1)
         assert(0);
@@ -39,9 +39,12 @@ void Battle::send_out(FIELD_POSITION pos, int poke_position)
         Parties[player].party_pokes[poke_position].status_turns = 0;
 
     if(!Battle::active_field.send_out(pos, Parties[player].party_pokes[poke_position]) && Battle::active_field.active_pokes[pos].get_current_hp() == 0)
+    {
         Battle::handle_faint(pos);
+        return false;
+    }
     Parties[player].party_pokes[poke_position].set_active(true);
-
+    return true;
 }
 
 void Battle::return_poke(FIELD_POSITION pos)
@@ -61,10 +64,11 @@ void Battle::return_poke(FIELD_POSITION pos)
     }
 };
 
-void Battle::swap_poke(FIELD_POSITION pos, int poke_position)
+bool Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 {
+
     Battle::return_poke(pos);
-    Battle::send_out(pos, poke_position);
+    return Battle::send_out(pos, poke_position);
 }
 
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
@@ -298,9 +302,7 @@ void Battle::update_party(Players player)
 float Battle::calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier)
 {
     float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
-
     float damage_adjustment = std::uniform_int_distribution<int>{85, 100}(Battle::generator) / 100.0;
-    std::cout << "Damage adjustment: " << damage_adjustment << std::endl;
 
     return base_damage * damage_adjustment;
 }

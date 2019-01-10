@@ -1,0 +1,14 @@
+{
+  "damage_type": "physical",
+  "type": "FLYING",
+  "priority": 0,
+  "pp": 56,
+  "acc": 100,
+  "targeting": "ALL_OTHERS",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 60,
+    "crit_chance": 5
+  }
+}

@@ -39,9 +39,9 @@ public:
     void update_generator(long seed);
 
 
-    void send_out(FIELD_POSITION pos, int poke_position);
+    bool send_out(FIELD_POSITION pos, int poke_position);
     void return_poke(FIELD_POSITION pos);
-    void swap_poke(FIELD_POSITION pos, int poke_position);
+    bool swap_poke(FIELD_POSITION pos, int poke_position);
     bool can_swap(Players player);
 
     Party get_party(Players player);
