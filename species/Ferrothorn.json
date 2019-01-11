@@ -1,0 +1,13 @@
+{
+  "HP":74,
+  "ATK": 94,
+  "DEF": 131,
+  "SPA": 54,
+  "SPD": 116,
+  "SPE": 20,
+  "TYPES":
+  {
+    "TYPE0" : "GRASS",
+    "TYPE1" : "STEEL"
+  }
+}

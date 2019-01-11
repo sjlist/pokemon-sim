@@ -1,0 +1,17 @@
+{
+  "damage_type": "status",
+  "type": "GROUND",
+  "priority": 0,
+  "pp": 32,
+  "acc": -1,
+  "targeting": "SELF",
+  "num_targets": -1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "FIELD_CHANGE",
+      "field_object": "SPIKES"
+    }
+  }
+}
