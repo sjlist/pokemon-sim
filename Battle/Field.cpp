@@ -19,31 +19,52 @@ Field::Field()
     Field::trick_room = false;
     Field::terrain = Terrain::NO_TERRAIN;
     Field::weather_state = Weather::CLEAR_SKIES;
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        Field::leech_seed_positions[i] = FIELD_POSITION::NO_POSITION;
+    }
 }
 
-void Field::increase_field_obj(Field_Objects obj, FIELD_POSITION pos)
+void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
 {
     switch(obj)
     {
         case Field_Objects::STEALTH_ROCKS:
-            std::cout << "Rocks are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
-            Field::stealth_rocks[get_player_from_position(pos)] = true;
+            std::cout << "Rocks are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            Field::stealth_rocks[get_player_from_position(def_pos)] = true;
             break;
         case Field_Objects::STICKY_WEB:
-            std::cout << "Sticky web is scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
-            Field::sticky_web[get_player_from_position(pos)] = true;
+            std::cout << "Sticky web is scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            Field::sticky_web[get_player_from_position(def_pos)] = true;
             break;
         case Field_Objects::SPIKES:
-            std::cout << "Spikes are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
-            Field::spikes[get_player_from_position(pos)] += 1;
+            std::cout << "Spikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            Field::spikes[get_player_from_position(def_pos)] += 1;
 
-            if(Field::spikes[get_player_from_position(pos)] > 3)
-                Field::spikes[get_player_from_position(pos)] = 3;
+            if(Field::spikes[get_player_from_position(def_pos)] > 3)
+                Field::spikes[get_player_from_position(def_pos)] = 3;
 
             break;
         case Field_Objects::TOXIC_SPIKES:
-            std::cout << "Toxic pikes are scattered all around P" << get_player_from_position(pos) + 1 << "'s field\n";
-            Field::toxic_spikes[get_player_from_position(pos)] += 1;
+            std::cout << "Toxic pikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            Field::toxic_spikes[get_player_from_position(def_pos)] += 1;
+            break;
+        case Field_Objects::LEECH_SEED:
+            if(Field::active_pokes[def_pos].get_type()[0] != PokeTypes::GRASS
+            && Field::active_pokes[def_pos].get_type()[1] != PokeTypes::GRASS
+            && Field::leech_seed_positions[def_pos] == FIELD_POSITION::NO_POSITION)
+            {
+                std::cout << Field::active_pokes[def_pos].get_species() << " is now seeded\n";
+                Field::leech_seed_positions[def_pos] = atk_pos;
+            } else
+            {
+                std::cout << "Leech seed failed\n";
+            }
+            break;
+        case Field_Objects::CLEAR:
+            std::cout << "Clearing Field Objects\n";
+            Field::reset_field_obj();
             break;
         case Field_Objects::WEATHER:
         case Field_Objects::TRICK_ROOM:
@@ -66,6 +87,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon poke)
 
 void Field::return_poke(FIELD_POSITION pos)
 {
+    Field::leech_seed_positions[pos] = FIELD_POSITION::NO_POSITION;
     Field::active_pokes[pos].set_active(false);
 }
 
@@ -80,7 +102,7 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
     float hp = Field::active_pokes[pos].get_stat(STAT::HP), damage;
     if(Field::spikes[player] > 0)
     {
-        damage = 1.0 / (2 * (Field::spikes[player] + 1)) * hp;
+        damage = 1.0 / (10 - (2 * Field::spikes[player])) * hp;
         std::cout << Field::active_pokes[pos].get_species() << " is taking damage from spikes\n";
         if(!Field::active_pokes[pos].deal_damage(damage))
             return false;
@@ -122,17 +144,24 @@ void Field::reset()
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
         active_pokes[i].set_active(false);
 
-    Field::stealth_rocks[Players::PLAYER_ONE] = false;
-    Field::stealth_rocks[Players::PLAYER_TWO] = false;
-    Field::sticky_web[Players::PLAYER_ONE] = false;
-    Field::sticky_web[Players::PLAYER_TWO] = false;
-    Field::spikes[Players::PLAYER_ONE] = 0;
-    Field::spikes[Players::PLAYER_TWO] = 0;
-    Field::toxic_spikes[Players::PLAYER_ONE] = 0;
-    Field::toxic_spikes[Players::PLAYER_TWO] = 0;
+    Field::reset_field_obj();
+
     Field::trick_room = false;
     Field::weather_state = Weather::CLEAR_SKIES;
     Field::terrain = Terrain::NO_TERRAIN;
+}
+
+void Field::reset_field_obj()
+{
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        Field::stealth_rocks[get_player_from_position(i)] = false;
+        Field::sticky_web[get_player_from_position(i)] = false;
+        Field::spikes[get_player_from_position(i)] = 0;
+        Field::toxic_spikes[get_player_from_position(i)] = 0;
+
+        Field::leech_seed_positions[i] = FIELD_POSITION::NO_POSITION;
+    }
 }
 
 void Field::print_field(bool detailed)
@@ -175,7 +204,18 @@ void Field::print_field(bool detailed)
     std::cout << "\n";
 }
 
+bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
+{
+    if(Field::leech_seed_positions[pos] != FIELD_POSITION::NO_POSITION && Field::active_pokes[Field::leech_seed_positions[pos]].is_alive())
+    {
+        int damage = Field::active_pokes[pos].get_stat(STAT::HP) / 8.0;
+        std::cout << Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << " sapped some life from " << Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << std::endl;
+        Field::active_pokes[Field::leech_seed_positions[pos]].heal_damage(damage);
+        return Field::active_pokes[pos].deal_damage(damage);
+    }
 
+    return true;
+}
 
 Players get_player_from_position(int pos)
 {

@@ -1,0 +1,17 @@
+{
+  "damage_type": "status",
+  "type": "GRASS",
+  "priority": 0,
+  "pp": 16,
+  "acc": -1,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "FIELD_CHANGE",
+      "field_object": "LEECH_SEED"
+    }
+  }
+}

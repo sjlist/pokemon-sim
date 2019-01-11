@@ -43,7 +43,7 @@ int BattleStateMachine::run(BattleState state)
 {
     Attack_Result atk_r;
     Players faint_player;
-    int MAX_TURN_COUNT = 100;
+    int MAX_TURN_COUNT = 200;
     int winner = 0, removed, count;
 
     BattleStateMachine::turn_count = 0;
@@ -77,7 +77,8 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 24)
+                if(BattleStateMachine::turn_count == 17)
+
                     std::cout << "HERERE\n";
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
@@ -197,11 +198,7 @@ int BattleStateMachine::run(BattleState state)
                                     {
                                         if(BattleStateMachine::battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(p))))
                                             break;
-                                        messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                                prio.at(i),
-                                                BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                                BattleStateMachine::battle.active_field,
-                                                Actions::CHOOSE_POKEMON);
+
                                     }
 
                                 contin:;
@@ -263,13 +260,6 @@ int BattleStateMachine::run(BattleState state)
                                         state = BattleState::BATTLE_END;
                                         break;
                                     }
-
-                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                            prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                            BattleStateMachine::battle.active_field,
-                                            Actions::CHOOSE_POKEMON);
-
                                 }
 
 
@@ -297,10 +287,14 @@ int BattleStateMachine::end_battle()
 {
 
     int loser = 0;
-    if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE))
+    if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE) && BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
+        loser = 0;
+    else if(BattleStateMachine::battle.has_lost(Players::PLAYER_ONE))
         loser -= 1;
-    if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
+    else if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
         loser += 1;
+    else
+        assert(0);
 
     if(loser != 0)
         std::cout << "Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n";

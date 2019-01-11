@@ -30,6 +30,7 @@ public:
     bool use_move(int move_number);
     void set_active(bool state);
     bool deal_damage(float damage);
+    void heal_damage(int damage);
     bool set_status(STATUS new_status);
     bool set_volatile_status(VOLATILE_STATUS v_status);
     void stat_change(STAT stat, int stages);

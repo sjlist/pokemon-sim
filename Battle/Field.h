@@ -42,9 +42,11 @@ public:
     bool send_out(FIELD_POSITION pos, Pokemon poke);
     void return_poke(FIELD_POSITION pos);
 
-    void increase_field_obj(Field_Objects obj, FIELD_POSITION pos);
+    void modify_field_obj(Field_Objects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos);
+    bool handle_end_turn_field_obj(FIELD_POSITION pos);
 
     Pokemon active_pokes [NUM_POSITIONS];
+    FIELD_POSITION leech_seed_positions [NUM_POSITIONS];
 
     //entrance hazards
     bool stealth_rocks [2], sticky_web [2];
@@ -56,6 +58,7 @@ public:
 
     void print_field(bool detailed=false);
 private:
+    void reset_field_obj();
     bool handle_entrance(FIELD_POSITION pos);
     bool handle_hazard_entrance(FIELD_POSITION pos);
     bool active_open(FIELD_POSITION pos);

@@ -80,7 +80,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     if(res != Attack_Result::HIT)
         return res;
 
-    res = Battle::handle_pre_attack_v_statuses(atk_pos, move_number);
+    res = Battle::handle_v_status_mask(atk_pos, move_number, pre_attack_v_status_mask);
     if(res != Attack_Result::HIT)
         return res;
 
@@ -177,7 +177,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 
 Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
 {
-    float eff_atk, eff_def, damage_dealt;
+    float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
 
     damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move.get_num_targets(), crit);
@@ -201,8 +201,10 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
         eff_def = Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPD);
     }
 
+    move_power = Battle::get_move_power(atk_pos, def_pos, move);
+
     // calculate damage dealt
-    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), move.get_power(), eff_atk, eff_def, damage_mod);
+    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos].get_level(), move_power, eff_atk, eff_def, damage_mod);
 
     // Deal damage and handle fainting but DO NOT RETURN FAINT RESULT UNTIL AFTER SWAP HAS A CHANCE TO RETURN
     if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
@@ -212,6 +214,18 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     }
 
     return Attack_Result::HIT;
+}
+
+int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move)
+{
+    if(move.get_power() != -1)
+        return move.get_power();
+
+    if(move.get_name() == "Gyro_Ball")
+    {
+        //(25 * target's current Speed / user's current Speed) + 1
+        return (25.0 * Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPE) / Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPE)) + 1;
+    }
 }
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos)
@@ -251,7 +265,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             Battle::active_field.active_pokes[atk_pos].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
             return Attack_Result::HIT;
         case MOVE_EFFECTS::FIELD_CHANGE:
-            Battle::active_field.increase_field_obj(move_effect.get_field_obj_changed(), def_pos);
+            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), def_pos, atk_pos);
             break;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
@@ -369,19 +383,26 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
 bool Battle::handle_end_turn_field_status()
 {
     bool fainted = false;
-    if(!Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_1_0))
+    if(!Battle::handle_end_turn_statuses(FIELD_POSITION::PLAYER_1_0))
     {
         Battle::handle_faint(FIELD_POSITION::PLAYER_1_0);
         fainted = true;
     }
 
-    if(!Battle::handle_end_turn_status(FIELD_POSITION::PLAYER_2_0))
+    if(!Battle::handle_end_turn_statuses(FIELD_POSITION::PLAYER_2_0))
     {
         Battle::handle_faint(FIELD_POSITION::PLAYER_2_0);
         fainted = true;
     }
 
     return fainted;
+}
+
+bool Battle::handle_end_turn_statuses(FIELD_POSITION pos)
+{
+    return Battle::handle_end_turn_status(pos)
+       && !(Battle::handle_v_status_mask(pos, turn_end_v_status_mask) == Attack_Result::FAINT)
+       && Battle::active_field.handle_end_turn_field_obj(pos);
 }
 
 bool Battle::handle_end_turn_status(FIELD_POSITION pos)
@@ -413,27 +434,24 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
     return Battle::active_field.active_pokes[pos].deal_damage(damage);
 }
 
-Attack_Result Battle::handle_pre_attack_v_statuses(FIELD_POSITION pos, int move_num)
+Attack_Result Battle::handle_v_status_mask(FIELD_POSITION pos, int status_mask, int move_num)
 {
-    int temp_v_status = Battle::active_field.active_pokes[pos].get_volatile_status();
     int current_v_status, i = 0;
     Attack_Result res = Attack_Result::HIT;
-    while(temp_v_status > 0)
+    for(int i = 0; i < VOLATILE_STATUS_NUMBERS::NUM_VOLATILE_STATUS; i++)
     {
         current_v_status = (1u << i);
-        if(current_v_status & temp_v_status)
+        if((current_v_status & status_mask) && (current_v_status & Battle::active_field.active_pokes[pos].get_volatile_status()))
         {
-            temp_v_status &= ~(current_v_status);
-            res = Battle::handle_pre_attack_v_status(pos, current_v_status, move_num);
+            res = Battle::handle_v_status(pos, current_v_status, move_num);
             if(res != Attack_Result::HIT)
                 break;
         }
-        i++;
     }
     return res;
 }
 
-Attack_Result Battle::handle_pre_attack_v_status(FIELD_POSITION pos, int v_status, int move_num)
+Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move_num)
 {
     switch(v_status)
     {

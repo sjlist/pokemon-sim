@@ -98,6 +98,9 @@ int BattleActor::choose_move(Pokemon poke)
         }
     }
 
+    if(num_moves == 0)
+        assert(0);
+
     selection = BattleActor::make_choice(0, num_moves - 1);
     return moves[selection];
 }

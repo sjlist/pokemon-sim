@@ -14,6 +14,8 @@ std::map<std::string, Field_Objects> string_v_field_obj_map = {
         { "WEATHER", Field_Objects::WEATHER },
         { "TERRAIN", Field_Objects::TERRAIN },
         { "TRICK_ROOM", Field_Objects::TRICK_ROOM },
+        { "LEECH_SEED", Field_Objects::LEECH_SEED},
+        { "CLEAR", Field_Objects::CLEAR },
         { "NUM_FIELD_OBJECTS", Field_Objects::NUM_FIELD_OBJECTS }
 };
 

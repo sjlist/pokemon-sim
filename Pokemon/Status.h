@@ -36,7 +36,8 @@ enum VOLATILE_STATUS_NUMBERS
     NUM_PERISHSONG  = 11,
     NUM_TAUNTED     = 12,
     NUM_TELEKINESIS = 13,
-    NUM_TORMENT     = 14
+    NUM_TORMENT     = 14,
+    NUM_VOLATILE_STATUS
 };
 
 enum VOLATILE_STATUS
@@ -55,9 +56,11 @@ enum VOLATILE_STATUS
     PERISHSONG  = (1u << NUM_PERISHSONG),
     TAUNTED     = (1u << NUM_TAUNTED),
     TELEKINESIS = (1u << NUM_TELEKINESIS),
-    TORMENT     = (1u << NUM_TORMENT),
-    NUM_VOLATILE_STATUS
+    TORMENT     = (1u << NUM_TORMENT)
 };
+
+static int pre_attack_v_status_mask = (VOLATILE_STATUS::CONFUSION & VOLATILE_STATUS::ENCORE & VOLATILE_STATUS::TAUNTED);
+static int turn_end_v_status_mask = 0;
 
 STATUS string_to_status(std::string status_string);
 std::string status_to_string(STATUS status);
