@@ -128,6 +128,16 @@ bool Pokemon::deal_damage(float damage)
     return true;
 }
 
+void Pokemon::heal_damage(int damage)
+{
+    Pokemon::current_hp = Pokemon::current_hp + damage;
+
+    if(Pokemon::current_hp >= Pokemon::base_stats[STAT::HP])
+    {
+        Pokemon::current_hp = Pokemon::base_stats[STAT::HP];
+    }
+}
+
 bool Pokemon::set_status(STATUS new_status)
 {
     if(Pokemon::status != STATUS::NO_STATUS)

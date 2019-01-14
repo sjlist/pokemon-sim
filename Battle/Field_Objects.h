@@ -16,6 +16,8 @@ enum Field_Objects
     WEATHER,
     TERRAIN,
     TRICK_ROOM,
+    CLEAR,
+    LEECH_SEED,
     NUM_FIELD_OBJECTS
 };
 

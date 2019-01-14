@@ -14,7 +14,7 @@ int main()
 {
     int wins [3] = {0, 0, 0}, max_runs = 10000;
     int num_runs = 1, winner;
-    BattleStateMachine BSM = *new BattleStateMachine(2854119142);
+    BattleStateMachine BSM = *new BattleStateMachine(80905532);
     winner = BSM.run() + 1;
     wins[winner] += 1;
     long seed;

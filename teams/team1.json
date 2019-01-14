@@ -126,5 +126,37 @@
       "MOVE2": "Wing_Attack",
       "MOVE3": "Stealth_Rocks"
     }
+  },
+  "4":
+  {
+    "species": "Ferrothorn",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 252,
+      "3": 0,
+      "4": 4,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "CAREFUL",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Spikes",
+      "MOVE2": "Leech_Seed",
+      "MOVE3": "Gyro_Ball"
+    }
   }
 }
