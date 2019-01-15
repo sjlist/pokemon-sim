@@ -28,6 +28,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
 {
     BattleMessage message;
     Players player = get_player_from_position(pos);
+    Move move;
 
     if(action == Actions::CHOOSE_ACTION)
     {
@@ -55,7 +56,16 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
         case Actions::CHOOSE_MOVE:
             message.move_command = Commands::COMMAND_ATTACK;
             message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
-            message.target_pos = BattleActor::choose_target(pos, field.active_pokes[pos].moves[message.move_num]);
+            if(message.move_num != 5)
+            {
+                move = field.active_pokes[pos].moves[message.move_num];
+                message.target_pos = BattleActor::choose_target(pos, move.get_num_targets(), move.get_move_targets());
+
+            }
+            else
+            {
+                message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY);
+            }
             break;;
     }
 
@@ -77,7 +87,12 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
             std::cout << "ALL TARGETS";
         }
 
-        std::cout << " with " << field.active_pokes[pos].moves[message.move_num].get_name() << "\n";
+        std::cout << " with ";
+
+        if(message.move_num < 4)
+            std::cout << field.active_pokes[pos].moves[message.move_num].get_name() << "\n";
+        else
+            std::cout << "struggle\n";
     }
     else
         assert(0);
@@ -99,7 +114,7 @@ int BattleActor::choose_move(Pokemon poke)
     }
 
     if(num_moves == 0)
-        assert(0);
+        return 5;
 
     selection = BattleActor::make_choice(0, num_moves - 1);
     return moves[selection];
@@ -124,11 +139,11 @@ int BattleActor::choose_pokemon(Party party)
     return pokes[selection];
 }
 
-FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, Move move)
+FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_targets, TARGETS targets)
 {
-    if(move.get_num_targets() == 1)
+    if(num_targets == 1)
     {
-        BattleActor::actor_targeting.get_valid_targets(move.get_move_targets(), atk_pos);
+        BattleActor::actor_targeting.get_valid_targets(targets, atk_pos);
         int rand_target = BattleActor::make_choice(0, BattleActor::actor_targeting.get_num_valid_targets() - 1);
         return BattleActor::actor_targeting.valid_targets[rand_target];
     }

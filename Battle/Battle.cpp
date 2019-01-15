@@ -28,6 +28,11 @@ Party Battle::get_party(Players player)
     return Parties[player];
 }
 
+Move Battle::get_struggle()
+{
+    return Battle::struggle;
+}
+
 bool Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
     if(poke_position == -1)
@@ -75,61 +80,68 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 {
     Attack_Result res;
     bool crit = false;
+    Move move;
 
     res = Battle::handle_pre_attack_status(atk_pos);
     if(res != Attack_Result::HIT)
         return res;
 
-    res = Battle::handle_v_status_mask(atk_pos, move_number, pre_attack_v_status_mask);
+    res = Battle::handle_v_status_mask(atk_pos, pre_attack_v_status_mask, move_number);
     if(res != Attack_Result::HIT)
         return res;
 
-    // Check if there is enough pp to use the move
-    if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
+    if(move_number < 4)
     {
-        std::cout << "Not enough PP\n";
-        assert(0);
+        // Check if there is enough pp to use the move
+        if(!Battle::active_field.active_pokes[atk_pos].use_move(move_number))
+        {
+            std::cout << "Not enough PP\n";
+            assert(0);
+        }
+        move = Battle::active_field.active_pokes[atk_pos].moves[move_number];
     }
+    else
+        move = Battle::struggle;
+
 
     std::cout << "P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos].get_species() << " used "
-              << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << "\n";
+              << move.get_name() << "\n";
 
     // roll for hit
-    if(!Battle::roll_acc(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_acc(),
+    if(!Battle::roll_acc(move.get_acc(),
                          Battle::active_field.active_pokes[atk_pos].get_stat(STAT::ACC),
                          Battle::active_field.active_pokes[def_pos].get_stat(STAT::EVA)))
     {
-        std::cout << Battle::active_field.active_pokes[atk_pos].moves[move_number].get_name() << " missed\n";
+        std::cout << move.get_name() << " missed\n";
         return Attack_Result::MISS;
     }
 
-    if(Battle::roll_chance(Battle::active_field.active_pokes[atk_pos].moves[move_number].get_crit()))
+    if(Battle::roll_chance(move.get_crit()))
         crit = true;
 
     if(def_pos == FIELD_POSITION::ALL_TARGETS)
     {
-        Battle::Battle_Targets.get_valid_targets(
-                Battle::active_field.active_pokes[atk_pos].moves[move_number].get_move_targets(), atk_pos);
+        Battle::Battle_Targets.get_valid_targets(move.get_move_targets(), atk_pos);
         for(int i = 0; i < Battle::Battle_Targets.get_num_valid_targets(); i++)
         {
             if(Battle::attack_target(
                     atk_pos,
                     Battle::Battle_Targets.valid_targets[i],
-                    Battle::active_field.active_pokes[atk_pos].moves[move_number],
+                    move,
                     crit)
                     == Attack_Result::FAINT)
                 res = Attack_Result::FAINT;
         }
     }
     else
-        res = Battle::attack_target(atk_pos, def_pos, Battle::active_field.active_pokes[atk_pos].moves[move_number], crit);
+        res = Battle::attack_target(atk_pos, def_pos, move, crit);
 
     return res;
 }
 
 Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
 {
-    Attack_Result res;
+    std::pair<Attack_Result, float> res;
 
     if(!Battle::active_field.active_pokes[def_pos].is_alive())
     {
@@ -143,11 +155,11 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
         case move_damage_type::MOVE_PHYSICAL:
         case move_damage_type::MOVE_SPECIAL:
             res = Battle::attack_damage(atk_pos, def_pos, move, crit);
-            if(res == Attack_Result::IMMUNE)
-                return res;
+            if(res.first == Attack_Result::IMMUNE)
+                return res.first;
             break;;
         case move_damage_type::MOVE_STATUS:
-            res = Attack_Result::NO_ATTACK;
+            res.first = Attack_Result::NO_ATTACK;
             break;
         default:
             std::cout << "Unhandled attack type" << move.get_damage_type() << "\n";
@@ -159,23 +171,24 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         if (move.get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
         {
-            res = Battle::handle_move_effects(
-                    move.get_move_effect(i), atk_pos, def_pos);
-            if (res == Attack_Result::SWAP)
-                return res;
+            res.first = Battle::handle_move_effects(
+                    move.get_move_effect(i), atk_pos, def_pos, res.second);
+            if (res.first == Attack_Result::SWAP)
+                return res.first;
         }
         else
             break;
     }
 
     // Handle returning faint if needed
-    if(!Battle::active_field.active_pokes[def_pos].is_alive())
+    if(!Battle::active_field.active_pokes[def_pos].is_alive() || !Battle::active_field.active_pokes[atk_pos].is_alive())
         return Attack_Result::FAINT;
 
-    return res;
+    return res.first;
 }
 
-Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
+
+std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
 {
     float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
@@ -186,7 +199,7 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         std::cout << "P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos].get_species()
                   << " is immune to " << type_to_string(move.get_type()) << " type moves\n";
-        return Attack_Result::IMMUNE;
+        return std::make_pair(Attack_Result::IMMUNE, 0);
     }
 
     // determine the effective stats to use
@@ -210,10 +223,10 @@ Attack_Result Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     if(!Battle::active_field.active_pokes[def_pos].deal_damage(damage_dealt))
     {
         Battle::handle_faint(def_pos);
-        return Attack_Result::FAINT;
+        return std::make_pair(Attack_Result::FAINT, damage_dealt);
     }
 
-    return Attack_Result::HIT;
+    return std::make_pair(Attack_Result::HIT, damage_dealt);
 }
 
 int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move)
@@ -223,12 +236,12 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move 
 
     if(move.get_name() == "Gyro_Ball")
     {
-        //(25 * target's current Speed / user's current Speed) + 1
-        return (25.0 * Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPE) / Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPE)) + 1;
+        return (25.0 * Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPE) /
+                Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPE)) + 1;
     }
 }
 
-Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos)
+Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage)
 {
     switch(move_effect.get_effect())
     {
@@ -267,6 +280,20 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::FIELD_CHANGE:
             Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), def_pos, atk_pos);
             break;
+        case MOVE_EFFECTS::RECOIL:
+            std::cout << "P" << get_player_from_position(atk_pos) + 1 << "'s "
+                      << Battle::active_field.active_pokes[atk_pos].get_species() << " was hurt by recoil\n";
+            if(move_effect.get_use_damage())
+                Battle::active_field.active_pokes[atk_pos].deal_damage(damage * move_effect.get_percent_recoil());
+            else
+                Battle::active_field.active_pokes[atk_pos].deal_damage(Battle::active_field.active_pokes[atk_pos].get_stat(STAT::HP)
+                                                                     * move_effect.get_percent_recoil());
+            if(!Battle::active_field.active_pokes[atk_pos].get_current_hp())
+            {
+                Battle::handle_faint(atk_pos);
+                return Attack_Result::FAINT;
+            }
+            return Attack_Result::HIT;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
             assert(0);
@@ -486,7 +513,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
             if(roll_chance(status_moves[NUM_CONFUSION].get_acc()))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " hurt itself in its confusion\n";
-                if(Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION], false) == Attack_Result::FAINT)
+                if(Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION], false).first == Attack_Result::FAINT)
                     return Attack_Result::FAINT;
                 else
                     return Attack_Result::NO_ATTACK;
@@ -587,7 +614,7 @@ void Battle::update_generator(long seed)
 void Battle::load_battle()
 {
     Battle::load_teams(Battle::select_teams());
-    Battle::load_status_moves();
+    Battle::load_game_moves();
 }
 
 void Battle::load_teams(std::vector<std::string> team_names)
@@ -635,9 +662,10 @@ std::vector<std::string> Battle::select_teams()
     return teams;
 }
 
-void Battle::load_status_moves()
+void Battle::load_game_moves()
 {
-    Battle::status_moves[NUM_CONFUSION].load_move("status_moves/Confusion");
+    Battle::status_moves[NUM_CONFUSION].load_move("game_moves/Confusion");
+    Battle::struggle.load_move("game_moves/Struggle");
 }
 
 void Battle::print_battle(bool detailed)
@@ -646,12 +674,14 @@ void Battle::print_battle(bool detailed)
     if(detailed)
     {
         std::cout << "Player ONE party pokemon:\n";
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             if (!Battle::Parties[PLAYER_ONE].party_pokes[i].is_active())
                 Battle::Parties[PLAYER_ONE].party_pokes[i].print_pokemon();
         }
         std::cout << "\nPlayer TWO party pokemon:\n";
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             if (!Battle::Parties[PLAYER_TWO].party_pokes[i].is_active())
                 Battle::Parties[PLAYER_TWO].party_pokes[i].print_pokemon();
         }

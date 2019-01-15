@@ -1,0 +1,23 @@
+{
+  "damage_type": "physical",
+  "type": "NONE",
+  "priority": 0,
+  "pp":1,
+  "acc": -1,
+  "targeting": "ADJACENT_ENEMY",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 50,
+    "crit_chance": 0
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "RECOIL",
+      "recoil_type": "HP",
+      "percent": 25
+    }
+  }
+}

@@ -51,13 +51,15 @@ public:
 
     bool has_lost(Players player);
     void print_battle(bool detailed=false);
+
+    Move get_struggle();
 private:
     std::vector<std::string> select_teams();
     void load_teams(std::vector<std::string> team_names);
-    void load_status_moves();
+    void load_game_moves();
 
     Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
-    Attack_Result attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
+    std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
     int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move);
 
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);
@@ -66,7 +68,7 @@ private:
     bool handle_end_turn_status(FIELD_POSITION pos);
     bool handle_end_turn_statuses(FIELD_POSITION pos);
 
-    Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
+    Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage);
 
     void update_party(Players player);
     void handle_faint(FIELD_POSITION pos);
@@ -80,6 +82,7 @@ private:
 
     Party Parties [2];
     Move status_moves [NUM_VOLATILE_STATUS];
+    Move struggle;
     int status_turns [NUM_VOLATILE_STATUS]; //TODO: WRONG should be handled by the pokemon
 };
 

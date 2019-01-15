@@ -53,7 +53,7 @@ private:
 
     int make_choice(int min, int max);
 
-    FIELD_POSITION choose_target(FIELD_POSITION atk_pos, Move move);
+    FIELD_POSITION choose_target(FIELD_POSITION atk_pos, int num_moves, TARGETS targets);
     int choose_move(Pokemon poke);
 
     bool roll_chance(float chance);
