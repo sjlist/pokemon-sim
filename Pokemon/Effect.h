@@ -24,6 +24,7 @@ enum MOVE_EFFECTS
     SWAP,
     STAT_CHANGE,
     FIELD_CHANGE,
+    RECOIL,
     NUM_MOVE_EFFECTS
 };
 
@@ -43,6 +44,9 @@ public:
 
     STAT get_stat_changed();
     int get_stages_changed();
+
+    bool get_use_damage();
+    float get_percent_recoil();
 private:
     MOVE_EFFECTS effect_type;
     float effect_chance;
@@ -56,6 +60,9 @@ private:
 
     STAT stat_changed;
     int stages_changes;
+
+    bool use_damage;
+    float percent_recoil;
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);

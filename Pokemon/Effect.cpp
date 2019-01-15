@@ -15,6 +15,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"VOLATILE_STATUS", MOVE_EFFECTS::VOLATILE_STATUS_EFFECT},
         {"STAT_CHANGE", MOVE_EFFECTS::STAT_CHANGE},
         {"FIELD_CHANGE", MOVE_EFFECTS::FIELD_CHANGE},
+        {"RECOIL", MOVE_EFFECTS::RECOIL},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -62,6 +63,17 @@ Field_Objects Effect::get_field_obj_changed()
     return Effect::field_obj;
 }
 
+bool Effect::get_use_damage()
+{
+    return Effect::use_damage;
+}
+
+float Effect::get_percent_recoil()
+{
+    return Effect::percent_recoil;
+}
+
+
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
@@ -86,6 +98,10 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             break;
         case MOVE_EFFECTS::FIELD_CHANGE:
             Effect::field_obj = string_to_field_obj(effect_tree.get<std::string>("field_object"));
+            break;
+        case MOVE_EFFECTS::RECOIL:
+            Effect::use_damage = (effect_tree.get<std::string>("recoil_type") == "DAMAGE");
+            Effect::percent_recoil = effect_tree.get<int>("percent") / 100.0;
             break;
         case MOVE_EFFECTS::SWAP:
         case MOVE_EFFECTS::FLINCH:

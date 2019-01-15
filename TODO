@@ -1,3 +1,2 @@
 Fix status turns to come from the pokemon not the battle
 Pass a pointer to random num gen and not the seed
-Make v status handler take in a mask of the statuses to handle
