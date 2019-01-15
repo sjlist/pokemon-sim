@@ -26,6 +26,13 @@ enum class Attack_Result
     NO_ATTACK
 };
 
+enum Game_Moves
+{
+    MOVE_STRUGGLE,
+    MOVE_CONFUSION,
+    NUM_GAME_MOVES
+};
+
 class Battle {
 public:
     Battle();
@@ -51,8 +58,6 @@ public:
 
     bool has_lost(Players player);
     void print_battle(bool detailed=false);
-
-    Move get_struggle();
 private:
     std::vector<std::string> select_teams();
     void load_teams(std::vector<std::string> team_names);
@@ -81,7 +86,7 @@ private:
     std::mt19937 generator;
 
     Party Parties [2];
-    Move status_moves [NUM_VOLATILE_STATUS];
+    Move game_moves [Game_Moves::NUM_GAME_MOVES];
     Move struggle;
     int status_turns [NUM_VOLATILE_STATUS]; //TODO: WRONG should be handled by the pokemon
 };

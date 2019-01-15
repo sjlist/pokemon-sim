@@ -21,6 +21,7 @@ public:
     STATUS get_status();
     int get_volatile_status();
     float get_current_hp();
+    int get_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
 
     bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
@@ -35,10 +36,12 @@ public:
     bool set_volatile_status(VOLATILE_STATUS v_status);
     void stat_change(STAT stat, int stages);
     void faint_poke();
+    void increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
 
     void clear_stat_mods();
     void clear_volatile_status(VOLATILE_STATUS v_status);
     void clear_volatile_statuses();
+    void clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
 
     int status_turns;
 
@@ -63,6 +66,7 @@ private:
     int get_stat_mod(STAT stat);
 
     int volatile_status;
+    int v_status_turns [NUM_VOLATILE_STATUS];
 
     int* load_species(std::string species_name);
     float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);

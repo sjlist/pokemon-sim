@@ -98,6 +98,11 @@ std::string Pokemon::get_species()
     return Pokemon::species;
 }
 
+int Pokemon::get_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
+{
+    return Pokemon::v_status_turns[v_status];
+}
+
 bool Pokemon::is_alive()
 {
     return Pokemon::alive;
@@ -204,6 +209,11 @@ void Pokemon::faint_poke()
     Pokemon::alive = false;
 }
 
+void Pokemon::increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
+{
+    Pokemon::v_status_turns[v_status]++;
+}
+
 //CLEARING FUNCTIONS
 
 void Pokemon::clear_stat_mods()
@@ -220,6 +230,11 @@ void Pokemon::clear_volatile_status(VOLATILE_STATUS v_status)
 void Pokemon::clear_volatile_statuses()
 {
     Pokemon::volatile_status = 0;
+}
+
+void Pokemon::clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
+{
+    Pokemon::v_status_turns[v_status] = 0;
 }
 //
 

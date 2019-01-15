@@ -28,11 +28,6 @@ Party Battle::get_party(Players player)
     return Parties[player];
 }
 
-Move Battle::get_struggle()
-{
-    return Battle::struggle;
-}
-
 bool Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
     if(poke_position == -1)
@@ -101,7 +96,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         move = Battle::active_field.active_pokes[atk_pos].moves[move_number];
     }
     else
-        move = Battle::struggle;
+        move = Battle::game_moves[Game_Moves::MOVE_STRUGGLE];
 
 
     std::cout << "P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos].get_species() << " used "
@@ -484,25 +479,25 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
     {
         case VOLATILE_STATUS::CONFUSION:
             std::cout << Battle::active_field.active_pokes[pos].get_species() << " is confused\n";
-            switch(Battle::status_turns[NUM_CONFUSION])
+            switch(Battle::active_field.active_pokes[pos].get_v_status_turns(NUM_CONFUSION))
             {
                 case 0:
-                    Battle::status_turns[NUM_CONFUSION]++;
+                    Battle::active_field.active_pokes[pos].increment_v_status_turns(NUM_CONFUSION);
                     break;;
                 case 1:
                 case 2:
                 case 3:
                     if(Battle::roll_chance(0.25))
                     {
-                        Battle::status_turns[NUM_CONFUSION] = 0;
+                        Battle::active_field.active_pokes[pos].clear_v_status_turns(NUM_CONFUSION);
                         Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                         std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
                         return Attack_Result::HIT;
                     }
-                    Battle::status_turns[NUM_CONFUSION]++;
+                    Battle::active_field.active_pokes[pos].increment_v_status_turns(NUM_CONFUSION);
                     break;;
                 case 4:
-                    Battle::status_turns[NUM_CONFUSION] = 0;
+                    Battle::active_field.active_pokes[pos].clear_v_status_turns(NUM_CONFUSION);
                     Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::CONFUSION);
                     std::cout << Battle::active_field.active_pokes[pos].get_species() << " snapped out of its confusion\n";
                     return Attack_Result::HIT;
@@ -510,10 +505,10 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                     assert(0);
             }
 
-            if(roll_chance(status_moves[NUM_CONFUSION].get_acc()))
+            if(roll_chance(Battle::game_moves[Game_Moves::MOVE_CONFUSION].get_acc()))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " hurt itself in its confusion\n";
-                if(Battle::attack_damage(pos, pos, status_moves[NUM_CONFUSION], false).first == Attack_Result::FAINT)
+                if(Battle::attack_damage(pos, pos, Battle::game_moves[Game_Moves::MOVE_CONFUSION], false).first == Attack_Result::FAINT)
                     return Attack_Result::FAINT;
                 else
                     return Attack_Result::NO_ATTACK;
@@ -664,8 +659,8 @@ std::vector<std::string> Battle::select_teams()
 
 void Battle::load_game_moves()
 {
-    Battle::status_moves[NUM_CONFUSION].load_move("game_moves/Confusion");
-    Battle::struggle.load_move("game_moves/Struggle");
+    Battle::game_moves[Game_Moves::MOVE_CONFUSION].load_move("game_moves/Confusion");
+    Battle::game_moves[Game_Moves::MOVE_STRUGGLE].load_move("game_moves/Struggle");
 }
 
 void Battle::print_battle(bool detailed)
