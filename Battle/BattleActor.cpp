@@ -12,8 +12,6 @@
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-float attack_swap_ratio [2] = {0.90, 0.90};
-
 BattleActor::BattleActor() = default;
 
 BattleActor::BattleActor(long seed)
@@ -32,7 +30,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
 
     if(action == Actions::CHOOSE_ACTION)
     {
-        if(BattleActor::roll_chance(attack_swap_ratio[player]))
+        if(BattleActor::roll_chance(BattleActor::attack_swap_ratio[player]))
         {
             action = Actions::CHOOSE_MOVE;
         }

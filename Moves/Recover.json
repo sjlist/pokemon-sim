@@ -1,0 +1,17 @@
+{
+  "damage_type": "status",
+  "type": "Normal",
+  "priority": 0,
+  "pp": 16,
+  "acc": -1,
+  "targeting": "SELF",
+  "num_targets": -1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "HEAL",
+      "heal_percent": 50
+    }
+  }
+}

@@ -289,6 +289,9 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 return Attack_Result::FAINT;
             }
             return Attack_Result::HIT;
+        case MOVE_EFFECTS::HEAL:
+            Battle::active_field.active_pokes[def_pos].heal_damage(Battle::active_field.active_pokes[def_pos].get_stat(STAT::HP) * move_effect.get_heal_percent());
+            break;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
             assert(0);

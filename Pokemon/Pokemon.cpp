@@ -135,6 +135,8 @@ bool Pokemon::deal_damage(float damage)
 
 void Pokemon::heal_damage(int damage)
 {
+    std::cout << "Healed " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% hitpoints to " << Pokemon::species << "\n";
+
     Pokemon::current_hp = Pokemon::current_hp + damage;
 
     if(Pokemon::current_hp >= Pokemon::base_stats[STAT::HP])

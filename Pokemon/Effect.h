@@ -25,6 +25,7 @@ enum MOVE_EFFECTS
     STAT_CHANGE,
     FIELD_CHANGE,
     RECOIL,
+    HEAL,
     NUM_MOVE_EFFECTS
 };
 
@@ -47,6 +48,8 @@ public:
 
     bool get_use_damage();
     float get_percent_recoil();
+
+    float get_heal_percent();
 private:
     MOVE_EFFECTS effect_type;
     float effect_chance;
@@ -63,6 +66,8 @@ private:
 
     bool use_damage;
     float percent_recoil;
+
+    float heal_percent;
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);

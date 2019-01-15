@@ -297,9 +297,13 @@ int BattleStateMachine::end_battle()
         assert(0);
 
     if(loser != 0)
+    {
         std::cout << "Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n";
+    }
     else
+    {
         std::cout << "TIED\n";
+    }
 
 
     return loser;
