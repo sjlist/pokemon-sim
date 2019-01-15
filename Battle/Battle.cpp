@@ -383,6 +383,7 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
             }
             return Attack_Result::HIT;
         case STATUS::PARALYZED:
+            std::cout << Battle::active_field.active_pokes[pos].get_species() << " is paralyzed and may not be able to attack\n";
             if(Battle::roll_chance(0.25))
             {
                 std::cout << Battle::active_field.active_pokes[pos].get_species() << " is paralyzed\n";
@@ -433,7 +434,7 @@ bool Battle::handle_end_turn_statuses(FIELD_POSITION pos)
 bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 {
     float damage = 0;
-    if(Battle::active_field.active_pokes[pos].get_status() != NO_STATUS)
+    if(Battle::active_field.active_pokes[pos].get_status() != STATUS::NO_STATUS && Battle::active_field.active_pokes[pos].get_status() != STATUS::PARALYZED)
         std::cout << "P" << get_player_from_position(pos) + 1 << "'s " << Battle::active_field.active_pokes[pos].get_species() << " is";
 
     switch(Battle::active_field.active_pokes[pos].get_status())

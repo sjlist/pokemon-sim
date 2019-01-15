@@ -155,8 +155,40 @@
     {
       "MOVE0": "Stealth_Rocks",
       "MOVE1": "Spikes",
-      "MOVE2": "Recover",
+      "MOVE2": "Leech_Seed",
       "MOVE3": "Gyro_Ball"
+    }
+  },
+  "5":
+  {
+    "species": "Togekiss",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 0,
+      "3": 4,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Recover",
+      "MOVE1": "Nasty_Plot",
+      "MOVE2": "Air_Slash",
+      "MOVE3": "Thunder_Wave"
     }
   }
 }

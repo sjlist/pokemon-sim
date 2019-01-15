@@ -1,0 +1,18 @@
+{
+  "damage_type": "status",
+  "type": "THUNDER",
+  "priority": 0,
+  "pp": 32,
+  "acc": 90,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "PARALYZED",
+      "chance": 100
+    }
+  }
+}

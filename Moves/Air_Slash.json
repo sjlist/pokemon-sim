@@ -1,0 +1,23 @@
+{
+  "damage_type": "special",
+  "type": "FLYING",
+  "priority": 0,
+  "pp": 32,
+  "acc": 95,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 75,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "VOLATILE_STATUS",
+      "status": "FLINCH",
+      "chance": 30
+    }
+  }
+}
