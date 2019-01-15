@@ -3,6 +3,7 @@
 //
 
 #include "Effect.h"
+#include "Type.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <map>
@@ -17,6 +18,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"FIELD_CHANGE", MOVE_EFFECTS::FIELD_CHANGE},
         {"RECOIL", MOVE_EFFECTS::RECOIL},
         {"HEAL", MOVE_EFFECTS::HEAL},
+        {"REMOVE_TYPE", MOVE_EFFECTS::REMOVE_TYPE},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -79,6 +81,11 @@ float Effect::get_heal_percent()
     return Effect::heal_percent;
 }
 
+PokeTypes Effect::get_type_removed()
+{
+    return Effect::type_removed;
+}
+
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
@@ -110,6 +117,9 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             break;
         case MOVE_EFFECTS::HEAL:
             Effect::heal_percent = effect_tree.get<int>("heal_percent") / 100.0;
+            break;
+        case MOVE_EFFECTS::REMOVE_TYPE:
+            Effect::type_removed = string_to_type(effect_tree.get<std::string>("type_removed"));
             break;
         case MOVE_EFFECTS::SWAP:
         case MOVE_EFFECTS::FLINCH:

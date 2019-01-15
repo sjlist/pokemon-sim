@@ -1,6 +1,6 @@
 {
   "damage_type": "status",
-  "type": "ROCK",
+  "type": "POISON",
   "priority": 0,
   "pp": 32,
   "acc": -1,
@@ -11,7 +11,7 @@
     "effect0":
     {
       "effect": "FIELD_CHANGE",
-      "field_object": "STEALTH_ROCKS"
+      "field_object": "TOXIC_SPIKES"
     }
   }
 }

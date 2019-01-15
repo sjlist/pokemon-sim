@@ -1,6 +1,6 @@
 {
   "damage_type": "status",
-  "type": "NORMAL",
+  "type": "FLYING",
   "priority": 0,
   "pp": 16,
   "acc": -1,
@@ -12,6 +12,11 @@
     {
       "effect": "HEAL",
       "heal_percent": 50
+    },
+    "effect1":
+    {
+      "effect": "REMOVE_TYPE",
+      "type_removed": "FLYING"
     }
   }
 }

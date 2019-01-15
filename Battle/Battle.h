@@ -55,6 +55,7 @@ public:
 
     Attack_Result attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move);
     bool handle_end_turn_field_status();
+    void reset_field_types();
 
     bool has_lost(Players player);
     void print_battle(bool detailed=false);

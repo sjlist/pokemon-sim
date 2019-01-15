@@ -100,7 +100,7 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
 {
     Players player = get_player_from_position(pos);
     float hp = Field::active_pokes[pos].get_stat(STAT::HP), damage;
-    if(Field::spikes[player] > 0)
+    if(Field::spikes[player] > 0 && Field::active_pokes[pos].is_grounded())
     {
         damage = 1.0 / (10 - (2 * Field::spikes[player])) * hp;
         std::cout << Field::active_pokes[pos].get_species() << " is taking damage from spikes\n";
@@ -108,15 +108,23 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
             return false;
     }
 
-    if(Field::toxic_spikes[player] == 1)
+    if(Field::toxic_spikes[player] >= 1 && Field::active_pokes[pos].is_grounded())
     {
-        std::cout << Field::active_pokes[pos].get_species() << " was poisoned by toxic spikes\n";
-        Field::active_pokes[pos].set_status(STATUS::POISONED);
-    }
-
-    if(Field::toxic_spikes[player] > 1)
-    {
-        Field::active_pokes[pos].set_status(STATUS::BADLY_POISONED);
+        if(Field::active_pokes[pos].get_type()[0] == PokeTypes::POISON || Field::active_pokes[pos].get_type()[1] == PokeTypes::POISON)
+        {
+            std::cout << Field::active_pokes[pos].get_species() << " asorbed the toxic spikes\n";
+            Field::toxic_spikes[player] = 0;
+        }
+        else if(Field::toxic_spikes[player] > 1)
+        {
+            std::cout << Field::active_pokes[pos].get_species() << " was badly poisoned by toxic spikes\n";
+            Field::active_pokes[pos].set_status(STATUS::BADLY_POISONED);
+        }
+        else
+        {
+            std::cout << Field::active_pokes[pos].get_species() << " was poisoned by toxic spikes\n";
+            Field::active_pokes[pos].set_status(STATUS::POISONED);
+        }
     }
 
     if(Field::stealth_rocks[player])
@@ -127,7 +135,7 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
             return false;
     }
 
-    if(Field::sticky_web[player])
+    if(Field::sticky_web[player] && Field::active_pokes[pos].is_grounded())
     {
         Field::active_pokes[pos].stat_change(STAT::SPE, -1);
     }

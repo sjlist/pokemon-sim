@@ -90,7 +90,7 @@ int Pokemon::get_level()
 
 PokeTypes* Pokemon::get_type()
 {
-    return Pokemon::type;
+    return Pokemon::current_type;
 }
 
 std::string Pokemon::get_species()
@@ -111,6 +111,14 @@ bool Pokemon::is_alive()
 float Pokemon::get_current_hp()
 {
     return Pokemon::current_hp;
+}
+
+bool Pokemon::is_grounded()
+{
+    if(Pokemon::current_type[0] == PokeTypes::FLYING || Pokemon::current_type[1] == PokeTypes::FLYING)
+        return false;
+
+    return true;
 }
 
 // STATE CHANGE FUNCTIONS
@@ -216,6 +224,11 @@ void Pokemon::increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
     Pokemon::v_status_turns[v_status]++;
 }
 
+void Pokemon::remove_type(int type_num)
+{
+    Pokemon::current_type[type_num] = PokeTypes::NO_TYPE;
+}
+
 //CLEARING FUNCTIONS
 
 void Pokemon::clear_stat_mods()
@@ -237,6 +250,12 @@ void Pokemon::clear_volatile_statuses()
 void Pokemon::clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
 {
     Pokemon::v_status_turns[v_status] = 0;
+}
+
+void Pokemon::reset_types()
+{
+    Pokemon::current_type[0] = Pokemon::type[0];
+    Pokemon::current_type[1] = Pokemon::type[1];
 }
 //
 
@@ -361,6 +380,9 @@ int* Pokemon::load_species(std::string species_name)
     root_child = root.get_child("TYPES");
     Pokemon::type[0] = string_to_type(root_child.get<std::string>("TYPE0"));
     Pokemon::type[1] = string_to_type(root_child.get<std::string>("TYPE1"));
+
+    Pokemon::current_type[0] = Pokemon::type[0];
+    Pokemon::current_type[1] = Pokemon::type[1];
     return base_ptr;
 }
 
