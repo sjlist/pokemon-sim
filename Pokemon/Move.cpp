@@ -7,6 +7,7 @@
 #include "fileIO/loadJSON.h"
 #include "Type.h"
 #include "Battle/Targeting.h"
+#include "Utils/Logging.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <algorithm>
@@ -108,7 +109,7 @@ void Move::load_move(std::string move_name)
     try
     {
         move_tree = load_json_file("Moves/" + move_name + ".json");
-        std::cout << "read move " << move_name << "\n";
+        DEBUG_MSG("read move " << move_name << "\n");
     }
     catch(...)
     {
@@ -153,12 +154,12 @@ void Move::load_move(std::string move_name)
 //Printing moves
 void Move::print_move()
 {
-    std::cout << "Name: " << Move::name << "\n";
-    std::cout << "Damage Type: " << Move::damage_type << "\n";
-    std::cout << "Type: " << Move::type << "\n";
-    std::cout << "Power: " << Move::power << "\n";
-    std::cout << "Acc: " << Move::acc << "\n";
-    std::cout << "PP: " << Move::current_pp << "/" << Move::max_pp << "\n";
-    std::cout << "Priority: " << Move::priority << "\n";
-    std::cout << "Crit chance: " << Move::crit_chance << "\n";
+    DEBUG_MSG("Name: " << Move::name << "\n");
+    DEBUG_MSG("Damage Type: " << Move::damage_type << "\n");
+    DEBUG_MSG("Type: " << Move::type << "\n");
+    DEBUG_MSG("Power: " << Move::power << "\n");
+    DEBUG_MSG("Acc: " << Move::acc << "\n");
+    DEBUG_MSG("PP: " << Move::current_pp << "/" << Move::max_pp << "\n");
+    DEBUG_MSG("Priority: " << Move::priority << "\n");
+    DEBUG_MSG("Crit chance: " << Move::crit_chance << "\n");
 }
