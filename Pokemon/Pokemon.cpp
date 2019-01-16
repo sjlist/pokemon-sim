@@ -307,18 +307,11 @@ void Pokemon::reset()
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
-
-    int* b = Pokemon::load_species(poke_ptree.get<std::string>("species"));
-    int base [6];
-
-    for(int i = 0; i < STAT::NUM_STATS; i++)
-        base[i] = *(b + i);
-
-
     int evs [6], ivs [6];
     auto ev_ptr = evs;
     auto iv_ptr = ivs;
 
+    Pokemon::load_species(poke_ptree.get<std::string>("species"));
     Pokemon::level = poke_ptree.get<int>("level", 0);
 
     boost::property_tree::ptree evs_ptree = poke_ptree.get_child("evs");
@@ -330,7 +323,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
         ivs[i] = ivs_ptree.get(std::to_string(i), 0);
     }
 
-    Pokemon::set_stats(base, iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<std::string>("nature")));
+    Pokemon::set_stats(iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<std::string>("nature")));
 
     boost::property_tree::ptree moves_ptree = poke_ptree.get_child("moves");
 
@@ -351,11 +344,10 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::volatile_status = 0;
 }
 
-int* Pokemon::load_species(std::string species_name)
+void Pokemon::load_species(std::string species_name)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree root_child;
-    int base_stats [6];
     auto base_ptr = base_stats;
 
     try
@@ -368,12 +360,12 @@ int* Pokemon::load_species(std::string species_name)
         assert(0);
     }
 
-    base_stats[STAT::HP]  = root.get<int>("HP", 0);
-    base_stats[STAT::ATK] = root.get<int>("ATK", 0);
-    base_stats[STAT::DEF] = root.get<int>("DEF", 0);
-    base_stats[STAT::SPA] = root.get<int>("SPA", 0);
-    base_stats[STAT::SPD] = root.get<int>("SPD", 0);
-    base_stats[STAT::SPE] = root.get<int>("SPE", 0);
+    Pokemon::base_stats[STAT::HP]  = root.get<int>("HP", 0);
+    Pokemon::base_stats[STAT::ATK] = root.get<int>("ATK", 0);
+    Pokemon::base_stats[STAT::DEF] = root.get<int>("DEF", 0);
+    Pokemon::base_stats[STAT::SPA] = root.get<int>("SPA", 0);
+    Pokemon::base_stats[STAT::SPD] = root.get<int>("SPD", 0);
+    Pokemon::base_stats[STAT::SPE] = root.get<int>("SPE", 0);
 
     Pokemon::species = species_name;
 
@@ -383,7 +375,6 @@ int* Pokemon::load_species(std::string species_name)
 
     Pokemon::current_type[0] = Pokemon::type[0];
     Pokemon::current_type[1] = Pokemon::type[1];
-    return base_ptr;
 }
 
 float Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
@@ -396,7 +387,7 @@ float Pokemon::calculate_stat_single(int level, int base, int ev, int iv, float 
     return (int)((std::floor(std::floor((float)((float)ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod);
 }
 
-void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature)
+void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
 {
     float nature_mod;
     for(int i = STAT::HP; i < STAT::NUM_STATS; i++)
@@ -404,7 +395,7 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
         switch(i)
         {
             case STAT::HP:
-                Pokemon::base_stats[i] = calculate_hp(level, base[i], evs[i], ivs[i]);
+                Pokemon::base_stats[i] = calculate_hp(level, Pokemon::base_stats[i], evs[i], ivs[i]);
                 Pokemon::current_hp = Pokemon::base_stats[i];
                 break;;
             case STAT::ATK:
@@ -413,7 +404,7 @@ void Pokemon::set_stats(int* base, int* ivs, int* evs, int level, Natures nature
             case STAT::SPD:
             case STAT::SPE:
                 nature_mod = get_nature_mod(nature, (STAT)i);
-                Pokemon::base_stats[i] = calculate_stat_single(level, base[i], evs[i], ivs[i], nature_mod);
+                Pokemon::base_stats[i] = calculate_stat_single(level, Pokemon::base_stats[i], evs[i], ivs[i], nature_mod);
                 break;;
             case STAT::ACC:
             case STAT::EVA:

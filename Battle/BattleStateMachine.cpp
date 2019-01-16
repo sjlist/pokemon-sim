@@ -78,7 +78,6 @@ int BattleStateMachine::run(BattleState state)
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
                 if(BattleStateMachine::turn_count == 17)
-
                     std::cout << "HERERE\n";
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)

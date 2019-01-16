@@ -52,7 +52,6 @@ public:
 
     void reset();
     void load_pokemon(boost::property_tree::ptree poke_ptree);
-    void set_stats(int* base_stats, int* ivs, int* evs, int level, Natures nature);
     Move moves[4];
 private:
     bool alive;
@@ -72,7 +71,8 @@ private:
     int volatile_status;
     int v_status_turns [NUM_VOLATILE_STATUS];
 
-    int* load_species(std::string species_name);
+    void load_species(std::string species_name);
+    void set_stats(int* ivs, int* evs, int level, Natures nature);
     float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
     float calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
 };
