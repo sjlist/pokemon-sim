@@ -245,6 +245,8 @@ void Pokemon::clear_volatile_status(VOLATILE_STATUS v_status)
 void Pokemon::clear_volatile_statuses()
 {
     Pokemon::volatile_status = 0;
+    for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
+        Pokemon::v_status_turns[i] = 0;
 }
 
 void Pokemon::clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
@@ -303,6 +305,8 @@ void Pokemon::reset()
         else
             Pokemon::moves[i].reset();
     }
+    for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
+        Pokemon::v_status_turns[i] = 0;
 }
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)

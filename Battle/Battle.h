@@ -88,8 +88,6 @@ private:
 
     Party Parties [2];
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
-    Move struggle;
-    int status_turns [NUM_VOLATILE_STATUS]; //TODO: WRONG should be handled by the pokemon
 };
 
 

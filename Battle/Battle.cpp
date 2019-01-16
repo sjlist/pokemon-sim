@@ -271,6 +271,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                     std::cout << "P" << get_player_from_position(effect_target) + 1 << "'s "
                               << Battle::active_field.active_pokes[effect_target].get_species()
                               << " is now " << v_status_to_string(move_effect.get_volatile_status_effect()) << "\n";
+
                 }
                 return Attack_Result::HIT;
             }
@@ -540,12 +541,24 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
 
             return Attack_Result::HIT;
         case VOLATILE_STATUS::TAUNTED:
-            if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
+            if(Battle::active_field.active_pokes[pos].get_v_status_turns(NUM_TAUNTED) < 4)
             {
-                std::cout << Battle::active_field.active_pokes[pos].get_species() << " is taunted and can't use " << Battle::active_field.active_pokes[pos].moves[move_num].get_name() << std::endl;
-                return Attack_Result::NO_ATTACK;
+                Battle::active_field.active_pokes[pos].increment_v_status_turns(NUM_TAUNTED);
+                if(Battle::active_field.active_pokes[pos].moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
+                {
+                    std::cout << Battle::active_field.active_pokes[pos].get_species() << " is taunted and can't use " << Battle::active_field.active_pokes[pos].moves[move_num].get_name() << std::endl;
+                    return Attack_Result::NO_ATTACK;
+                }
+                return Attack_Result::HIT;
             }
-            return Attack_Result::HIT;
+            else if(Battle::active_field.active_pokes[pos].get_v_status_turns(NUM_TAUNTED) == 4)
+            {
+                std::cout << Battle::active_field.active_pokes[pos].get_species() << " is no longer taunted\n";
+                Battle::active_field.active_pokes[pos].clear_v_status_turns(NUM_TAUNTED);
+                Battle::active_field.active_pokes[pos].clear_volatile_status(VOLATILE_STATUS::TAUNTED);
+                return Attack_Result::HIT;
+            }
+            assert(0);
         case VOLATILE_STATUS::BOUND:
         case VOLATILE_STATUS::CANT_ESCAPE:
         case VOLATILE_STATUS::CURSE:
