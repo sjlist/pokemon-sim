@@ -44,7 +44,7 @@ int BattleStateMachine::run(BattleState state)
     Attack_Result atk_r;
     Players faint_player;
     int MAX_TURN_COUNT = 200;
-    int winner = 0, removed, count;
+    int winner = 0, removed;
 
     BattleStateMachine::turn_count = 0;
 
@@ -62,15 +62,18 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::BATTLE_START:
                 //get pokemon to send out
 
-                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-                {
-                    BattleStateMachine::battle.send_out(
-                            static_cast<FIELD_POSITION>(i),
-                            actor.choose_pokemon(
-                                    BattleStateMachine::battle.get_party(
-                                            get_player_from_position(i)
-                                            )));
-                }
+//                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+//                {
+//                    BattleStateMachine::battle.send_out(
+//                            static_cast<FIELD_POSITION>(i),
+//                            actor.choose_pokemon(
+//                                    BattleStateMachine::battle.get_party(
+//                                            get_player_from_position(i)
+//                                            )));
+//                }
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 3);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 4);
+
                 std::cout << "\n\n\n--------------BATTLE START--------------\n";
                 state = BattleState::TURN_START;
                 break;;
