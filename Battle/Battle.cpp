@@ -692,7 +692,7 @@ void Battle::load_teams(std::vector<std::string> team_names)
 std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team1";
+    teams[Players::PLAYER_ONE] = "team2";
     teams[Players::PLAYER_TWO] = "team2";
     return teams;
 }
@@ -706,19 +706,10 @@ void Battle::load_game_moves()
 void Battle::print_battle(bool detailed)
 {
     Battle::active_field.print_field(detailed);
-    if(detailed)
-    {
-        std::cout << "Player ONE party pokemon:\n";
-        for (int i = 0; i < 6; i++)
-        {
-            if (!Battle::Parties[PLAYER_ONE].party_pokes[i].is_active())
-                Battle::Parties[PLAYER_ONE].party_pokes[i].print_pokemon();
-        }
-        std::cout << "\nPlayer TWO party pokemon:\n";
-        for (int i = 0; i < 6; i++)
-        {
-            if (!Battle::Parties[PLAYER_TWO].party_pokes[i].is_active())
-                Battle::Parties[PLAYER_TWO].party_pokes[i].print_pokemon();
-        }
-    }
+
+    std::cout << "Player ONE party pokemon:\n";
+    Battle::Parties[Players::PLAYER_ONE].print_party(detailed);
+    std::cout << "\nPlayer TWO party pokemon:\n";
+    Battle::Parties[Players::PLAYER_TWO].print_party(detailed);
+    std::cout << std::endl;
 }

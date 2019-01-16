@@ -364,6 +364,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     }
     else
         assert(0);
+
     return prio_list;
 }
 

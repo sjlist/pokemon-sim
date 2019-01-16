@@ -11,7 +11,7 @@ class Party {
 public:
     Party();
     Pokemon party_pokes [6];
-
+    void print_party(bool detailed);
     void reset();
 };
 
