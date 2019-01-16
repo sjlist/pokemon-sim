@@ -25,10 +25,10 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Flamethrower",
-      "MOVE1": "Volt_Switch",
+      "MOVE0": "Shadow_Ball",
+      "MOVE1": "Sludge_Bomb",
       "MOVE2": "Will-o-Wisp",
-      "MOVE3": "Confusion"
+      "MOVE3": "Taunt"
     }
   },
   "1":
@@ -57,7 +57,7 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Taunt",
+      "MOVE0": "Fire_Fang",
       "MOVE1": "Earthquake",
       "MOVE2": "Dragon_Claw",
       "MOVE3": "Swords_Dance"
@@ -123,7 +123,7 @@
     {
       "MOVE0": "Rock_Slide",
       "MOVE1": "Earthquake",
-      "MOVE2": "Wing_Attack",
+      "MOVE2": "Taunt",
       "MOVE3": "Stealth_Rocks"
     }
   },

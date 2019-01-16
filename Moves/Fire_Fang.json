@@ -1,0 +1,28 @@
+{
+  "damage_type": "physical",
+  "type": "FIRE",
+  "priority": 0,
+  "pp": 24,
+  "acc": 95,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 65,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "BURNED",
+      "chance": 10
+    },
+    "effect1":
+    {
+      "effect": "FLINCH",
+      "chance": 10
+    }
+  }
+}

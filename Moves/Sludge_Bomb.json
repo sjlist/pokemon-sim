@@ -1,0 +1,14 @@
+{
+  "damage_type": "special",
+  "type": "POISON",
+  "priority": 0,
+  "pp": 16,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 90,
+    "crit_chance": 5
+  }
+}
