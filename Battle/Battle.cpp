@@ -292,6 +292,12 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::HEAL:
             Battle::active_field.active_pokes[def_pos].heal_damage(Battle::active_field.active_pokes[def_pos].get_stat(STAT::HP) * move_effect.get_heal_percent());
             break;
+        case MOVE_EFFECTS::REMOVE_TYPE:
+            if(Battle::active_field.active_pokes[def_pos].get_type()[0] == move_effect.get_type_removed())
+                Battle::active_field.active_pokes[def_pos].remove_type(0);
+            else if(Battle::active_field.active_pokes[def_pos].get_type()[1] == move_effect.get_type_removed())
+                Battle::active_field.active_pokes[def_pos].remove_type(1);
+            break;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
             assert(0);
@@ -335,6 +341,14 @@ void Battle::update_party(Players player)
             Battle::Parties[player].party_pokes[i] = Battle::active_field.active_pokes[player];
             return;
         }
+    }
+}
+
+void Battle::reset_field_types()
+{
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        Battle::active_field.active_pokes[i].reset_types();
     }
 }
 
@@ -593,6 +607,9 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
 
     if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker.get_status() == STATUS::BURNED)
         damage_modifier *= 0.5;
+
+    if(move.get_type() == PokeTypes::GROUND && !defender.is_grounded())
+        damage_modifier = 0;
 
     return damage_modifier;
 }

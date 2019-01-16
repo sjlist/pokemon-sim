@@ -4,8 +4,8 @@
   "priority": 0,
   "pp": 32,
   "acc": -1,
-  "targeting": "SELF",
-  "num_targets": -1,
+  "targeting": "ALL_ENEMY",
+  "num_targets": 1,
   "effects":
   {
     "effect0":

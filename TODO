@@ -1,2 +1,3 @@
 Pass a pointer to random num gen and not the seed
 GROUNDED
+Make loading pokemon use the stats array instead of creating a new one and passing the pointer

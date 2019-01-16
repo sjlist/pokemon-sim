@@ -27,6 +27,7 @@ public:
     bool is_active();
     std::string get_species();
     bool is_alive();
+    bool is_grounded();
 
     bool use_move(int move_number);
     void set_active(bool state);
@@ -37,7 +38,9 @@ public:
     void stat_change(STAT stat, int stages);
     void faint_poke();
     void increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
+    void remove_type(int type_num);
 
+    void reset_types();
     void clear_stat_mods();
     void clear_volatile_status(VOLATILE_STATUS v_status);
     void clear_volatile_statuses();
@@ -56,6 +59,7 @@ private:
     bool active;
     int level;
     PokeTypes type[2];
+    PokeTypes current_type[2];
     float current_hp;
     std::string name;
     float base_stats [STAT::NUM_STATS];

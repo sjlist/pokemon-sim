@@ -268,6 +268,8 @@ int BattleStateMachine::run(BattleState state)
                         }
                     }
                 }
+                BattleStateMachine::battle.reset_field_types();
+
                 if(BattleStateMachine::battle_over())
                     state = BattleState::BATTLE_END;
 

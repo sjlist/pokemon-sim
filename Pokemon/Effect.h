@@ -8,6 +8,7 @@
 #include <string>
 #include "Status.h"
 #include "Stats.h"
+#include "Type.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <Battle/Field_Objects.h>
@@ -26,6 +27,7 @@ enum MOVE_EFFECTS
     FIELD_CHANGE,
     RECOIL,
     HEAL,
+    REMOVE_TYPE,
     NUM_MOVE_EFFECTS
 };
 
@@ -50,6 +52,8 @@ public:
     float get_percent_recoil();
 
     float get_heal_percent();
+
+    PokeTypes get_type_removed();
 private:
     MOVE_EFFECTS effect_type;
     float effect_chance;
@@ -68,6 +72,8 @@ private:
     float percent_recoil;
 
     float heal_percent;
+
+    PokeTypes type_removed;
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);
