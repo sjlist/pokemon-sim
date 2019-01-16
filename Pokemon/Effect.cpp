@@ -36,6 +36,11 @@ MOVE_EFFECTS Effect::get_effect()
     return Effect::effect_type;
 }
 
+bool Effect::does_target_self()
+{
+    return Effect::target_self;
+}
+
 STATUS Effect::get_effect_status_type()
 {
     return Effect::status_effect;
@@ -90,6 +95,12 @@ PokeTypes Effect::get_type_removed()
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
     Effect::effect_type = string_to_move_effect(effect_tree.get<std::string>("effect"));
+
+    if(effect_tree.count("target"))
+        Effect::target_self = (effect_tree.get<std::string>("target") == "SELF");
+    else
+        Effect::target_self = false;
+
 
     if(effect_tree.count("chance"))
         Effect::effect_chance = (float)effect_tree.get<int>("chance") / 100;

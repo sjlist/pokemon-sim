@@ -238,6 +238,12 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move 
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage)
 {
+    FIELD_POSITION effect_target;
+    if(move_effect.does_target_self())
+        effect_target = atk_pos;
+    else
+        effect_target = def_pos;
+
     switch(move_effect.get_effect())
     {
         case MOVE_EFFECTS::SWAP:
@@ -251,52 +257,52 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
-                if(Battle::active_field.active_pokes[def_pos].set_status(move_effect.get_effect_status_type()))
-                    std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
-                              << Battle::active_field.active_pokes[def_pos].get_species()
+                if(Battle::active_field.active_pokes[effect_target].set_status(move_effect.get_effect_status_type()))
+                    std::cout << "P" << get_player_from_position(effect_target) + 1 << "'s "
+                              << Battle::active_field.active_pokes[effect_target].get_species()
                               << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n";
             }
             return Attack_Result::HIT;
         case MOVE_EFFECTS::VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
-                if(Battle::active_field.active_pokes[def_pos].set_volatile_status(move_effect.get_volatile_status_effect()))
+                if(Battle::active_field.active_pokes[effect_target].set_volatile_status(move_effect.get_volatile_status_effect()))
                 {
-                    std::cout << "P" << get_player_from_position(def_pos) + 1 << "'s "
-                              << Battle::active_field.active_pokes[def_pos].get_species()
+                    std::cout << "P" << get_player_from_position(effect_target) + 1 << "'s "
+                              << Battle::active_field.active_pokes[effect_target].get_species()
                               << " is now " << v_status_to_string(move_effect.get_volatile_status_effect()) << "\n";
                 }
                 return Attack_Result::HIT;
             }
             return Attack_Result::HIT;
         case MOVE_EFFECTS::STAT_CHANGE:
-            Battle::active_field.active_pokes[atk_pos].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
+            Battle::active_field.active_pokes[effect_target].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
             return Attack_Result::HIT;
         case MOVE_EFFECTS::FIELD_CHANGE:
-            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), def_pos, atk_pos);
+            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), effect_target, effect_target);
             break;
         case MOVE_EFFECTS::RECOIL:
-            std::cout << "P" << get_player_from_position(atk_pos) + 1 << "'s "
-                      << Battle::active_field.active_pokes[atk_pos].get_species() << " was hurt by recoil\n";
+            std::cout << "P" << get_player_from_position(effect_target) + 1 << "'s "
+                      << Battle::active_field.active_pokes[effect_target].get_species() << " was hurt by recoil\n";
             if(move_effect.get_use_damage())
-                Battle::active_field.active_pokes[atk_pos].deal_damage(damage * move_effect.get_percent_recoil());
+                Battle::active_field.active_pokes[effect_target].deal_damage(damage * move_effect.get_percent_recoil());
             else
-                Battle::active_field.active_pokes[atk_pos].deal_damage(Battle::active_field.active_pokes[atk_pos].get_stat(STAT::HP)
+                Battle::active_field.active_pokes[effect_target].deal_damage(Battle::active_field.active_pokes[effect_target].get_stat(STAT::HP)
                                                                      * move_effect.get_percent_recoil());
-            if(!Battle::active_field.active_pokes[atk_pos].get_current_hp())
+            if(!Battle::active_field.active_pokes[effect_target].get_current_hp())
             {
-                Battle::handle_faint(atk_pos);
+                Battle::handle_faint(effect_target);
                 return Attack_Result::FAINT;
             }
             return Attack_Result::HIT;
         case MOVE_EFFECTS::HEAL:
-            Battle::active_field.active_pokes[def_pos].heal_damage(Battle::active_field.active_pokes[def_pos].get_stat(STAT::HP) * move_effect.get_heal_percent());
+            Battle::active_field.active_pokes[effect_target].heal_damage(Battle::active_field.active_pokes[effect_target].get_stat(STAT::HP) * move_effect.get_heal_percent());
             break;
         case MOVE_EFFECTS::REMOVE_TYPE:
-            if(Battle::active_field.active_pokes[def_pos].get_type()[0] == move_effect.get_type_removed())
-                Battle::active_field.active_pokes[def_pos].remove_type(0);
-            else if(Battle::active_field.active_pokes[def_pos].get_type()[1] == move_effect.get_type_removed())
-                Battle::active_field.active_pokes[def_pos].remove_type(1);
+            if(Battle::active_field.active_pokes[effect_target].get_type()[0] == move_effect.get_type_removed())
+                Battle::active_field.active_pokes[effect_target].remove_type(0);
+            else if(Battle::active_field.active_pokes[effect_target].get_type()[1] == move_effect.get_type_removed())
+                Battle::active_field.active_pokes[effect_target].remove_type(1);
             break;
         default:
             std::cout << "Unhandled move effect " << move_effect.get_effect() << "\n";
@@ -674,7 +680,7 @@ std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
     teams[Players::PLAYER_ONE] = "team1";
-    teams[Players::PLAYER_TWO] = "team1";
+    teams[Players::PLAYER_TWO] = "team2";
     return teams;
 }
 

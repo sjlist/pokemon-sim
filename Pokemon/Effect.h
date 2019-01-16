@@ -9,6 +9,7 @@
 #include "Status.h"
 #include "Stats.h"
 #include "Type.h"
+#include "Battle/Field_Positions.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <Battle/Field_Objects.h>
@@ -38,6 +39,7 @@ public:
 
     MOVE_EFFECTS get_effect();
     float get_effect_chance();
+    bool does_target_self();
 
     VOLATILE_STATUS get_volatile_status_effect();
 
@@ -57,6 +59,7 @@ public:
 private:
     MOVE_EFFECTS effect_type;
     float effect_chance;
+    bool target_self;
 
     //Effect specific attributes
     STATUS status_effect;
