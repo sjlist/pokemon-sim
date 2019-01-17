@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Party.h"
 #include "Pokemon/Pokemon.h"
+#include "Utils/Logging.h"
 
 Party::Party() = default;
 
@@ -26,10 +27,10 @@ void Party::print_party(bool detailed)
             Party::party_pokes[i].print_pokemon(detailed);
         else if(!Party::party_pokes[i].is_active())
         {
-            std::cout << Party::party_pokes[i].get_species() << ": " <<
+            DEBUG_MSG(Party::party_pokes[i].get_species() << ": " <<
                       round(Party::party_pokes[i].get_current_hp() / Party::party_pokes[i].get_stat(STAT::HP) *
-                            100 * 10) / 10 << "%\n";
+                            100 * 10) / 10 << "%\n");
         }
         else
-            std::cout << Party::party_pokes[i].get_species() << ": ACTIVE\n";
+            DEBUG_MSG(Party::party_pokes[i].get_species() << ": ACTIVE\n");
 }
