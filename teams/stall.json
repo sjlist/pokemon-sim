@@ -57,10 +57,10 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Fire_Fang",
+      "MOVE0": "Roar",
       "MOVE1": "Earthquake",
-      "MOVE2": "Dragon_Claw",
-      "MOVE3": "Swords_Dance"
+      "MOVE2": "Rest",
+      "MOVE3": "Thunder_Wave"
     }
   },
   "2":
@@ -123,7 +123,7 @@
     {
       "MOVE0": "Roost",
       "MOVE1": "Earthquake",
-      "MOVE2": "Taunt",
+      "MOVE2": "Roar",
       "MOVE3": "Stealth_Rocks"
     }
   },

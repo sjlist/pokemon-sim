@@ -68,7 +68,10 @@ int Move::get_priority()
 
 Effect Move::get_move_effect(int effect_num)
 {
-    return Move::move_effects[effect_num];
+    if(effect_num == -1)
+        return Move::move_effects.back();
+    else
+        return Move::move_effects[effect_num];
 }
 
 TARGETS Move::get_move_targets()

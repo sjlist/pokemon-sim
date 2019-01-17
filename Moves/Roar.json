@@ -1,0 +1,16 @@
+{
+  "damage_type": "status",
+  "type": "NORMAL",
+  "priority": -6,
+  "pp": 32,
+  "acc": -1,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "SWAP"
+    }
+  }
+}
