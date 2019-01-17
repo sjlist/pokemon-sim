@@ -1,0 +1,13 @@
+{
+  "HP":70,
+  "ATK": 110,
+  "DEF": 180,
+  "SPA": 60,
+  "SPD": 60,
+  "SPE": 50,
+  "TYPES":
+  {
+    "TYPE0" : "STEEL",
+    "TYPE1" : "ROCK"
+  }
+}
