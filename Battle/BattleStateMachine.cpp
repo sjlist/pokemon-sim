@@ -83,7 +83,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 3)
+                if(BattleStateMachine::turn_count == 20)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
@@ -127,8 +127,14 @@ int BattleStateMachine::run(BattleState state)
                     switch(atk_r)
                     {
                         case Attack_Result::SWAP:
-                            if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
+                            if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
+                                //if attacking and trying to swap an opponent, both the attacker and defender must be alive to execute the swap
+                                if((!BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive()
+                                 || !BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                 && !BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(-1).does_target_self())
+                                    goto swap_end;
+
                                 if(BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(0).does_target_self())
                                 {
                                     swap_pos = prio.at(i);
@@ -180,7 +186,15 @@ int BattleStateMachine::run(BattleState state)
                                 if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                                     break;;
 
-                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                removed = BattleStateMachine::moves_later(swap_pos, i, prio);
+                                if (removed != -1)
+                                    prio = BattleStateMachine::remove_priority_list(removed, prio);
+
+                                swap_end:;
+
+                                // If both the attacker and defender are alive, no need to handle faints
+                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive()
+                                 && BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive())
                                     break;;
                             }
 
@@ -191,12 +205,12 @@ int BattleStateMachine::run(BattleState state)
                                 if(!BattleStateMachine::battle.active_field.active_pokes[p].is_alive())
                                     faint_player = get_player_from_position(static_cast<FIELD_POSITION>(p));
                                 else
-                                    continue;
+                                    goto faint_end;
 
                                 // lose if no pokes left
                                 if (battle.has_lost(faint_player)) {
                                     state = BattleState::BATTLE_END;
-                                    continue;
+                                    goto faint_end;
                                 }
 
                                 // remove next action in turn if there is one left. use no_player
@@ -219,7 +233,7 @@ int BattleStateMachine::run(BattleState state)
 
                                     }
 
-                                contin:;
+                                faint_end:;
                             }
                             if(BattleStateMachine::battle_over())
                                 return BattleStateMachine::end_battle();
@@ -384,6 +398,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     return prio_list;
 }
 
+// Does th epokemon at pos move later than the current action. If not return, otherwise return the index in the priority list pos takes its action
 int BattleStateMachine::moves_later(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
 {
     for(int j = (current_action + 1); j < BattleStateMachine::num_players; j++)

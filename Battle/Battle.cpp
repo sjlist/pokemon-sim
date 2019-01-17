@@ -693,8 +693,8 @@ void Battle::load_teams(std::vector<std::string> team_names)
 std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team2";
-    teams[Players::PLAYER_TWO] = "team2";
+    teams[Players::PLAYER_ONE] = "stall";
+    teams[Players::PLAYER_TWO] = "stall";
     return teams;
 }
 
