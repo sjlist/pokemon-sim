@@ -5,6 +5,7 @@
 #include "Players.h"
 #include "Field.h"
 #include <iostream>
+#include <Utils/Logging.h>
 
 Field::Field()
 {
@@ -31,15 +32,15 @@ void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_PO
     switch(obj)
     {
         case Field_Objects::STEALTH_ROCKS:
-            std::cout << "Rocks are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            DEBUG_MSG("Rocks are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::stealth_rocks[get_player_from_position(def_pos)] = true;
             break;
         case Field_Objects::STICKY_WEB:
-            std::cout << "Sticky web is scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            DEBUG_MSG("Sticky web is scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::sticky_web[get_player_from_position(def_pos)] = true;
             break;
         case Field_Objects::SPIKES:
-            std::cout << "Spikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            DEBUG_MSG("Spikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::spikes[get_player_from_position(def_pos)] += 1;
 
             if(Field::spikes[get_player_from_position(def_pos)] > 3)
@@ -47,7 +48,7 @@ void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_PO
 
             break;
         case Field_Objects::TOXIC_SPIKES:
-            std::cout << "Toxic pikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n";
+            DEBUG_MSG("Toxic pikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::toxic_spikes[get_player_from_position(def_pos)] += 1;
             break;
         case Field_Objects::LEECH_SEED:
@@ -55,15 +56,15 @@ void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_PO
             && Field::active_pokes[def_pos].get_type()[1] != PokeTypes::GRASS
             && Field::leech_seed_positions[def_pos] == FIELD_POSITION::NO_POSITION)
             {
-                std::cout << Field::active_pokes[def_pos].get_species() << " is now seeded\n";
+                DEBUG_MSG(Field::active_pokes[def_pos].get_species() << " is now seeded\n");
                 Field::leech_seed_positions[def_pos] = atk_pos;
             } else
             {
-                std::cout << "Leech seed failed\n";
+                DEBUG_MSG("Leech seed failed\n");
             }
             break;
         case Field_Objects::CLEAR:
-            std::cout << "Clearing Field Objects\n";
+            DEBUG_MSG("Clearing Field Objects\n");
             Field::reset_field_obj();
             break;
         case Field_Objects::WEATHER:
@@ -103,7 +104,7 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
     if(Field::spikes[player] > 0 && Field::active_pokes[pos].is_grounded())
     {
         damage = 1.0 / (10 - (2 * Field::spikes[player])) * hp;
-        std::cout << Field::active_pokes[pos].get_species() << " is taking damage from spikes\n";
+        DEBUG_MSG(Field::active_pokes[pos].get_species() << " is taking damage from spikes\n");
         if(!Field::active_pokes[pos].deal_damage(damage))
             return false;
     }
@@ -112,17 +113,17 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
     {
         if(Field::active_pokes[pos].get_type()[0] == PokeTypes::POISON || Field::active_pokes[pos].get_type()[1] == PokeTypes::POISON)
         {
-            std::cout << Field::active_pokes[pos].get_species() << " asorbed the toxic spikes\n";
+            DEBUG_MSG(Field::active_pokes[pos].get_species() << " absorbed the toxic spikes\n");
             Field::toxic_spikes[player] = 0;
         }
         else if(Field::toxic_spikes[player] > 1)
         {
-            std::cout << Field::active_pokes[pos].get_species() << " was badly poisoned by toxic spikes\n";
+            DEBUG_MSG(Field::active_pokes[pos].get_species() << " was badly poisoned by toxic spikes\n");
             Field::active_pokes[pos].set_status(STATUS::BADLY_POISONED);
         }
         else
         {
-            std::cout << Field::active_pokes[pos].get_species() << " was poisoned by toxic spikes\n";
+            DEBUG_MSG(Field::active_pokes[pos].get_species() << " was poisoned by toxic spikes\n");
             Field::active_pokes[pos].set_status(STATUS::POISONED);
         }
     }
@@ -130,7 +131,7 @@ bool Field::handle_hazard_entrance(FIELD_POSITION pos)
     if(Field::stealth_rocks[player])
     {
         damage = 0.125 * hp * calculate_type_damage_modifier(Field::active_pokes[pos].get_type(), PokeTypes::ROCK);
-        std::cout << Field::active_pokes[pos].get_species() << " is taking damage from stealth rocks\n";
+        DEBUG_MSG(Field::active_pokes[pos].get_species() << " is taking damage from stealth rocks\n");
         if(!Field::active_pokes[pos].deal_damage(damage))
             return false;
     }
@@ -174,42 +175,44 @@ void Field::reset_field_obj()
 
 void Field::print_field(bool detailed)
 {
-    std::cout << "ACTIVE POKEMON: " << "\nPLAYER ONE\n";
+#ifdef DEBUG
+    DEBUG_MSG("ACTIVE POKEMON: " << "\nPLAYER ONE\n");
     if(Field::active_pokes[Players::PLAYER_ONE].is_active())
         Field::active_pokes[Players::PLAYER_ONE].print_pokemon(detailed);
     else
-        std::cout << "NONE\n";
+        DEBUG_MSG("NONE\n");
 
-    std::cout << "\nPLAYER TWO\n";
+    DEBUG_MSG("\nPLAYER TWO\n");
     if(Field::active_pokes[Players::PLAYER_TWO].is_active())
         Field::active_pokes[Players::PLAYER_TWO].print_pokemon(detailed);
     else
-        std::cout << "NONE\n";
+        DEBUG_MSG("NONE\n");
 
     if(detailed)
     {
-        std::cout << "FIELD STATE P1:\n";
+        DEBUG_MSG("FIELD STATE P1:\n");
         if(Field::spikes[Players::PLAYER_ONE] > 0)
-            std::cout << Field::spikes[Players::PLAYER_ONE] << " layers of spikes\n";
+            DEBUG_MSG(Field::spikes[Players::PLAYER_ONE] << " layers of spikes\n");
         if(Field::toxic_spikes[Players::PLAYER_ONE])
-            std::cout << "Toxic spikes\n";
+            DEBUG_MSG("Toxic spikes\n");
         if(Field::stealth_rocks[Players::PLAYER_ONE])
-            std::cout << "Stealth rocks\n";
-        std::cout << "FIELD STATE P2:\n";
+            DEBUG_MSG("Stealth rocks\n");
+        DEBUG_MSG("FIELD STATE P2:\n");
         if(Field::spikes[Players::PLAYER_TWO] > 0)
-            std::cout << Field::spikes[Players::PLAYER_TWO] << " layers of spikes\n";
+            DEBUG_MSG(Field::spikes[Players::PLAYER_TWO] << " layers of spikes\n");
         if(Field::toxic_spikes[Players::PLAYER_TWO])
-            std::cout << "Toxic spikes\n";
+            DEBUG_MSG("Toxic spikes\n");
         if(Field::stealth_rocks[Players::PLAYER_TWO])
-            std::cout << "Stealth rocks\n";
+            DEBUG_MSG("Stealth rocks\n");
         if(Field::trick_room)
-            std::cout << "Trick room active\n";
+            DEBUG_MSG("Trick room active\n");
         if(Field::terrain != Terrain::NO_TERRAIN)
-            std::cout << Field::terrain << " terrain is active\n";
+            DEBUG_MSG(Field::terrain << " terrain is active\n");
         if(Field::weather_state != Weather::CLEAR_SKIES)
-            std::cout << Field::terrain << " weather is active\n";
+            DEBUG_MSG(Field::terrain << " weather is active\n");
     }
-    std::cout << "\n";
+    DEBUG_MSG("\n");
+#endif
 }
 
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
@@ -217,7 +220,7 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
     if(Field::leech_seed_positions[pos] != FIELD_POSITION::NO_POSITION && Field::active_pokes[Field::leech_seed_positions[pos]].is_alive())
     {
         int damage = Field::active_pokes[pos].get_stat(STAT::HP) / 8.0;
-        std::cout << Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << " sapped some life from " << Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << std::endl;
+        DEBUG_MSG(Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << " sapped some life from " << Field::active_pokes[Field::leech_seed_positions[pos]].get_species() << std::endl);
         Field::active_pokes[Field::leech_seed_positions[pos]].heal_damage(damage);
         return Field::active_pokes[pos].deal_damage(damage);
     }

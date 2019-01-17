@@ -3,6 +3,9 @@ project(pokemon_sim)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -O0")
+
 include_directories(.
         ../libs/boost)
 
@@ -41,6 +44,8 @@ add_executable(pokemon_sim
         Pokemon/Status.cpp
         Pokemon/Status.h
         Pokemon/Type.cpp
-        Pokemon/Type.h)
+        Pokemon/Type.h
+        Utils/Logging.h)
+
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

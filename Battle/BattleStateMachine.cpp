@@ -11,6 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <random>
+#include <Utils/Logging.h>
 
 #define DEBUGGING
 
@@ -18,7 +19,7 @@ BattleStateMachine::BattleStateMachine()
 {
     std::random_device rd;
     BattleStateMachine::seed = rd();
-    std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
+    DEBUG_MSG("The random seed is " << BattleStateMachine::seed << "\n");
     BattleStateMachine::choice = std::mt19937(seed);
     BattleStateMachine::actor = BattleActor(seed);
     BattleStateMachine::battle = Battle(seed);
@@ -27,7 +28,7 @@ BattleStateMachine::BattleStateMachine()
 BattleStateMachine::BattleStateMachine(long seed)
 {
     BattleStateMachine::seed = seed;
-    std::cout << "The random seed is " << BattleStateMachine::seed << "\n";
+    DEBUG_MSG("The random seed is " << BattleStateMachine::seed << "\n");
     BattleStateMachine::choice = std::mt19937(seed);
     BattleStateMachine::actor = BattleActor(seed);
     BattleStateMachine::battle = Battle(seed);
@@ -41,7 +42,7 @@ void BattleStateMachine::init()
 
 int BattleStateMachine::run(BattleState state)
 {
-    Attack_Result atk_r;
+    Attack_Result atk_r = Attack_Result::NO_ATTACK;
     Players faint_player;
     int MAX_TURN_COUNT = 200;
     int winner = 0, removed;
@@ -74,21 +75,21 @@ int BattleStateMachine::run(BattleState state)
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 3);
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 4);
 
-                std::cout << "\n\n\n--------------BATTLE START--------------\n";
+                DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
                 break;;
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 17)
-                    std::cout << "HERERE\n";
+                if(BattleStateMachine::turn_count == 3)
+                    DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
                         assert(0);
                 if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
                     assert(0);
 #endif
-                std::cout << "\n-------Turn " << BattleStateMachine::turn_count << " start-------\n";
+                DEBUG_MSG("\n-------Turn " << BattleStateMachine::turn_count << " start-------\n");
                 BattleStateMachine::battle.print_battle();
                 //get action choice
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
@@ -126,7 +127,7 @@ int BattleStateMachine::run(BattleState state)
                         case Attack_Result::SWAP:
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
                             {
-                                std::cout << "No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n";
+                                DEBUG_MSG("No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n");
                             }
                             else
                             {
@@ -213,8 +214,8 @@ int BattleStateMachine::run(BattleState state)
                             removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
                             if( removed != -1 )
                             {
-                                std::cout << "P" << get_player_from_position(messages[prio.at(i)].target_pos) + 1 << "'s "
-                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].get_species() << " flinched\n";
+                                DEBUG_MSG("P" << get_player_from_position(messages[prio.at(i)].target_pos) + 1 << "'s "
+                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].get_species() << " flinched\n");
 
                                 prio = BattleStateMachine::remove_priority_list(removed, prio);
                             }
@@ -227,7 +228,7 @@ int BattleStateMachine::run(BattleState state)
                         case Attack_Result::NO_ATTACK:
                             break;;
                         default:
-                            std::cout << "Unhandled attack result\n";
+                            DEBUG_MSG("Unhandled attack result\n");
                             assert(0);
                     }
 
@@ -302,11 +303,11 @@ int BattleStateMachine::end_battle()
 
     if(loser != 0)
     {
-        std::cout << "Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n";
+        DEBUG_MSG("Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n");
     }
     else
     {
-        std::cout << "TIED\n";
+        DEBUG_MSG("TIED\n");
     }
 
 
@@ -330,7 +331,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
                 move_prio = BattleStateMachine::battle.active_field.active_pokes[pos].moves[messages[pos].move_num].get_priority();
                 break;
             default:
-                std::cout << "Unsupported Command " << messages[pos].move_command << "\n";
+                DEBUG_MSG("Unsupported Command " << messages[pos].move_command << "\n");
                 assert(0);
         }
         prio_map[pos] = move_prio;
@@ -409,10 +410,10 @@ bool BattleStateMachine::battle_over()
 
 void BattleStateMachine::reset()
 {
-    std::cout << "------RESETTING BATTLE------\n";
+    DEBUG_MSG("------RESETTING BATTLE------\n");
     std::random_device rd;
     BattleStateMachine::seed = rd();
-    std::cout << "New random seed: " << seed << std::endl;
+    DEBUG_MSG("New random seed: " << seed << std::endl);
     BattleStateMachine::turn_count = 0;
     BattleStateMachine::battle.reset();
     BattleStateMachine::battle.update_generator(seed);

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <Utils/Logging.h>
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
@@ -67,30 +68,30 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
             break;;
     }
 
-    std::cout << "Player " << get_player_from_position(pos) + 1 << " chose action: ";
+    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " chose action: ");
     if(message.move_command == Commands::COMMAND_SWAP)
     {
-        std::cout << "SWAP, sending out " << player_party.party_pokes[message.reserve_poke].get_species() << "\n";
+        DEBUG_MSG("SWAP, sending out " << player_party.party_pokes[message.reserve_poke].get_species() << "\n");
     }
     else if(message.move_command == Commands::COMMAND_ATTACK)
     {
-        std::cout << "ATTACK, targeting ";
+        DEBUG_MSG("ATTACK, targeting ");
         if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
         {
-            std::cout << "P" << get_player_from_position(message.target_pos) + 1 << "'s ";
-            std::cout << field.active_pokes[message.target_pos].get_species();
+            DEBUG_MSG("P" << get_player_from_position(message.target_pos) + 1 << "'s ");
+            DEBUG_MSG(field.active_pokes[message.target_pos].get_species());
         }
         else
         {
-            std::cout << "ALL TARGETS";
+            DEBUG_MSG("ALL TARGETS");
         }
 
-        std::cout << " with ";
+        DEBUG_MSG(" with ");
 
         if(message.move_num < 4)
-            std::cout << field.active_pokes[pos].moves[message.move_num].get_name() << "\n";
+            DEBUG_MSG(field.active_pokes[pos].moves[message.move_num].get_name() << "\n");
         else
-            std::cout << "struggle\n";
+            DEBUG_MSG("struggle\n");
     }
     else
         assert(0);
