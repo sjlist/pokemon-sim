@@ -45,7 +45,8 @@ int BattleStateMachine::run(BattleState state)
     Attack_Result atk_r = Attack_Result::NO_ATTACK;
     Players faint_player;
     FIELD_POSITION swap_pos;
-    int MAX_TURN_COUNT = 200;
+    int reserve_poke;
+    int MAX_TURN_COUNT = 300;
     int winner = 0, removed;
 
     BattleStateMachine::turn_count = 0;
@@ -146,34 +147,34 @@ int BattleStateMachine::run(BattleState state)
                             else
                             {
                                 // FOR ATTACKING MOVES THAT SWAP
-                                if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK) {
-                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
-                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                            prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(swap_pos)),
-                                            BattleStateMachine::battle.active_field,
-                                            Actions::CHOOSE_POKEMON);
-                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
-                                    messages[prio.at(i)].target_pos = target;
-                                    //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
-                                    //KEEP MESSAGE COMMAND ATTACK
+                                if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
+                                {
+                                    // get reserve poke for whatever team needs to swap, if attacking
+                                    reserve_poke = BattleStateMachine::actor.choose_pokemon(
+                                            BattleStateMachine::battle.get_party(
+                                                    get_player_from_position(swap_pos)));
+                                }
+                                else
+                                {
+                                    // grab the reserve poke from the battle message if this is a swap action
+                                    reserve_poke = messages[prio.at(i)].reserve_poke;
                                 }
 
                                 // TODO: HANDLE PURSUIT HERE
-                                while(!BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos,
-                                                                     messages[prio.at(i)].reserve_poke))
+
+                                //swap pokes!
+                                while(!BattleStateMachine::battle.swap_poke(swap_pos, reserve_poke))
                                 {
+                                    // if the poke fainted on entrance
+
+                                    //check if battle is over
                                     if(BattleStateMachine::battle_over())
                                         return BattleStateMachine::end_battle();
 
-                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
-                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                            prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                            BattleStateMachine::battle.active_field,
-                                            Actions::CHOOSE_POKEMON);
-                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
-                                    messages[prio.at(i)].target_pos = target;
+                                    // if the battle isnt over, ask for another poke
+                                    reserve_poke = BattleStateMachine::actor.choose_pokemon(
+                                            BattleStateMachine::battle.get_party(
+                                                    get_player_from_position(swap_pos)));
                                 }
 
                                 if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
