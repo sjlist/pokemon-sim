@@ -425,6 +425,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
 
 void Pokemon::print_pokemon(bool detailed)
 {
+#ifdef DEBUG
     if(Pokemon::species.empty())
         return;
 
@@ -445,4 +446,5 @@ void Pokemon::print_pokemon(bool detailed)
     }
     DEBUG_MSG("Current HP: " << round(Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n");
     DEBUG_MSG("STATUS: " << status_to_string(Pokemon::status) << "\n");
+#endif
 }

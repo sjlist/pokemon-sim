@@ -175,6 +175,7 @@ void Field::reset_field_obj()
 
 void Field::print_field(bool detailed)
 {
+#ifdef DEBUG
     DEBUG_MSG("ACTIVE POKEMON: " << "\nPLAYER ONE\n");
     if(Field::active_pokes[Players::PLAYER_ONE].is_active())
         Field::active_pokes[Players::PLAYER_ONE].print_pokemon(detailed);
@@ -211,6 +212,7 @@ void Field::print_field(bool detailed)
             DEBUG_MSG(Field::terrain << " weather is active\n");
     }
     DEBUG_MSG("\n");
+#endif
 }
 
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)

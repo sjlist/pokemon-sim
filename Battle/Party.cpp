@@ -22,6 +22,7 @@ void Party::reset()
 
 void Party::print_party(bool detailed)
 {
+#ifdef DEBUG
     for(int i = 0; i < 6; i++)
         if (detailed)
             Party::party_pokes[i].print_pokemon(detailed);
@@ -33,4 +34,5 @@ void Party::print_party(bool detailed)
         }
         else
             DEBUG_MSG(Party::party_pokes[i].get_species() << ": ACTIVE\n");
+#endif
 }

@@ -706,6 +706,7 @@ void Battle::load_game_moves()
 
 void Battle::print_battle(bool detailed)
 {
+#ifdef DEBUG
     Battle::active_field.print_field(detailed);
 
     DEBUG_MSG("Player ONE party pokemon:\n");
@@ -713,4 +714,5 @@ void Battle::print_battle(bool detailed)
     DEBUG_MSG("\nPlayer TWO party pokemon:\n");
     Battle::Parties[Players::PLAYER_TWO].print_party(detailed);
     DEBUG_MSG(std::endl);
+#endif
 }
