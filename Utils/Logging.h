@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_LOGGING_H
 #define POKEMON_SIM_LOGGING_H
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 #define DEBUG_MSG(str) do { std::cout << str; } while( false )

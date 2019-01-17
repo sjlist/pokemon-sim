@@ -24,9 +24,9 @@ Battle::Battle(long seed)
     Battle::generator = std::mt19937(seed);
 }
 
-Party Battle::get_party(Players player)
+Party* Battle::get_party(Players player)
 {
-    return Parties[player];
+    return &Parties[player];
 }
 
 bool Battle::send_out(FIELD_POSITION pos, int poke_position)
@@ -282,7 +282,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             return Attack_Result::HIT;
         case MOVE_EFFECTS::FIELD_CHANGE:
             Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), effect_target, effect_target);
-            break;
+            return Attack_Result::HIT;
         case MOVE_EFFECTS::RECOIL:
             DEBUG_MSG("P" << get_player_from_position(effect_target) + 1 << "'s "
                       << Battle::active_field.active_pokes[effect_target].get_species() << " was hurt by recoil\n");
@@ -299,7 +299,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             return Attack_Result::HIT;
         case MOVE_EFFECTS::HEAL:
             Battle::active_field.active_pokes[effect_target].heal_damage(Battle::active_field.active_pokes[effect_target].get_stat(STAT::HP) * move_effect.get_heal_percent());
-            break;
+            return Attack_Result::HIT;
         case MOVE_EFFECTS::REMOVE_TYPE:
             if(Battle::active_field.active_pokes[effect_target].get_type()[0] == move_effect.get_type_removed())
                 Battle::active_field.active_pokes[effect_target].remove_type(0);

@@ -44,6 +44,7 @@ int BattleStateMachine::run(BattleState state)
 {
     Attack_Result atk_r = Attack_Result::NO_ATTACK;
     Players faint_player;
+    FIELD_POSITION swap_pos;
     int MAX_TURN_COUNT = 200;
     int winner = 0, removed;
 
@@ -72,8 +73,8 @@ int BattleStateMachine::run(BattleState state)
 //                                            get_player_from_position(i)
 //                                            )));
 //                }
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 3);
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 4);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
 
                 DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
@@ -125,9 +126,22 @@ int BattleStateMachine::run(BattleState state)
                     switch(atk_r)
                     {
                         case Attack_Result::SWAP:
-                            if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
+                            if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
-                                DEBUG_MSG("No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n");
+                                if(BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(0).does_target_self())
+                                {
+                                    swap_pos = prio.at(i);
+                                }
+                                else
+                                    swap_pos = messages[prio.at(i)].target_pos;
+
+                            }
+                            else
+                                swap_pos = prio.at(i);
+
+                            if(!BattleStateMachine::battle.can_swap(get_player_from_position(swap_pos)))
+                            {
+                                DEBUG_MSG("No valid pokemon to swap into for player " << (get_player_from_position(swap_pos) + 1) << "\n");
                             }
                             else
                             {
@@ -136,7 +150,7 @@ int BattleStateMachine::run(BattleState state)
                                     FIELD_POSITION target = messages[prio.at(i)].target_pos;
                                     messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
                                             prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
+                                            BattleStateMachine::battle.get_party(get_player_from_position(swap_pos)),
                                             BattleStateMachine::battle.active_field,
                                             Actions::CHOOSE_POKEMON);
                                     messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;

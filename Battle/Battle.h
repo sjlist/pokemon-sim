@@ -51,7 +51,7 @@ public:
     bool swap_poke(FIELD_POSITION pos, int poke_position);
     bool can_swap(Players player);
 
-    Party get_party(Players player);
+    Party* get_party(Players player);
 
     Attack_Result attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move);
     bool handle_end_turn_field_status();

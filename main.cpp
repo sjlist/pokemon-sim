@@ -12,7 +12,7 @@
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 10000;
+    int wins [3] = {0, 0, 0}, max_runs = 100000;
     int num_runs = 1, winner, max_turns = 0, tot_turns = 0;
     BattleStateMachine BSM = *new BattleStateMachine();
     winner = BSM.run() + 1;

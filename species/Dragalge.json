@@ -1,0 +1,13 @@
+{
+  "HP":65,
+  "ATK": 75,
+  "DEF": 90,
+  "SPA": 97,
+  "SPD": 123,
+  "SPE": 44,
+  "TYPES":
+  {
+    "TYPE0" : "DRAGON",
+    "TYPE1" : "POISON"
+  }
+}

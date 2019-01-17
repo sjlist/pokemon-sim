@@ -1,22 +1,23 @@
 {
   "damage_type": "special",
-  "type": "ELECTRIC",
+  "type": "POISON",
   "priority": 0,
-  "pp": 32,
+  "pp": 16,
   "acc": 100,
   "targeting": "ADJACENT_ALL",
-  "num_targets": 1,
+  "num_targets": 0,
   "damage_info":
   {
-    "power": 70,
+    "power": 95,
     "crit_chance": 5
   },
   "effects":
   {
     "effect0":
     {
-      "effect": "SWAP",
-      "target": "SELF"
+      "effect": "STATUS",
+      "status": "POISONED",
+      "chance": 10
     }
   }
 }
