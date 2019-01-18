@@ -58,6 +58,7 @@ private:
     float crit_chance;
     PokeTypes type;
     move_damage_type damage_type;
+    int last_effect;
 
     int current_pp;
 };

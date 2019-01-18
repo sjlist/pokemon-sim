@@ -1,0 +1,25 @@
+{
+  "damage_type": "special",
+  "type": "DRAGON",
+  "priority": 0,
+  "pp": 80,
+  "acc": 90,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 130,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STAT_CHANGE",
+      "chance": 100,
+      "stat": "SPA",
+      "stages": -2,
+      "target": "SELF"
+    }
+  }
+}

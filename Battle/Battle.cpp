@@ -59,6 +59,7 @@ void Battle::return_poke(FIELD_POSITION pos)
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volatile_statuses();
+            Battle::Parties[get_player_from_position(pos)].party_pokes[i].reset_types();
             Battle::active_field.return_poke(pos);
             break;;
         }
@@ -235,6 +236,11 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move 
         return (25.0 * Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPE) /
                 Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPE)) + 1;
     }
+
+    if(move.get_name() == "Seismic_Toss")
+    {
+        return Battle::active_field.active_pokes[atk_pos].get_level();
+    }
 }
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage)
@@ -281,7 +287,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             Battle::active_field.active_pokes[effect_target].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
             return Attack_Result::HIT;
         case MOVE_EFFECTS::FIELD_CHANGE:
-            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), effect_target, effect_target);
+            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), def_pos, atk_pos);
             return Attack_Result::HIT;
         case MOVE_EFFECTS::RECOIL:
             DEBUG_MSG("P" << get_player_from_position(effect_target) + 1 << "'s "
@@ -380,6 +386,7 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
     switch(Battle::active_field.active_pokes[pos].get_status())
     {
         case STATUS::ASLEEP:
+            DEBUG_MSG(Battle::active_field.active_pokes[pos].get_species() << " is asleep\n");
             if(Battle::active_field.active_pokes[pos].status_turns == 0)
             {
                 Battle::active_field.active_pokes[pos].status_turns++;
@@ -474,6 +481,7 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
         case STATUS::BADLY_POISONED:
             DEBUG_MSG(" badly poisoned\n");
             DEBUG_MSG("Poison ");
+            Battle::active_field.active_pokes[pos].status_turns++;
             damage = Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16.0 * Battle::active_field.active_pokes[pos].status_turns;
             break;;
         default:
@@ -693,7 +701,7 @@ void Battle::load_teams(std::vector<std::string> team_names)
 std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "stall";
+    teams[Players::PLAYER_ONE] = "team1";
     teams[Players::PLAYER_TWO] = "stall";
     return teams;
 }

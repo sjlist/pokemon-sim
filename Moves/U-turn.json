@@ -1,0 +1,22 @@
+{
+  "damage_type": "physical",
+  "type": "BUG",
+  "priority": 0,
+  "pp": 32,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 70,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "SWAP",
+      "target": "SELF"
+    }
+  }
+}

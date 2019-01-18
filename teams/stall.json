@@ -1,15 +1,15 @@
 {
   "0":
   {
-    "species": "Dragalge",
+    "species": "Ferrothorn",
     "evs":
     {
       "0": 252,
       "1": 0,
-      "2": 0,
+      "2": 252,
       "3": 0,
-      "4": 240,
-      "5": 52
+      "4": 4,
+      "5": 0
     },
     "ivs":
     {
@@ -20,15 +20,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "TIMID",
+    "nature": "CAREFUL",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Toxic_Spikes",
-      "MOVE1": "Sludge_Wave",
-      "MOVE2": "Will-o-Wisp",
-      "MOVE3": "Dragon_Tail"
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Spikes",
+      "MOVE2": "Leech_Seed",
+      "MOVE3": "Gyro_Ball"
     }
   },
   "1":
@@ -65,15 +65,15 @@
   },
   "2":
   {
-    "species": "Dragonite",
+    "species": "Blissey",
     "evs":
     {
-      "0": 4,
-      "1": 252,
-      "2": 0,
+      "0": 252,
+      "1": 0,
+      "2": 252,
       "3": 0,
-      "4": 0,
-      "5": 252
+      "4": 4,
+      "5": 0
     },
     "ivs":
     {
@@ -84,15 +84,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "JOLLY",
+    "nature": "BOLD",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Dragon_Claw",
-      "MOVE2": "Extreme_Speed",
-      "MOVE3": "Dragon_Dance"
+      "MOVE0": "Soft-Boiled",
+      "MOVE1": "Stealth_Rocks",
+      "MOVE2": "Seismic_Toss",
+      "MOVE3": "Toxic"
     }
   },
   "3":
@@ -124,20 +124,20 @@
       "MOVE0": "Roost",
       "MOVE1": "Earthquake",
       "MOVE2": "Roar",
-      "MOVE3": "Stealth_Rocks"
+      "MOVE3": "Toxic"
     }
   },
   "4":
   {
-    "species": "Ferrothorn",
+    "species": "Dragalge",
     "evs":
     {
       "0": 252,
       "1": 0,
-      "2": 252,
+      "2": 0,
       "3": 0,
-      "4": 4,
-      "5": 0
+      "4": 240,
+      "5": 52
     },
     "ivs":
     {
@@ -148,15 +148,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "CAREFUL",
+    "nature": "TIMID",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Stealth_Rocks",
-      "MOVE1": "Spikes",
-      "MOVE2": "Leech_Seed",
-      "MOVE3": "Gyro_Ball"
+      "MOVE0": "Toxic_Spikes",
+      "MOVE1": "Sludge_Wave",
+      "MOVE2": "Toxic",
+      "MOVE3": "Dragon_Tail"
     }
   },
   "5":
@@ -186,7 +186,7 @@
     "moves":
     {
       "MOVE0": "Roost",
-      "MOVE1": "Flamethrower",
+      "MOVE1": "Toxic",
       "MOVE2": "Air_Slash",
       "MOVE3": "Thunder_Wave"
     }

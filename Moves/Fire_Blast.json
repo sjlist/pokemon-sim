@@ -1,0 +1,23 @@
+{
+  "damage_type": "special",
+  "type": "FIRE",
+  "priority": 0,
+  "pp": 8,
+  "acc": 85,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": 110,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "BURNED",
+      "chance": 10
+    }
+  }
+}

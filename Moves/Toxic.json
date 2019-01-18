@@ -1,0 +1,18 @@
+{
+  "damage_type": "status",
+  "type": "POISON",
+  "priority": 0,
+  "pp": 16,
+  "acc": 90,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "STATUS",
+      "status": "BADLY_POISONED",
+      "chance": 100
+    }
+  }
+}

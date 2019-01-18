@@ -1,38 +1,6 @@
 {
   "0":
   {
-    "species": "Gengar",
-    "evs":
-    {
-      "0": 4,
-      "1": 0,
-      "2": 0,
-      "3": 252,
-      "4": 0,
-      "5": 252
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "TIMID",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Shadow_Ball",
-      "MOVE1": "Sludge_Bomb",
-      "MOVE2": "Will-o-Wisp",
-      "MOVE3": "Taunt"
-    }
-  },
-  "1":
-  {
     "species": "Garchomp",
     "evs":
     {
@@ -61,6 +29,38 @@
       "MOVE1": "Earthquake",
       "MOVE2": "Dragon_Claw",
       "MOVE3": "Swords_Dance"
+    }
+  },
+  "1":
+  {
+    "species": "Gengar",
+    "evs":
+    {
+      "0": 4,
+      "1": 0,
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Shadow_Ball",
+      "MOVE1": "Sludge_Bomb",
+      "MOVE2": "Will-o-Wisp",
+      "MOVE3": "Confusion"
     }
   },
   "2":
@@ -123,21 +123,21 @@
     {
       "MOVE0": "Rock_Slide",
       "MOVE1": "Earthquake",
-      "MOVE2": "Taunt",
-      "MOVE3": "Stealth_Rocks"
+      "MOVE2": "Wing_Attack",
+      "MOVE3": "Roost"
     }
   },
   "4":
   {
-    "species": "Ferrothorn",
+    "species": "Hydreigon",
     "evs":
     {
-      "0": 252,
+      "0": 4,
       "1": 0,
-      "2": 252,
-      "3": 0,
-      "4": 4,
-      "5": 0
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
     },
     "ivs":
     {
@@ -148,15 +148,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "CAREFUL",
+    "nature": "TIMID",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Stealth_Rocks",
-      "MOVE1": "Spikes",
-      "MOVE2": "Leech_Seed",
-      "MOVE3": "Gyro_Ball"
+      "MOVE0": "Draco_Meteor",
+      "MOVE1": "Fire_Blast",
+      "MOVE2": "U-turn",
+      "MOVE3": "Dark_Pulse"
     }
   },
   "5":

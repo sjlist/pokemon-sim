@@ -83,7 +83,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 20)
+                if(BattleStateMachine::turn_count == 12)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
@@ -376,17 +376,20 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) > BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+          > BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) < BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+          < BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) == BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+         == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         int choice = BattleStateMachine::make_choice(0, 1);
         prio_list.at(0) = static_cast<FIELD_POSITION>(choice);
