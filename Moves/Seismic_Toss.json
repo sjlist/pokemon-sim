@@ -6,9 +6,12 @@
   "acc": 100,
   "targeting": "ADJACENT_ALL",
   "num_targets": 1,
-  "damage_info":
+  "effects":
   {
-    "power": -1,
-    "crit_chance": 5
+    "effect0":
+    {
+      "effect": "FLAT_DAMAGE",
+      "use_level": true
+    }
   }
 }

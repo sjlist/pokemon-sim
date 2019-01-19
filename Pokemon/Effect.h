@@ -29,6 +29,7 @@ enum MOVE_EFFECTS
     RECOIL,
     HEAL,
     REMOVE_TYPE,
+    FLAT_DAMAGE,
     NUM_MOVE_EFFECTS
 };
 
@@ -56,6 +57,9 @@ public:
     float get_heal_percent();
 
     PokeTypes get_type_removed();
+
+    bool use_flat_level();
+    int get_flat_damage();
 private:
     MOVE_EFFECTS effect_type;
     float effect_chance;
@@ -77,6 +81,9 @@ private:
     float heal_percent;
 
     PokeTypes type_removed;
+
+    bool flat_damage_level;
+    int flat_damage;
 };
 
 MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);

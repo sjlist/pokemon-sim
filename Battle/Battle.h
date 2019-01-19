@@ -82,7 +82,7 @@ private:
     bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
-    float calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit);
+    float calculate_damage_modifier(Move move, Pokemon attacker, Pokemon defender, int num_targets, bool crit);
 
     std::mt19937 generator;
 
