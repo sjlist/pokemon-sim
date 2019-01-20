@@ -23,12 +23,12 @@ static int MAX_STAGES = 6;
 Pokemon::Pokemon()
 {
     Pokemon::active = false;
+    Pokemon::alive = false;
     Pokemon::status = STATUS::NO_STATUS;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
     {
         Pokemon::stat_modifiers[stat] = 0;
     }
-    Pokemon::alive = false;
 }
 
 // STATE CHECKING FUNCTIONS

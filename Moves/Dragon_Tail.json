@@ -17,5 +17,6 @@
     {
       "effect": "SWAP"
     }
-  }
+  },
+  "contact": true
 }

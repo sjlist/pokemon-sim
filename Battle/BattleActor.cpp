@@ -57,7 +57,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
             if(message.move_num != 5)
             {
-                move = field.active_pokes[pos].moves[message.move_num];
+                move = field.active_pokes[pos]->moves[message.move_num];
                 message.target_pos = BattleActor::choose_target(pos, move.get_num_targets(), move.get_move_targets());
 
             }
@@ -79,7 +79,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
         if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
         {
             DEBUG_MSG("P" << get_player_from_position(message.target_pos) + 1 << "'s ");
-            DEBUG_MSG(field.active_pokes[message.target_pos].get_species());
+            DEBUG_MSG(field.active_pokes[message.target_pos]->get_species());
         }
         else
         {
@@ -89,7 +89,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
         DEBUG_MSG(" with ");
 
         if(message.move_num < 4)
-            DEBUG_MSG(field.active_pokes[pos].moves[message.move_num].get_name() << "\n");
+            DEBUG_MSG(field.active_pokes[pos]->moves[message.move_num].get_name() << "\n");
         else
             DEBUG_MSG("struggle\n");
     }
@@ -99,13 +99,13 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
     return message;
 }
 
-int BattleActor::choose_move(Pokemon poke)
+int BattleActor::choose_move(Pokemon* poke)
 {
     int num_moves = 0, selection;
     int moves [4];
     for(int i = 0; i < 4; i++)
     {
-        if(poke.moves[i].get_pp() != 0)
+        if(poke->moves[i].get_pp() != 0)
         {
             moves[num_moves] = i;
             num_moves++;
