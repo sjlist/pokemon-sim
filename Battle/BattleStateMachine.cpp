@@ -86,7 +86,7 @@ int BattleStateMachine::run(BattleState state)
                 if(BattleStateMachine::turn_count == 40)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-                    if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
+                    if(BattleStateMachine::battle.active_field.active_pokes[i]->get_current_hp() == 0)
                         assert(0);
                 if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
                     assert(0);
@@ -130,12 +130,12 @@ int BattleStateMachine::run(BattleState state)
                             if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
                                 //if attacking and trying to swap an opponent, both the attacker and defender must be alive to execute the swap
-                                if((!BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive()
-                                 || !BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
-                                 && !BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(-1).does_target_self())
+                                if((!BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->is_alive()
+                                 || !BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->is_alive())
+                                 && !BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->moves[messages[prio.at(i)].move_num].get_move_effect(-1).does_target_self())
                                     goto swap_end;
 
-                                if(BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(0).does_target_self())
+                                if(BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->moves[messages[prio.at(i)].move_num].get_move_effect(0).does_target_self())
                                 {
                                     swap_pos = prio.at(i);
                                 }
@@ -193,8 +193,8 @@ int BattleStateMachine::run(BattleState state)
                                 swap_end:;
 
                                 // If both the attacker and defender are alive, no need to handle faints
-                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive()
-                                 && BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive())
+                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->is_alive()
+                                 && BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->is_alive())
                                     break;;
                             }
 
@@ -202,7 +202,7 @@ int BattleStateMachine::run(BattleState state)
                             //determine the fainted side
                             for(int p = 0; p < FIELD_POSITION::NUM_POSITIONS; p++)
                             {
-                                if(!BattleStateMachine::battle.active_field.active_pokes[p].is_alive())
+                                if(!BattleStateMachine::battle.active_field.active_pokes[p]->is_alive())
                                     faint_player = get_player_from_position(static_cast<FIELD_POSITION>(p));
                                 else
                                     goto faint_end;
@@ -244,7 +244,7 @@ int BattleStateMachine::run(BattleState state)
                             if( removed != -1 )
                             {
                                 DEBUG_MSG("P" << get_player_from_position(messages[prio.at(i)].target_pos) + 1 << "'s "
-                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].get_species() << " flinched\n");
+                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->get_species() << " flinched\n");
 
                                 prio = BattleStateMachine::remove_priority_list(removed, prio);
                             }
@@ -273,7 +273,7 @@ int BattleStateMachine::run(BattleState state)
                 {
                     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     {
-                        if(!BattleStateMachine::battle.active_field.active_pokes[static_cast<FIELD_POSITION>(i)].is_alive())
+                        if(!BattleStateMachine::battle.active_field.active_pokes[static_cast<FIELD_POSITION>(i)]->is_alive())
                         {
                             if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
                             {
@@ -357,7 +357,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
                 move_prio = MAX_PRIO + 1;
                 break;
             case Commands::COMMAND_ATTACK:
-                move_prio = BattleStateMachine::battle.active_field.active_pokes[pos].moves[messages[pos].move_num].get_priority();
+                move_prio = BattleStateMachine::battle.active_field.active_pokes[pos]->moves[messages[pos].move_num].get_priority();
                 break;
             default:
                 DEBUG_MSG("Unsupported Command " << messages[pos].move_command << "\n");
@@ -376,20 +376,20 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
-          > BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
+          > BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
-          < BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
+          < BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
-         == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
+         == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
     {
         int choice = BattleStateMachine::make_choice(0, 1);
         prio_list.at(0) = static_cast<FIELD_POSITION>(choice);
