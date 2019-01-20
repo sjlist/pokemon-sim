@@ -331,8 +331,9 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 damage = move_effect.get_flat_damage();
             }
 
-            if(Battle::active_field.active_pokes[effect_target].deal_damage(damage))
+            if(!Battle::active_field.active_pokes[effect_target].deal_damage(damage))
             {
+                Battle::handle_faint(effect_target);
                 return Attack_Result::FAINT;
             }
             else
