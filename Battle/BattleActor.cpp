@@ -23,7 +23,7 @@ BattleActor::BattleActor(long seed)
 BattleMessage::BattleMessage() = default;
 
 
-BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party, Field field, Actions action)
+BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field field, Actions action)
 {
     BattleMessage message;
     Players player = get_player_from_position(pos);
@@ -71,7 +71,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party player_party,
     DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " chose action: ");
     if(message.move_command == Commands::COMMAND_SWAP)
     {
-        DEBUG_MSG("SWAP, sending out " << player_party.party_pokes[message.reserve_poke].get_species() << "\n");
+        DEBUG_MSG("SWAP, sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
     }
     else if(message.move_command == Commands::COMMAND_ATTACK)
     {
@@ -119,13 +119,13 @@ int BattleActor::choose_move(Pokemon poke)
     return moves[selection];
 }
 
-int BattleActor::choose_pokemon(Party party)
+int BattleActor::choose_pokemon(Party* party)
 {
     int num_pokes = 0, selection;
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
-        if(party.party_pokes[i].is_alive() && !party.party_pokes[i].is_active())
+        if(party->party_pokes[i].is_alive() && !party->party_pokes[i].is_active())
         {
             pokes[num_pokes] = i;
             num_pokes++;

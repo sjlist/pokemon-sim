@@ -54,10 +54,11 @@ private:
     int power;
     float acc;
     int priority;
-    Effect move_effects[MAX_EFFECTS];
+    std::array<Effect, MAX_EFFECTS> move_effects;
     float crit_chance;
     PokeTypes type;
     move_damage_type damage_type;
+    int last_effect;
 
     int current_pp;
 };

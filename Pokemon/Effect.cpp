@@ -19,6 +19,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"RECOIL", MOVE_EFFECTS::RECOIL},
         {"HEAL", MOVE_EFFECTS::HEAL},
         {"REMOVE_TYPE", MOVE_EFFECTS::REMOVE_TYPE},
+        {"FLAT_DAMAGE", MOVE_EFFECTS::FLAT_DAMAGE},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -91,6 +92,16 @@ PokeTypes Effect::get_type_removed()
     return Effect::type_removed;
 }
 
+bool Effect::use_flat_level()
+{
+    return Effect::flat_damage_level;
+}
+
+int Effect::get_flat_damage()
+{
+    return Effect::flat_damage;
+}
+
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
@@ -131,6 +142,17 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             break;
         case MOVE_EFFECTS::REMOVE_TYPE:
             Effect::type_removed = string_to_type(effect_tree.get<std::string>("type_removed"));
+            break;
+        case MOVE_EFFECTS::FLAT_DAMAGE:
+            if(effect_tree.count("flat_damage"))
+            {
+                Effect::flat_damage_level = false;
+                Effect::flat_damage = effect_tree.get<int>("flat_damage");
+            }
+            else
+            {
+                Effect::flat_damage_level = true;
+            }
             break;
         case MOVE_EFFECTS::SWAP:
         case MOVE_EFFECTS::FLINCH:

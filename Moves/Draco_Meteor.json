@@ -1,21 +1,24 @@
 {
   "damage_type": "special",
-  "type": "ELECTRIC",
+  "type": "DRAGON",
   "priority": 0,
-  "pp": 32,
-  "acc": 100,
+  "pp": 80,
+  "acc": 90,
   "targeting": "ADJACENT_ALL",
   "num_targets": 1,
   "damage_info":
   {
-    "power": 70,
+    "power": 130,
     "crit_chance": 5
   },
   "effects":
   {
     "effect0":
     {
-      "effect": "SWAP",
+      "effect": "STAT_CHANGE",
+      "chance": 100,
+      "stat": "SPA",
+      "stages": -2,
       "target": "SELF"
     }
   }

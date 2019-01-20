@@ -1,22 +1,22 @@
 {
-  "damage_type": "special",
-  "type": "ELECTRIC",
+  "damage_type": "physical",
+  "type": "STEEL",
   "priority": 0,
-  "pp": 32,
+  "pp": 24,
   "acc": 100,
   "targeting": "ADJACENT_ALL",
   "num_targets": 1,
   "damage_info":
   {
-    "power": 70,
+    "power": 80,
     "crit_chance": 5
   },
   "effects":
   {
     "effect0":
     {
-      "effect": "SWAP",
-      "target": "SELF"
+      "effect": "FLINCH",
+      "chance": 30
     }
   }
 }

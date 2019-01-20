@@ -169,21 +169,33 @@ bool Pokemon::set_status(STATUS new_status)
             break;;
         case STATUS::BURNED:
             if(Pokemon::type[0] == PokeTypes::FIRE || Pokemon::type[1] == PokeTypes::FIRE)
+            {
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
+            }
             break;;
         case STATUS::FROZEN:
             if(Pokemon::type[0] == PokeTypes::ICE || Pokemon::type[1] == PokeTypes::ICE)
+            {
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
+            }
             break;;
         case STATUS::PARALYZED:
             if(Pokemon::type[0] == PokeTypes::ELECTRIC || Pokemon::type[1] == PokeTypes::ELECTRIC)
+            {
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
+            }
             break;;
         case STATUS::BADLY_POISONED:
             Pokemon::status_turns = 0;
         case STATUS::POISONED:
             if(Pokemon::type[0] == PokeTypes::STEEL || Pokemon::type[1] == PokeTypes::STEEL || Pokemon::type[0] == PokeTypes::POISON || Pokemon::type[1] == PokeTypes::POISON)
+            {
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
+            }
             break;;
         case STATUS::NO_STATUS:
             break;

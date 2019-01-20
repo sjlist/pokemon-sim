@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cmath>
 #include "Party.h"
 #include "Pokemon/Pokemon.h"
 #include "Utils/Logging.h"

@@ -68,7 +68,10 @@ int Move::get_priority()
 
 Effect Move::get_move_effect(int effect_num)
 {
-    return Move::move_effects[effect_num];
+    if(effect_num == -1)
+        return Move::move_effects[Move::last_effect];
+    else
+        return Move::move_effects[effect_num];
 }
 
 TARGETS Move::get_move_targets()
@@ -147,6 +150,7 @@ void Move::load_move(std::string move_name)
             Move::move_effects[i].load_effect(tmp_tree.get_child("effect" + std::to_string(i)));
             i++;
         }
+        Move::last_effect = i - 1;
     }
 }
 

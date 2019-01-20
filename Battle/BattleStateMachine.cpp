@@ -44,7 +44,9 @@ int BattleStateMachine::run(BattleState state)
 {
     Attack_Result atk_r = Attack_Result::NO_ATTACK;
     Players faint_player;
-    int MAX_TURN_COUNT = 200;
+    FIELD_POSITION swap_pos;
+    int reserve_poke;
+    int MAX_TURN_COUNT = 300;
     int winner = 0, removed;
 
     BattleStateMachine::turn_count = 0;
@@ -72,8 +74,8 @@ int BattleStateMachine::run(BattleState state)
 //                                            get_player_from_position(i)
 //                                            )));
 //                }
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 3);
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 4);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
 
                 DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
@@ -81,7 +83,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 3)
+                if(BattleStateMachine::turn_count == 40)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i].get_current_hp() == 0)
@@ -125,47 +127,74 @@ int BattleStateMachine::run(BattleState state)
                     switch(atk_r)
                     {
                         case Attack_Result::SWAP:
-                            if(!BattleStateMachine::battle.can_swap(get_player_from_position(prio.at(i))))
+                            if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
-                                DEBUG_MSG("No valid pokemon to swap into for player " << (get_player_from_position(prio.at(i)) + 1) << "\n");
+                                //if attacking and trying to swap an opponent, both the attacker and defender must be alive to execute the swap
+                                if((!BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive()
+                                 || !BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                 && !BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(-1).does_target_self())
+                                    goto swap_end;
+
+                                if(BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].moves[messages[prio.at(i)].move_num].get_move_effect(0).does_target_self())
+                                {
+                                    swap_pos = prio.at(i);
+                                }
+                                else
+                                    swap_pos = messages[prio.at(i)].target_pos;
+
+                            }
+                            else
+                                swap_pos = prio.at(i);
+
+                            if(!BattleStateMachine::battle.can_swap(get_player_from_position(swap_pos)))
+                            {
+                                DEBUG_MSG("No valid pokemon to swap into for player " << (get_player_from_position(swap_pos) + 1) << "\n");
                             }
                             else
                             {
                                 // FOR ATTACKING MOVES THAT SWAP
-                                if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK) {
-                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
-                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                            prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                            BattleStateMachine::battle.active_field,
-                                            Actions::CHOOSE_POKEMON);
-                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
-                                    messages[prio.at(i)].target_pos = target;
-                                    //GET SWAP STUFF FROM BATTLE ACTOR AND PUT IT IN THE CURRENT MESSAGE
-                                    //KEEP MESSAGE COMMAND ATTACK
+                                if (messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
+                                {
+                                    // get reserve poke for whatever team needs to swap, if attacking
+                                    reserve_poke = BattleStateMachine::actor.choose_pokemon(
+                                            BattleStateMachine::battle.get_party(
+                                                    get_player_from_position(swap_pos)));
+                                }
+                                else
+                                {
+                                    // grab the reserve poke from the battle message if this is a swap action
+                                    reserve_poke = messages[prio.at(i)].reserve_poke;
                                 }
 
                                 // TODO: HANDLE PURSUIT HERE
-                                while(!BattleStateMachine::battle.swap_poke(messages[prio.at(i)].active_pos,
-                                                                     messages[prio.at(i)].reserve_poke))
+
+                                //swap pokes!
+                                while(!BattleStateMachine::battle.swap_poke(swap_pos, reserve_poke))
                                 {
+                                    // if the poke fainted on entrance
+
+                                    //check if battle is over
                                     if(BattleStateMachine::battle_over())
                                         return BattleStateMachine::end_battle();
 
-                                    FIELD_POSITION target = messages[prio.at(i)].target_pos;
-                                    messages[prio.at(i)] = BattleStateMachine::actor.choose_action(
-                                            prio.at(i),
-                                            BattleStateMachine::battle.get_party(get_player_from_position(prio.at(i))),
-                                            BattleStateMachine::battle.active_field,
-                                            Actions::CHOOSE_POKEMON);
-                                    messages[prio.at(i)].move_command = Commands::COMMAND_ATTACK;
-                                    messages[prio.at(i)].target_pos = target;
+                                    // if the battle isnt over, ask for another poke
+                                    reserve_poke = BattleStateMachine::actor.choose_pokemon(
+                                            BattleStateMachine::battle.get_party(
+                                                    get_player_from_position(swap_pos)));
                                 }
 
                                 if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
                                     break;;
 
-                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive())
+                                removed = BattleStateMachine::moves_later(swap_pos, i, prio);
+                                if (removed != -1)
+                                    prio = BattleStateMachine::remove_priority_list(removed, prio);
+
+                                swap_end:;
+
+                                // If both the attacker and defender are alive, no need to handle faints
+                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos].is_alive()
+                                 && BattleStateMachine::battle.active_field.active_pokes[prio.at(i)].is_alive())
                                     break;;
                             }
 
@@ -176,12 +205,12 @@ int BattleStateMachine::run(BattleState state)
                                 if(!BattleStateMachine::battle.active_field.active_pokes[p].is_alive())
                                     faint_player = get_player_from_position(static_cast<FIELD_POSITION>(p));
                                 else
-                                    continue;
+                                    goto faint_end;
 
                                 // lose if no pokes left
                                 if (battle.has_lost(faint_player)) {
                                     state = BattleState::BATTLE_END;
-                                    continue;
+                                    goto faint_end;
                                 }
 
                                 // remove next action in turn if there is one left. use no_player
@@ -204,7 +233,7 @@ int BattleStateMachine::run(BattleState state)
 
                                     }
 
-                                contin:;
+                                faint_end:;
                             }
                             if(BattleStateMachine::battle_over())
                                 return BattleStateMachine::end_battle();
@@ -347,17 +376,20 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) > BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+          > BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) < BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+          < BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
     }
-    else if(BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_ONE].get_stat(STAT::SPE) == BattleStateMachine::battle.active_field.active_pokes[Players::PLAYER_TWO].get_stat(STAT::SPE))
+    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0].get_stat(STAT::SPE)
+         == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0].get_stat(STAT::SPE))
     {
         int choice = BattleStateMachine::make_choice(0, 1);
         prio_list.at(0) = static_cast<FIELD_POSITION>(choice);
@@ -369,6 +401,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     return prio_list;
 }
 
+// Does th epokemon at pos move later than the current action. If not return, otherwise return the index in the priority list pos takes its action
 int BattleStateMachine::moves_later(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
 {
     for(int j = (current_action + 1); j < BattleStateMachine::num_players; j++)

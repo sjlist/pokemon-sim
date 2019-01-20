@@ -1,6 +1,6 @@
 {
-  "damage_type": "special",
-  "type": "ELECTRIC",
+  "damage_type": "physical",
+  "type": "BUG",
   "priority": 0,
   "pp": 32,
   "acc": 100,

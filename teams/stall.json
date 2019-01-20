@@ -1,15 +1,15 @@
 {
   "0":
   {
-    "species": "Garchomp",
+    "species": "Ferrothorn",
     "evs":
     {
-      "0": 4,
-      "1": 252,
-      "2": 0,
+      "0": 252,
+      "1": 0,
+      "2": 252,
       "3": 0,
-      "4": 0,
-      "5": 252
+      "4": 4,
+      "5": 0
     },
     "ivs":
     {
@@ -20,28 +20,28 @@
       "4": 31,
       "5": 31
     },
-    "nature": "JOLLY",
+    "nature": "CAREFUL",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Fire_Fang",
-      "MOVE1": "Earthquake",
-      "MOVE2": "Dragon_Claw",
-      "MOVE3": "Swords_Dance"
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Spikes",
+      "MOVE2": "Leech_Seed",
+      "MOVE3": "Gyro_Ball"
     }
   },
   "1":
   {
-    "species": "Gengar",
+    "species": "Aggron",
     "evs":
     {
-      "0": 4,
+      "0": 252,
       "1": 0,
-      "2": 0,
-      "3": 252,
-      "4": 0,
-      "5": 252
+      "2": 4,
+      "3": 0,
+      "4": 252,
+      "5": 0
     },
     "ivs":
     {
@@ -52,28 +52,28 @@
       "4": 31,
       "5": 31
     },
-    "nature": "TIMID",
+    "nature": "CAREFUL",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Shadow_Ball",
-      "MOVE1": "Sludge_Bomb",
-      "MOVE2": "Will-o-Wisp",
-      "MOVE3": "Confusion"
+      "MOVE0": "Roar",
+      "MOVE1": "Earthquake",
+      "MOVE2": "Iron_Head",
+      "MOVE3": "Thunder_Wave"
     }
   },
   "2":
   {
-    "species": "Dragonite",
+    "species": "Blissey",
     "evs":
     {
-      "0": 4,
-      "1": 252,
-      "2": 0,
+      "0": 252,
+      "1": 0,
+      "2": 252,
       "3": 0,
-      "4": 0,
-      "5": 252
+      "4": 4,
+      "5": 0
     },
     "ivs":
     {
@@ -84,15 +84,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "JOLLY",
+    "nature": "BOLD",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Dragon_Claw",
-      "MOVE2": "Extreme_Speed",
-      "MOVE3": "Dragon_Dance"
+      "MOVE0": "Soft-Boiled",
+      "MOVE1": "Stealth_Rocks",
+      "MOVE2": "Seismic_Toss",
+      "MOVE3": "Toxic"
     }
   },
   "3":
@@ -121,23 +121,23 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
+      "MOVE0": "Roost",
       "MOVE1": "Earthquake",
-      "MOVE2": "Wing_Attack",
-      "MOVE3": "Roost"
+      "MOVE2": "Roar",
+      "MOVE3": "Toxic"
     }
   },
   "4":
   {
-    "species": "Hydreigon",
+    "species": "Dragalge",
     "evs":
     {
-      "0": 4,
+      "0": 252,
       "1": 0,
       "2": 0,
-      "3": 252,
-      "4": 0,
-      "5": 252
+      "3": 0,
+      "4": 240,
+      "5": 52
     },
     "ivs":
     {
@@ -153,10 +153,10 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Draco_Meteor",
-      "MOVE1": "Fire_Blast",
-      "MOVE2": "U-turn",
-      "MOVE3": "Dark_Pulse"
+      "MOVE0": "Toxic_Spikes",
+      "MOVE1": "Sludge_Wave",
+      "MOVE2": "Toxic",
+      "MOVE3": "Dragon_Tail"
     }
   },
   "5":
@@ -186,7 +186,7 @@
     "moves":
     {
       "MOVE0": "Roost",
-      "MOVE1": "Nasty_Plot",
+      "MOVE1": "Toxic",
       "MOVE2": "Air_Slash",
       "MOVE3": "Thunder_Wave"
     }

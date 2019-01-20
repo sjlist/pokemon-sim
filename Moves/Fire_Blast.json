@@ -1,22 +1,23 @@
 {
   "damage_type": "special",
-  "type": "ELECTRIC",
+  "type": "FIRE",
   "priority": 0,
-  "pp": 32,
-  "acc": 100,
+  "pp": 8,
+  "acc": 85,
   "targeting": "ADJACENT_ALL",
   "num_targets": 1,
   "damage_info":
   {
-    "power": 70,
+    "power": 110,
     "crit_chance": 5
   },
   "effects":
   {
     "effect0":
     {
-      "effect": "SWAP",
-      "target": "SELF"
+      "effect": "STATUS",
+      "status": "BURNED",
+      "chance": 10
     }
   }
 }

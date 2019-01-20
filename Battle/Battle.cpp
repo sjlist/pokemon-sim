@@ -24,9 +24,9 @@ Battle::Battle(long seed)
     Battle::generator = std::mt19937(seed);
 }
 
-Party Battle::get_party(Players player)
+Party* Battle::get_party(Players player)
 {
-    return Parties[player];
+    return &Parties[player];
 }
 
 bool Battle::send_out(FIELD_POSITION pos, int poke_position)
@@ -59,6 +59,7 @@ void Battle::return_poke(FIELD_POSITION pos)
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].set_active(false);
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_stat_mods();
             Battle::Parties[get_player_from_position(pos)].party_pokes[i].clear_volatile_statuses();
+            Battle::Parties[get_player_from_position(pos)].party_pokes[i].reset_types();
             Battle::active_field.return_poke(pos);
             break;;
         }
@@ -189,7 +190,7 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
     float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
 
-    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move.get_num_targets(), crit);
+    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move.get_num_targets(), crit);
 
     if(damage_mod == 0)
     {
@@ -197,6 +198,9 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
                   << " is immune to " << type_to_string(move.get_type()) << " type moves\n");
         return std::make_pair(Attack_Result::IMMUNE, 0);
     }
+
+    if(move.get_power() == 0)
+        return std::make_pair(Attack_Result::HIT, 0);
 
     // determine the effective stats to use
     if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL)
@@ -235,6 +239,8 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move 
         return (25.0 * Battle::active_field.active_pokes[def_pos].get_stat(STAT::SPE) /
                 Battle::active_field.active_pokes[atk_pos].get_stat(STAT::SPE)) + 1;
     }
+
+    assert(0);
 }
 
 Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage)
@@ -254,6 +260,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             {
                 return Attack_Result::FLINCHED;
             }
+
             return Attack_Result::MISS;
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
@@ -263,6 +270,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                               << Battle::active_field.active_pokes[effect_target].get_species()
                               << " is now " << status_to_string(move_effect.get_effect_status_type()) << "\n");
             }
+
             return Attack_Result::HIT;
         case MOVE_EFFECTS::VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
@@ -276,13 +284,16 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 }
                 return Attack_Result::HIT;
             }
+
             return Attack_Result::HIT;
         case MOVE_EFFECTS::STAT_CHANGE:
             Battle::active_field.active_pokes[effect_target].stat_change(move_effect.get_stat_changed(), move_effect.get_stages_changed());
+
             return Attack_Result::HIT;
         case MOVE_EFFECTS::FIELD_CHANGE:
-            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), effect_target, effect_target);
-            break;
+            Battle::active_field.modify_field_obj(move_effect.get_field_obj_changed(), def_pos, atk_pos);
+
+            return Attack_Result::HIT;
         case MOVE_EFFECTS::RECOIL:
             DEBUG_MSG("P" << get_player_from_position(effect_target) + 1 << "'s "
                       << Battle::active_field.active_pokes[effect_target].get_species() << " was hurt by recoil\n");
@@ -296,16 +307,39 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 Battle::handle_faint(effect_target);
                 return Attack_Result::FAINT;
             }
+
             return Attack_Result::HIT;
         case MOVE_EFFECTS::HEAL:
             Battle::active_field.active_pokes[effect_target].heal_damage(Battle::active_field.active_pokes[effect_target].get_stat(STAT::HP) * move_effect.get_heal_percent());
-            break;
+
+            return Attack_Result::HIT;
         case MOVE_EFFECTS::REMOVE_TYPE:
             if(Battle::active_field.active_pokes[effect_target].get_type()[0] == move_effect.get_type_removed())
                 Battle::active_field.active_pokes[effect_target].remove_type(0);
             else if(Battle::active_field.active_pokes[effect_target].get_type()[1] == move_effect.get_type_removed())
                 Battle::active_field.active_pokes[effect_target].remove_type(1);
-            break;
+
+            return Attack_Result::HIT;
+        case MOVE_EFFECTS::FLAT_DAMAGE:
+            int damage;
+            if(move_effect.use_flat_level())
+            {
+                damage = Battle::active_field.active_pokes[atk_pos].get_level();
+            }
+            else
+            {
+                damage = move_effect.get_flat_damage();
+            }
+
+            if(!Battle::active_field.active_pokes[effect_target].deal_damage(damage))
+            {
+                Battle::handle_faint(effect_target);
+                return Attack_Result::FAINT;
+            }
+            else
+            {
+                return Attack_Result::HIT;
+            }
         default:
             DEBUG_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");
             assert(0);
@@ -380,6 +414,7 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
     switch(Battle::active_field.active_pokes[pos].get_status())
     {
         case STATUS::ASLEEP:
+            DEBUG_MSG(Battle::active_field.active_pokes[pos].get_species() << " is asleep\n");
             if(Battle::active_field.active_pokes[pos].status_turns == 0)
             {
                 Battle::active_field.active_pokes[pos].status_turns++;
@@ -474,6 +509,7 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
         case STATUS::BADLY_POISONED:
             DEBUG_MSG(" badly poisoned\n");
             DEBUG_MSG("Poison ");
+            Battle::active_field.active_pokes[pos].status_turns++;
             damage = Battle::active_field.active_pokes[pos].get_stat(STAT::HP) / 16.0 * Battle::active_field.active_pokes[pos].status_turns;
             break;;
         default:
@@ -596,7 +632,7 @@ bool Battle::roll_chance(float chance)
     return c < chance;
 }
 
-float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker, Pokemon defender, int num_targets, bool crit)
+float Battle::calculate_damage_modifier(Move move, Pokemon attacker, Pokemon defender, int num_targets, bool crit)
 {
     float damage_modifier = 1;
 
@@ -616,10 +652,12 @@ float Battle::calculate_damage_modifier(Move move, Field field, Pokemon attacker
     if(num_targets > 1)
         damage_modifier *= 0.75;
 
-    if((field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::WATER) || (field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::FIRE))
+    if((Battle::active_field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::WATER)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::FIRE))
         damage_modifier *= 1.5;
 
-    if((field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::FIRE) || (field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::WATER))
+    if((Battle::active_field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::WATER))
         damage_modifier *= 0.5;
 
     if(is_stab(attacker.get_type(), move.get_type()))
@@ -693,8 +731,8 @@ void Battle::load_teams(std::vector<std::string> team_names)
 std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team2";
-    teams[Players::PLAYER_TWO] = "team2";
+    teams[Players::PLAYER_ONE] = "team1";
+    teams[Players::PLAYER_TWO] = "stall";
     return teams;
 }
 

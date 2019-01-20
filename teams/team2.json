@@ -1,15 +1,15 @@
 {
   "0":
   {
-    "species": "Gengar",
+    "species": "Ferrothorn",
     "evs":
     {
-      "0": 4,
+      "0": 252,
       "1": 0,
-      "2": 0,
-      "3": 252,
-      "4": 0,
-      "5": 252
+      "2": 252,
+      "3": 0,
+      "4": 4,
+      "5": 0
     },
     "ivs":
     {
@@ -20,15 +20,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "TIMID",
+    "nature": "CAREFUL",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Shadow_Ball",
-      "MOVE1": "Sludge_Bomb",
-      "MOVE2": "Will-o-Wisp",
-      "MOVE3": "Volt_Switch"
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Spikes",
+      "MOVE2": "Leech_Seed",
+      "MOVE3": "Gyro_Ball"
     }
   },
   "1":
@@ -129,15 +129,15 @@
   },
   "4":
   {
-    "species": "Ferrothorn",
+    "species": "Gengar",
     "evs":
     {
-      "0": 252,
+      "0": 4,
       "1": 0,
-      "2": 252,
-      "3": 0,
-      "4": 4,
-      "5": 0
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
     },
     "ivs":
     {
@@ -148,15 +148,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "CAREFUL",
+    "nature": "TIMID",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Stealth_Rocks",
-      "MOVE1": "Spikes",
-      "MOVE2": "Leech_Seed",
-      "MOVE3": "Gyro_Ball"
+      "MOVE0": "Shadow_Ball",
+      "MOVE1": "Sludge_Bomb",
+      "MOVE2": "Will-o-Wisp",
+      "MOVE3": "Volt_Switch"
     }
   },
   "5":
