@@ -84,6 +84,11 @@ int Move::get_num_targets()
     return Move::num_targets;
 }
 
+bool Move::makes_contact()
+{
+    return Move::contact;
+}
+
 // SET FUNCS
 bool Move::use()
 {
@@ -151,6 +156,15 @@ void Move::load_move(std::string move_name)
             i++;
         }
         Move::last_effect = i - 1;
+    }
+
+    if(move_tree.count("contact"))
+    {
+        Move::contact = true;
+    }
+    else
+    {
+        Move::contact = false;
     }
 }
 

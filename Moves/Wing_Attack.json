@@ -10,5 +10,6 @@
   {
     "power": 60,
     "crit_chance": 5
-  }
+  },
+  "contact": true
 }

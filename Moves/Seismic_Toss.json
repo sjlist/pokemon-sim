@@ -13,5 +13,6 @@
       "effect": "FLAT_DAMAGE",
       "use_level": true
     }
-  }
+  },
+  "contact": true
 }
