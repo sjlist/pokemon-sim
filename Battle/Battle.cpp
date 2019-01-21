@@ -57,6 +57,7 @@ void Battle::return_poke(FIELD_POSITION pos)
     Battle::active_field.active_pokes[pos]->clear_stat_mods();
     Battle::active_field.active_pokes[pos]->clear_volatile_statuses();
     Battle::active_field.active_pokes[pos]->reset_types();
+    Battle::active_field.active_pokes[pos]->reset_protect();
     Battle::active_field.return_poke(pos);
 };
 
@@ -118,16 +119,6 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     else
         res = Battle::attack_target(atk_pos, def_pos, move, crit);
 
-    if(move.makes_contact())
-    {
-        if(res == Attack_Result::HIT)
-        {
-            res = Battle::handle_contact(atk_pos, def_pos);
-        }
-        else
-            Battle::handle_contact(atk_pos, def_pos);
-    }
-
     return res;
 }
 
@@ -150,6 +141,11 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
         return Attack_Result::NO_ATTACK;
     }
 
+    if(Battle::active_field.active_pokes[def_pos]->is_protected() && !move.ignores_protect())
+    {
+        DEBUG_MSG(Battle::active_field.active_pokes[def_pos]->get_species() << " is protected\n");
+        return Attack_Result::NO_ATTACK;
+    }
 
     switch(move.get_damage_type())
     {
@@ -179,6 +175,16 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
         }
         else
             break;
+    }
+
+    if(move.makes_contact())
+    {
+        if(res.first == Attack_Result::HIT)
+        {
+            res.first = Battle::handle_contact(atk_pos, def_pos);
+        }
+        else
+            Battle::handle_contact(atk_pos, def_pos);
     }
 
     // Handle returning faint if needed
@@ -349,10 +355,23 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             {
                 return Attack_Result::HIT;
             }
+        case MOVE_EFFECTS::PROTECT:
+            Battle::active_field.active_pokes[effect_target]->increment_protect_turns();
+            if(Battle::roll_chance(1.0/Battle::active_field.active_pokes[effect_target]->get_protect_turns()))
+            {
+                Battle::active_field.active_pokes[effect_target]->protect_poke();
+                return Attack_Result::HIT;
+            }
+            else
+            {
+                DEBUG_MSG("But it failed\n");
+                return Attack_Result::MISS;
+            }
         default:
             DEBUG_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");
             assert(0);
     }
+    assert(0);
 }
 
 bool Battle::has_lost(Players player)
@@ -378,11 +397,16 @@ bool Battle::can_swap(Players player)
     return false;
 }
 
-void Battle::reset_field_types()
+void Battle::reset_temp_field_status()
 {
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
         Battle::active_field.active_pokes[i]->reset_types();
+
+        //TODO: DOESNT WORK IN DOUBLES CORRECTLY
+        if(!Battle::active_field.active_pokes[i]->is_protected())
+            Battle::active_field.active_pokes[i]->clear_protect_turns();
+        Battle::active_field.active_pokes[i]->reset_protect();
     }
 }
 
@@ -725,7 +749,7 @@ void Battle::load_teams(std::vector<std::string> team_names)
 std::vector<std::string> Battle::select_teams()
 {
     std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team1";
+    teams[Players::PLAYER_ONE] = "team2";
     teams[Players::PLAYER_TWO] = "stall";
     return teams;
 }

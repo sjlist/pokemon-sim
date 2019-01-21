@@ -13,5 +13,6 @@
       "effect": "FIELD_CHANGE",
       "field_object": "SPIKES"
     }
-  }
+  },
+  "protectable": false
 }

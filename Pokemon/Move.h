@@ -40,6 +40,7 @@ public:
     TARGETS get_move_targets();
     int get_num_targets();
     bool makes_contact();
+    bool ignores_protect();
 
     void reset();
 
@@ -61,6 +62,7 @@ private:
     move_damage_type damage_type;
     int last_effect;
     bool contact;
+    bool protectable;
 
     int current_pp;
 };

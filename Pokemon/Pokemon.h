@@ -22,12 +22,14 @@ public:
     int get_volatile_status();
     float get_current_hp();
     int get_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
+    int get_protect_turns();
 
     bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
     std::string get_species();
     bool is_alive();
     bool is_grounded();
+    bool is_protected();
 
     bool use_move(int move_number);
     void set_active(bool state);
@@ -35,16 +37,20 @@ public:
     void heal_damage(int damage);
     bool set_status(STATUS new_status);
     bool set_volatile_status(VOLATILE_STATUS v_status);
+    void protect_poke();
     void stat_change(STAT stat, int stages);
     void faint_poke();
     void increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
+    void increment_protect_turns();
     void remove_type(int type_num);
 
     void reset_types();
+    void reset_protect();
     void clear_stat_mods();
     void clear_volatile_status(VOLATILE_STATUS v_status);
     void clear_volatile_statuses();
     void clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
+    void clear_protect_turns();
 
     int status_turns;
 
@@ -65,6 +71,8 @@ private:
     int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
     STATUS status;
     std::string species;
+    bool protect_active;
+    int protect_turns;
 
     int get_stat_mod(STAT stat);
 

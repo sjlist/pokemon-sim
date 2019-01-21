@@ -30,6 +30,7 @@ enum MOVE_EFFECTS
     HEAL,
     REMOVE_TYPE,
     FLAT_DAMAGE,
+    PROTECT,
     NUM_MOVE_EFFECTS
 };
 

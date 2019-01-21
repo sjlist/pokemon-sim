@@ -60,7 +60,7 @@
       "MOVE0": "Roar",
       "MOVE1": "Earthquake",
       "MOVE2": "Iron_Head",
-      "MOVE3": "Thunder_Wave"
+      "MOVE3": "Protect"
     }
   },
   "2":
@@ -124,7 +124,7 @@
       "MOVE0": "Roost",
       "MOVE1": "Earthquake",
       "MOVE2": "Roar",
-      "MOVE3": "Toxic"
+      "MOVE3": "Protect"
     }
   },
   "4":
