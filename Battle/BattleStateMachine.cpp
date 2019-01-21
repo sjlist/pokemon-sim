@@ -300,7 +300,7 @@ int BattleStateMachine::run(BattleState state)
                         }
                     }
                 }
-                BattleStateMachine::battle.reset_field_types();
+                BattleStateMachine::battle.reset_temp_field_status();
 
                 if(BattleStateMachine::battle_over())
                     state = BattleState::BATTLE_END;

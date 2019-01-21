@@ -89,6 +89,11 @@ bool Move::makes_contact()
     return Move::contact;
 }
 
+bool Move::ignores_protect()
+{
+    return !Move::protectable;
+}
+
 // SET FUNCS
 bool Move::use()
 {
@@ -134,6 +139,8 @@ void Move::load_move(std::string move_name)
 
     Move::move_targets = string_to_target(move_tree.get<std::string>("targeting"));
     Move::num_targets = move_tree.get<int>("num_targets");
+    Move::protectable = !move_tree.count("protectable");
+
 
     if(move_tree.count("damage_info"))
     {

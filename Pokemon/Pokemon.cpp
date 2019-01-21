@@ -104,6 +104,11 @@ int Pokemon::get_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
     return Pokemon::v_status_turns[v_status];
 }
 
+int Pokemon::get_protect_turns()
+{
+    return Pokemon::protect_turns;
+}
+
 bool Pokemon::is_alive()
 {
     return Pokemon::alive;
@@ -120,6 +125,11 @@ bool Pokemon::is_grounded()
         return false;
 
     return true;
+}
+
+bool Pokemon::is_protected()
+{
+    return Pokemon::protect_active;
 }
 
 // STATE CHANGE FUNCTIONS
@@ -237,9 +247,22 @@ void Pokemon::increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
     Pokemon::v_status_turns[v_status]++;
 }
 
+void Pokemon::increment_protect_turns()
+{
+    Pokemon::protect_turns++;
+    if(Pokemon::protect_turns > 6)
+        Pokemon::protect_turns = 6;
+}
+
+
 void Pokemon::remove_type(int type_num)
 {
     Pokemon::current_type[type_num] = PokeTypes::NO_TYPE;
+}
+
+void Pokemon::protect_poke()
+{
+    Pokemon::protect_active = true;
 }
 
 //CLEARING FUNCTIONS
@@ -265,6 +288,11 @@ void Pokemon::clear_volatile_statuses()
 void Pokemon::clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
 {
     Pokemon::v_status_turns[v_status] = 0;
+}
+
+void Pokemon::clear_protect_turns()
+{
+    Pokemon::protect_turns = 0;
 }
 
 void Pokemon::reset_types()
@@ -296,6 +324,11 @@ void Pokemon::stat_change(STAT stat, int stages)
         Pokemon::stat_modifiers[stat] = MAX_STAGES;
     }
 }
+
+void Pokemon::reset_protect()
+{
+    Pokemon::protect_active = false;
+}
 //
 
 // LOADING POKEMON FUNCTIONS
@@ -320,6 +353,8 @@ void Pokemon::reset()
     }
     for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
         Pokemon::v_status_turns[i] = 0;
+
+    Pokemon::reset_protect();
 }
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)

@@ -20,6 +20,7 @@ std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
         {"HEAL", MOVE_EFFECTS::HEAL},
         {"REMOVE_TYPE", MOVE_EFFECTS::REMOVE_TYPE},
         {"FLAT_DAMAGE", MOVE_EFFECTS::FLAT_DAMAGE},
+        {"PROTECT", MOVE_EFFECTS::PROTECT},
         {"NONE", MOVE_EFFECTS::NO_MOVE_EFFECT}
 };
 
@@ -156,6 +157,7 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             break;
         case MOVE_EFFECTS::SWAP:
         case MOVE_EFFECTS::FLINCH:
+        case MOVE_EFFECTS::PROTECT:
             break;
         default:
             assert(0);
