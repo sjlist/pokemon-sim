@@ -41,7 +41,7 @@ public:
     Field active_field;
     Targets Battle_Targets;
 
-    void load_battle();
+    void load_battle(std::vector<std::string> team_choice);
     void reset();
     void update_generator(long seed);
 
@@ -60,7 +60,6 @@ public:
     bool has_lost(Players player);
     void print_battle(bool detailed=false);
 private:
-    std::vector<std::string> select_teams();
     void load_teams(std::vector<std::string> team_names);
     void load_game_moves();
 

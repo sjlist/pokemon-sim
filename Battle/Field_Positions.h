@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_FIELD_POSITIONS_H
 #define POKEMON_SIM_FIELD_POSITIONS_H
 
-#include <Battle/BattleConfig.h>
+#include <Config.h>
 
 enum FIELD_POSITION
 {

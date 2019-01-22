@@ -5,14 +5,15 @@
 #include <Battle/BattleActor.h>
 #include <Battle/BattleStateMachine.h>
 #include <Battle/Players.h>
+#include <Config.h>
+#include <fileIO/loadJSON.h>
 #include <Pokemon/Move.h>
 #include <Utils/Logging.h>
 
+#include <boost/property_tree/ptree.hpp>
 #include <cstdlib>
 #include <map>
 #include <random>
-
-#define DEBUGGING
 
 BattleStateMachine::BattleStateMachine()
 {
@@ -35,7 +36,11 @@ BattleStateMachine::BattleStateMachine(long seed)
 
 void BattleStateMachine::init()
 {
-    BattleStateMachine::battle.load_battle();
+    std::vector<std::string> team_choice(2);
+    boost::property_tree::ptree team_tree = load_json_file("team_choice.json");
+    team_choice[0] = team_tree.get<std::string>("0");
+    team_choice[1] = team_tree.get<std::string>("1");
+    BattleStateMachine::battle.load_battle(team_choice);
     //BattleStateMachine::battle.print_battle(true);
 }
 

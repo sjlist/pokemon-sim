@@ -702,9 +702,9 @@ void Battle::update_generator(long seed)
     Battle::generator = std::mt19937(seed);
 }
 
-void Battle::load_battle()
+void Battle::load_battle(std::vector<std::string> team_choice)
 {
-    Battle::load_teams(Battle::select_teams());
+    Battle::load_teams(team_choice);
     Battle::load_game_moves();
 }
 
@@ -743,14 +743,6 @@ void Battle::load_teams(std::vector<std::string> team_names)
         }
         i++;
     }
-}
-
-std::vector<std::string> Battle::select_teams()
-{
-    std::vector<std::string> teams(2);
-    teams[Players::PLAYER_ONE] = "team2";
-    teams[Players::PLAYER_TWO] = "stall";
-    return teams;
 }
 
 void Battle::load_game_moves()

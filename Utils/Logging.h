@@ -5,11 +5,11 @@
 #ifndef POKEMON_SIM_LOGGING_H
 #define POKEMON_SIM_LOGGING_H
 
+#include <Config.h>
+
 #include <iostream>
 
-//#define DEBUG
-
-#ifdef DEBUG
+#ifdef DEBUG_MESSAGES
 #define DEBUG_MSG(str) do { std::cout << str; } while( false )
 #else
 #define DEBUG_MSG(str) do { } while ( false )
