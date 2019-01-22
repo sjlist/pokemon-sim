@@ -2,10 +2,10 @@
 // Created by slist on 1/3/19.
 //
 
-#include <iostream>
+#include <Battle/Field.h>
+#include <Battle/Targeting.h>
+
 #include <map>
-#include "Targeting.h"
-#include "Field.h"
 
 static std::map<std::string, TARGETS> string_target_map = {
         { "ADJACENT_ALL", TARGETS::ADJACENT_ALL},

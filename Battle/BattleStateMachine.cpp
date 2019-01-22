@@ -2,16 +2,15 @@
 // Created by slist on 12/19/18.
 //
 
-#include "BattleStateMachine.h"
-#include "BattleActor.h"
-#include "Players.h"
-#include "Pokemon/Move.h"
-#include <cstdlib>
-#include <iostream>
-#include <map>
-#include <algorithm>
-#include <random>
+#include <Battle/BattleActor.h>
+#include <Battle/BattleStateMachine.h>
+#include <Battle/Players.h>
+#include <Pokemon/Move.h>
 #include <Utils/Logging.h>
+
+#include <cstdlib>
+#include <map>
+#include <random>
 
 #define DEBUGGING
 

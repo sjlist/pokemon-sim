@@ -2,14 +2,13 @@
 // Created by slist on 12/19/18.
 //
 
-#include "BattleActor.h"
-#include "Battle.h"
-
-#include <time.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
+#include <Battle/Battle.h>
+#include <Battle/BattleActor.h>
 #include <Utils/Logging.h>
+
+#include <stdlib.h>
+#include <string>
+#include <time.h>
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 

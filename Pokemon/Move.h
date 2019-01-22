@@ -5,11 +5,12 @@
 #ifndef POKEMON_SIM_MOVE_H
 #define POKEMON_SIM_MOVE_H
 
+#include <Battle/Targeting.h>
+#include <Pokemon/Effect.h>
+#include <Pokemon/Status.h>
+#include <Pokemon/Type.h>
+
 #include <string>
-#include "Type.h"
-#include "Status.h"
-#include "Effect.h"
-#include "Battle/Targeting.h"
 
 static const int MAX_PRIO = 5;
 static const int MAX_EFFECTS = 4;

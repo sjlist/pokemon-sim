@@ -2,8 +2,9 @@
 // Created by slist on 12/13/18.
 //
 
-#include "Natures.h"
-#include "Stats.h"
+#include <Pokemon/Natures.h>
+#include <Pokemon/Stats.h>
+
 #include <map>
 
 

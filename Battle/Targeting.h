@@ -5,7 +5,9 @@
 #ifndef POKEMON_SIM_TARGETING_H
 #define POKEMON_SIM_TARGETING_H
 
-#include "Field_Positions.h"
+#include <Battle/Field_Positions.h>
+
+#include <string>
 
 //Nameing Scheme of targeting
 //Relative position to attacking pokemon: adjacent, all, others, or self (special case)

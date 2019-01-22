@@ -5,9 +5,9 @@
 #ifndef POKEMON_SIM_BATTLEACTOR_H
 #define POKEMON_SIM_BATTLEACTOR_H
 
-#include "Players.h"
-#include "Field.h"
-#include "Battle.h"
+#include <Battle/Battle.h>
+#include <Battle/Field.h>
+#include <Battle/Players.h>
 
 enum class Actions
 {

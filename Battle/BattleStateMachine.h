@@ -5,8 +5,8 @@
 #ifndef POKEMON_SIM_BATTLESTATEMACHINE_H
 #define POKEMON_SIM_BATTLESTATEMACHINE_H
 
-#include "Battle.h"
-#include "BattleActor.h"
+#include <Battle/Battle.h>
+#include <Battle/BattleActor.h>
 
 enum class BattleState
 {

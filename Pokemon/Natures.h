@@ -5,7 +5,8 @@
 #ifndef POKEMON_SIM_NATURES_H
 #define POKEMON_SIM_NATURES_H
 
-#include "Stats.h"
+#include <Pokemon/Stats.h>
+
 #include <string>
 
 enum Natures

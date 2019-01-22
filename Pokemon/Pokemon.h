@@ -5,11 +5,12 @@
 #ifndef POKEMON_SIM_POKEMON_H
 #define POKEMON_SIM_POKEMON_H
 
-#include "Move.h"
-#include "Natures.h"
-#include "Stats.h"
-#include <string>
+#include <Pokemon/Move.h>
+#include <Pokemon/Natures.h>
+#include <Pokemon/Stats.h>
+
 #include <boost/property_tree/ptree.hpp>
+#include <string>
 
 class Pokemon {
 public:

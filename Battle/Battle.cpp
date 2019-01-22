@@ -2,18 +2,17 @@
 // Created by slist on 12/13/18.
 //
 
-#include "Battle/Battle.h"
-#include "Pokemon/Pokemon.h"
-#include "Pokemon/Type.h"
-#include "Battle/Field.h"
-#include "Battle/Party.h"
-#include "Utils/Logging.h"
+#include <Battle/Battle.h>
+#include <Battle/Field.h>
+#include <Battle/Party.h>
+#include <fileIO/loadJSON.h>
+#include <Pokemon/Pokemon.h>
+#include <Pokemon/Type.h>
+#include <Utils/Logging.h>
 
-#include "fileIO/loadJSON.h"
 #include <boost/property_tree/ptree.hpp>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <cstdlib>
 #include <random>
 

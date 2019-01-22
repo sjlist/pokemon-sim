@@ -2,20 +2,20 @@
 // Created by slist on 12/12/18.
 //
 
-#include <string>
-#include <iostream>
-#include <cassert>
-#include <cmath>
 
-#include "Pokemon.h"
-#include "Stats.h"
-#include "Move.h"
-#include "Natures.h"
-#include "Status.h"
-#include "fileIO/loadJSON.h"
-#include "Utils/Logging.h"
-#include "Type.h"
+
+#include <fileIO/loadJSON.h>
+#include <Pokemon/Move.h>
+#include <Pokemon/Natures.h>
+#include <Pokemon/Pokemon.h>
+#include <Pokemon/Stats.h>
+#include <Pokemon/Status.h>
+#include <Pokemon/Type.h>
+#include <Utils/Logging.h>
+
 #include <boost/property_tree/ptree.hpp>
+#include <cmath>
+#include <string>
 #include <vector>
 
 static int MAX_STAGES = 6;

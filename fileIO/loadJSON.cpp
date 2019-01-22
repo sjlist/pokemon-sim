@@ -2,8 +2,8 @@
 // Created by slist on 12/15/18.
 //
 
-#include "loadJSON.h"
-#include "Config.h"
+#include <Config.h>
+#include <fileIO/loadJSON.h>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 

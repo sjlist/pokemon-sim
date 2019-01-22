@@ -2,8 +2,8 @@
 // Created by slist on 12/18/18.
 //
 
-#include "Status.h"
-#include "Pokemon/Pokemon.h"
+#include <Pokemon/Pokemon.h>
+#include <Pokemon/Status.h>
 
 #include <string>
 #include <map>

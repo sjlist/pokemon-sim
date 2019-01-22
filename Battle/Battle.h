@@ -5,9 +5,9 @@
 #ifndef POKEMON_SIM_BATTLE_H
 #define POKEMON_SIM_BATTLE_H
 
-#include "Pokemon/Pokemon.h"
-#include "Field.h"
-#include "Battle/Party.h"
+#include <Battle/Field.h>
+#include <Battle/Party.h>
+#include <Pokemon/Pokemon.h>
 
 #include <vector>
 #include <random>

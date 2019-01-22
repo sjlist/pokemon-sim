@@ -2,11 +2,11 @@
 // Created by slist on 1/8/19.
 //
 
-#include <iostream>
+#include <Battle/Party.h>
+#include <Pokemon/Pokemon.h>
+#include <Utils/Logging.h>
+
 #include <cmath>
-#include "Party.h"
-#include "Pokemon/Pokemon.h"
-#include "Utils/Logging.h"
 
 Party::Party() = default;
 

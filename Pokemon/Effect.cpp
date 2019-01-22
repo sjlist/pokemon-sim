@@ -2,8 +2,8 @@
 // Created by slist on 12/27/18.
 //
 
-#include "Effect.h"
-#include "Type.h"
+#include <Pokemon/Effect.h>
+#include <Pokemon/Type.h>
 
 #include <boost/property_tree/ptree.hpp>
 #include <map>

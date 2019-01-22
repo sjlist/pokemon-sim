@@ -2,9 +2,9 @@
 // Created by slist on 12/12/18.
 //
 
-#include "Type.h"
+#include <Pokemon/Type.h>
+
 #include <map>
-#include <iostream>
 
 
 static float type_effectiveness [(int)PokeTypes::NUM_TYPES] [(int)PokeTypes::NUM_TYPES] = {

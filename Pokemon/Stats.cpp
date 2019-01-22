@@ -2,9 +2,10 @@
 // Created by slist on 12/20/18.
 //
 
-#include "Stats.h"
-#include <string>
+#include <Pokemon/Stats.h>
+
 #include <map>
+#include <string>
 
 static std::map<STAT, std::string> string_stat_map = {
         { STAT::HP,  "HP" },

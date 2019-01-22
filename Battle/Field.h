@@ -5,10 +5,10 @@
 #ifndef POKEMON_SIM_FIELD_H
 #define POKEMON_SIM_FIELD_H
 
-#include "Pokemon/Pokemon.h"
-#include "Players.h"
-#include "Field_Positions.h"
-#include "Field_Objects.h"
+#include <Battle/Field_Objects.h>
+#include <Battle/Field_Positions.h>
+#include <Battle/Players.h>
+#include <Pokemon/Pokemon.h>
 
 enum Terrain
 {

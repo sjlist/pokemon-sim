@@ -5,14 +5,14 @@
 #ifndef POKEMON_SIM_EFFECT_H
 #define POKEMON_SIM_EFFECT_H
 
-#include <string>
-#include "Status.h"
-#include "Stats.h"
-#include "Type.h"
-#include "Battle/Field_Positions.h"
+#include <Battle/Field_Objects.h>
+#include <Battle/Field_Positions.h>
+#include <Pokemon/Stats.h>
+#include <Pokemon/Status.h>
+#include <Pokemon/Type.h>
 
 #include <boost/property_tree/ptree.hpp>
-#include <Battle/Field_Objects.h>
+#include <string>
 
 /*
  * Effects are the general non damaging effects that a move can have, stat bufff, status application ...

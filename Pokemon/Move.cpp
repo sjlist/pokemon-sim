@@ -2,18 +2,17 @@
 // Created by slist on 12/12/18.
 //
 
-#include "Move.h"
-#include "Status.h"
-#include "fileIO/loadJSON.h"
-#include "Type.h"
-#include "Battle/Targeting.h"
-#include "Utils/Logging.h"
-#include <boost/property_tree/ptree.hpp>
-#include <string>
-#include <algorithm>
-#include <map>
+#include <Battle/Targeting.h>
+#include <fileIO/loadJSON.h>
+#include <Pokemon/Move.h>
+#include <Pokemon/Status.h>
+#include <Pokemon/Type.h>
+#include <Utils/Logging.h>
 
-#include <iostream>
+#include <algorithm>
+#include <boost/property_tree/ptree.hpp>
+#include <map>
+#include <string>
 
 static std::map<std::string, move_damage_type> string_move_damage_type_map = {
         { "NONE", move_damage_type::NO_DAMAGE_TYPE},

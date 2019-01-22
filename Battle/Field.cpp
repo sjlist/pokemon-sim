@@ -2,9 +2,8 @@
 // Created by slist on 12/14/18.
 //
 
-#include "Players.h"
-#include "Field.h"
-#include <iostream>
+#include <Battle/Players.h>
+#include <Battle/Field.h>
 #include <Utils/Logging.h>
 
 Field::Field()

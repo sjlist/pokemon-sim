@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_PARTY_H
 #define POKEMON_SIM_PARTY_H
 
-#include "Pokemon/Pokemon.h"
+#include <Pokemon/Pokemon.h>
 
 class Party {
 public:
