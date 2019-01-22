@@ -12,9 +12,10 @@
 const std::string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 
 #define BATTLE_TYPE SINGLE_BATTLE
+#define DEBUG_LEVEL 0
 
-#define DEBUG_MESSAGES
+#if DEBUG_LEVEL > 3
 #define DEBUGGING
-
+#endif
 
 #endif /* POKEMON_SIM_CONFIG_H */
