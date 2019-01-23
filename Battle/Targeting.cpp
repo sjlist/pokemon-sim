@@ -4,6 +4,7 @@
 
 #include <Battle/Field.h>
 #include <Battle/Targeting.h>
+#include <Utils/Logging.h>
 
 #include <map>
 
@@ -61,7 +62,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
         case ALL_FRIENDLY:
         case SELF:
         case ALL_ALL:
-            assert(0);
+            ERR_MSG("Double Battles not supported yet\n");
 #endif
 #if BATTLE_TYPE == TRIPLE_BATTLE
         case ADJACENT_ALL:
@@ -72,10 +73,10 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
         case ALL_FRIENDLY:
         case SELF:
         case ALL_ALL:
-            assert(0);
+            ERR_MSG("Triple Battles not supported yet\n");
 #endif
         default:
-            assert(0);
+            ERR_MSG("Unhandled targeting case\n");
     }
 }
 

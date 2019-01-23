@@ -9,15 +9,15 @@
 
 #include <iostream>
 
-#if DEBUG_LEVEL > 3
+#if DEBUG_LEVEL >= 3
 #define DEBUG_MESSAGES
 #endif
 
-#if DEBUG_LEVEL > 2
+#if DEBUG_LEVEL >= 2
 #define WARNING_MESSAGES
 #endif
 
-#if DEBUG_LEVEL > 1
+#if DEBUG_LEVEL >= 1
 #define ERROR_MESSAGES
 #endif
 
@@ -35,9 +35,9 @@
 #endif
 
 #ifdef ERROR_MESSAGES
-#define ERR_MES(str) do { std::cout << str; } while( false )
+#define ERR_MSG(str) do { std::cout << str;  assert(0); } while( false )
 #else
-#define ERR_MES(str) do { } while ( false )
+#define ERR_MSG(str) do { assert(0); } while ( false )
 #endif
 
 #endif //POKEMON_SIM_LOGGING_H

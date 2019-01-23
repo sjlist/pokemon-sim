@@ -210,8 +210,7 @@ bool Pokemon::set_status(STATUS new_status)
         case STATUS::NO_STATUS:
             break;
         default:
-            DEBUG_MSG("Unhandled status " << new_status << "\n");
-            assert(0);
+            ERR_MSG("Unhandled status " << new_status << "\n");
     }
 
     Pokemon::status = new_status;
@@ -408,8 +407,7 @@ void Pokemon::load_species(std::string species_name)
     }
     catch(...)
     {
-        DEBUG_MSG("ERROR: FAILED TO LOAD SPECIES " << species_name << "\n");
-        assert(0);
+        ERR_MSG("ERROR: FAILED TO LOAD SPECIES " << species_name << "\n");
     }
 
     Pokemon::base_stats[STAT::HP]  = root.get<int>("HP", 0);
@@ -463,7 +461,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
                 Pokemon::base_stats[i] = 1;
                 break;;
             default:
-                assert(0);
+                ERR_MSG("Unhandled stat " << i << std::endl);
         }
     }
 }

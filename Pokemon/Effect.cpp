@@ -4,6 +4,7 @@
 
 #include <Pokemon/Effect.h>
 #include <Pokemon/Type.h>
+#include <Utils/Logging.h>
 
 #include <boost/property_tree/ptree.hpp>
 #include <map>
@@ -160,7 +161,7 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
         case MOVE_EFFECTS::PROTECT:
             break;
         default:
-            assert(0);
+            ERR_MSG("Unhandled Effect Type: " << Effect::effect_type << std::endl);
     }
 
 }

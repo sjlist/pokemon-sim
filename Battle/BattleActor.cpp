@@ -93,7 +93,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             DEBUG_MSG("struggle\n");
     }
     else
-        assert(0);
+        ERR_MSG("Unhandled Command Type" << message.move_command << std::endl);
 
     return message;
 }

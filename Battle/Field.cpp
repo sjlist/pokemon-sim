@@ -70,7 +70,7 @@ void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_PO
         case Field_Objects::WEATHER:
         case Field_Objects::TRICK_ROOM:
         default:
-            assert(0);
+            ERR_MSG("Unhandled field object\n");
     }
 }
 
@@ -83,7 +83,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
         return Field::handle_entrance(pos);
     }
     else
-        assert(0);
+        ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << std::endl);
 }
 
 void Field::return_poke(FIELD_POSITION pos)
@@ -254,5 +254,5 @@ Players get_player_from_position(int pos)
        )
         return Players::PLAYER_TWO;
 
-    assert(0);
+    ERR_MSG("Impossible field position\n");
 }

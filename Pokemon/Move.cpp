@@ -125,7 +125,7 @@ void Move::load_move(std::string move_name)
     }
     catch(...)
     {
-        assert(0);
+        ERR_MSG("Failed to read move " << move_name << std::endl);
     }
 
     Move::type = string_to_type(move_tree.get<std::string>("type"));

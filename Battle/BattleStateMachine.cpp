@@ -50,8 +50,7 @@ int BattleStateMachine::run(BattleState state)
     Players faint_player;
     FIELD_POSITION swap_pos;
     int reserve_poke;
-    int MAX_TURN_COUNT = 300;
-    int winner = 0, removed;
+    int removed;
 
     BattleStateMachine::turn_count = 0;
 
@@ -91,10 +90,10 @@ int BattleStateMachine::run(BattleState state)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i]->get_current_hp() == 0)
-                        assert(0);
-                if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
-                    assert(0);
+                        ERR_MSG("Pokemon started the turn fainted\n");
 #endif
+                if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
+                    ERR_MSG("Exceeded max turn count\n");
                 DEBUG_MSG("\n-------Turn " << BattleStateMachine::turn_count << " start-------\n");
                 BattleStateMachine::battle.print_battle();
                 //get action choice
@@ -126,7 +125,7 @@ int BattleStateMachine::run(BattleState state)
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                         atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
                     else
-                        assert(0);
+                        ERR_MSG("Unhandled action option\n");
 
                     switch(atk_r)
                     {
@@ -261,8 +260,7 @@ int BattleStateMachine::run(BattleState state)
                         case Attack_Result::NO_ATTACK:
                             break;;
                         default:
-                            DEBUG_MSG("Unhandled attack result\n");
-                            assert(0);
+                            ERR_MSG("Unhandled attack result\n");
                     }
 
                     if(state != BattleState::TURN_EXECUTE)
@@ -332,7 +330,7 @@ int BattleStateMachine::end_battle()
     else if(BattleStateMachine::battle.has_lost(Players::PLAYER_TWO))
         loser += 1;
     else
-        assert(0);
+        ERR_MSG("No loser, can't end battle\n");
 
     if(loser != 0)
     {
@@ -364,8 +362,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
                 move_prio = BattleStateMachine::battle.active_field.active_pokes[pos]->moves[messages[pos].move_num].get_priority();
                 break;
             default:
-                DEBUG_MSG("Unsupported Command " << messages[pos].move_command << "\n");
-                assert(0);
+                ERR_MSG("Unsupported Command " << messages[pos].move_command << "\n");
         }
         prio_map[pos] = move_prio;
     }

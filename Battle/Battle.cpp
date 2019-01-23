@@ -30,8 +30,8 @@ Party* Battle::get_party(Players player)
 
 bool Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
-    if(poke_position == -1)
-        assert(0);
+    if(poke_position < 0 || poke_position > 5)
+        ERR_MSG("Invlaid party position\n");
     Players player = get_player_from_position(pos);
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
@@ -86,8 +86,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         // Check if there is enough pp to use the move
         if(!Battle::active_field.active_pokes[atk_pos]->use_move(move_number))
         {
-            DEBUG_MSG("Not enough PP\n");
-            assert(0);
+            ERR_MSG("Not enough PP\n");
         }
         move = Battle::active_field.active_pokes[atk_pos]->moves[move_number];
     }
@@ -158,8 +157,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             res.first = Attack_Result::NO_ATTACK;
             break;
         default:
-            DEBUG_MSG("Unhandled attack type" << move.get_damage_type() << "\n");
-            assert(0);
+            ERR_MSG("Unhandled attack type" << move.get_damage_type() << "\n");
     }
 
     // Handling move effects
@@ -249,7 +247,7 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move 
                 Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE)) + 1;
     }
 
-    assert(0);
+    ERR_MSG("Unhandled move power equation\n");
 }
 
 Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender)
@@ -367,10 +365,9 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 return Attack_Result::MISS;
             }
         default:
-            DEBUG_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");
-            assert(0);
+            ERR_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");
     }
-    assert(0);
+    ERR_MSG("Handling of move effect " << move_effect.get_effect() << " did not return correctly\n");
 }
 
 bool Battle::has_lost(Players player)
@@ -406,6 +403,9 @@ void Battle::reset_temp_field_status()
         if(!Battle::active_field.active_pokes[i]->is_protected())
             Battle::active_field.active_pokes[i]->clear_protect_turns();
         Battle::active_field.active_pokes[i]->reset_protect();
+#if BATTLE_TYPE != SINGLE_BATTLE
+        WARN_MSG("Protect clearing is only properly supported in single battles\n");
+#endif
     }
 }
 
@@ -580,7 +580,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                     DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " snapped out of its confusion\n");
                     return Attack_Result::HIT;
                 default:
-                    assert(0);
+                    ERR_MSG("Confusion turn count impossible\n");
             }
 
             if(roll_chance(Battle::game_moves[Game_Moves::MOVE_CONFUSION].get_acc()))
@@ -612,7 +612,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                 Battle::active_field.active_pokes[pos]->clear_volatile_status(VOLATILE_STATUS::TAUNTED);
                 return Attack_Result::HIT;
             }
-            assert(0);
+            ERR_MSG("Impossible Taunt status handling\n");
         case VOLATILE_STATUS::BOUND:
         case VOLATILE_STATUS::CANT_ESCAPE:
         case VOLATILE_STATUS::CURSE:
@@ -627,7 +627,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
         case VOLATILE_STATUS::TELEKINESIS:
         case VOLATILE_STATUS::TORMENT:
         default:
-            assert(0);
+            ERR_MSG("Unhandled Volatile status");
     }
     return Attack_Result::HIT;
 }
