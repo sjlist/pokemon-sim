@@ -28,4 +28,6 @@ enum FIELD_POSITION
     ALL_TARGETS
 };
 
+std::string get_string_from_field_position(FIELD_POSITION pos);
+
 #endif //POKEMON_SIM_FIELD_POSITIONS_H

@@ -78,7 +78,10 @@ int BattleStateMachine::run(BattleState state)
 //                                            )));
 //                }
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_1, 1);
+
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_1, 1);
 
                 DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
@@ -228,7 +231,7 @@ int BattleStateMachine::run(BattleState state)
                                     while(!BattleStateMachine::battle.swap_poke(static_cast<FIELD_POSITION>(p),
                                                                          BattleStateMachine::actor.choose_pokemon(
                                                                                  BattleStateMachine::battle.get_party(
-                                                                                         get_player_from_position(p
+                                                                                         get_player_from_position(static_cast<FIELD_POSITION>(p)
                                                                                          )))))
                                     {
                                         if(BattleStateMachine::battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(p))))
@@ -313,7 +316,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::BATTLE_END:
                 return BattleStateMachine::end_battle();
             default:
-                assert(0);
+                ERR_MSG("Unhandled Turn State\n");
         }
     }
 
@@ -347,11 +350,11 @@ int BattleStateMachine::end_battle()
 
 std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessage* messages)
 {
-    std::vector<FIELD_POSITION> prio_list (BattleStateMachine::num_players);
-    int move_prio;
-    std::map<int, int> prio_map;
+    std::vector<FIELD_POSITION> prio_list (FIELD_POSITION::NUM_POSITIONS);
+    int move_prio, choice;
+    std::map<FIELD_POSITION, int> prio_map;
 
-    for(int pos = FIELD_POSITION::PLAYER_1_0; pos < FIELD_POSITION ::NUM_POSITIONS; pos++)
+    for(int pos = FIELD_POSITION::PLAYER_1_0; pos < FIELD_POSITION::NUM_POSITIONS; pos++)
     {
         switch(messages[pos].move_command)
         {
@@ -364,15 +367,15 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
             default:
                 ERR_MSG("Unsupported Command " << messages[pos].move_command << "\n");
         }
-        prio_map[pos] = move_prio;
+        prio_map[static_cast<FIELD_POSITION>(pos)] = move_prio;
     }
-
-    if(prio_map[Players::PLAYER_ONE] > prio_map[Players::PLAYER_TWO])
+#if BATTLE_TYPE == SINGLE_BATTLE
+    if(prio_map[FIELD_POSITION::PLAYER_1_0] > prio_map[FIELD_POSITION::PLAYER_2_0])
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(prio_map[Players::PLAYER_ONE] < prio_map[Players::PLAYER_TWO])
+    else if(prio_map[FIELD_POSITION::PLAYER_1_0] < prio_map[FIELD_POSITION::PLAYER_2_0])
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
@@ -392,12 +395,73 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
          == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
     {
-        int choice = BattleStateMachine::make_choice(0, 1);
+        choice = BattleStateMachine::make_choice(0, 1);
         prio_list.at(0) = static_cast<FIELD_POSITION>(choice);
         prio_list.at(1) = static_cast<FIELD_POSITION>(!choice);
     }
     else
-        assert(0);
+        ERR_MSG("Unhandled Priority list case\n");
+#else
+    FIELD_POSITION temp;
+
+    // initialize the prio list to be in order of the field positions, just to load the values in
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        prio_list.at(i) = static_cast<FIELD_POSITION>(i);
+    }
+
+    //bubble sort by move priority
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        {
+            //if i prio is less than j prio, swap
+            if(prio_map[prio_list.at(i)] < prio_map[prio_list.at(j)])
+            {
+                temp = prio_list.at(i);
+                prio_list.at(i) = static_cast<FIELD_POSITION >(j);
+                prio_list.at(j) = temp;
+
+            }
+        }
+    }
+
+    //bubble sort by speed within move priority
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        {
+            //if i prio is equal to j prio, comapre speeds, if slower then swap
+            if(prio_map[prio_list.at(i)] == prio_map[prio_list.at(j)]
+            && BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
+             < BattleStateMachine::battle.active_field.active_pokes[prio_list.at(j)]->get_stat(STAT::SPE))
+            {
+                temp = prio_list.at(i);
+                prio_list.at(i) = prio_list.at(j);
+                prio_list.at(j) = temp;
+
+            }
+        }
+    }
+
+    //handle speed ties
+    //TODO: HANDLE 3 OR 4 WAY TIES
+    for(int i = 0; i < (FIELD_POSITION::NUM_POSITIONS - 1); i++)
+    {
+        if(prio_map[prio_list.at(i)] == prio_map[prio_list.at(i+1)]
+           && BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
+              == BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i+1)]->get_stat(STAT::SPE))
+        {
+            choice = BattleStateMachine::make_choice(0, 1);
+            if(choice == 1)
+            {
+                temp = prio_list.at(i);
+                prio_list.at(i) = static_cast<FIELD_POSITION >(i+1);
+                prio_list.at(i+1) = temp;
+            }
+        }
+    }
+#endif
 
     return prio_list;
 }

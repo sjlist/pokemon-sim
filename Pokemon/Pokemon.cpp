@@ -470,7 +470,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
 
 void Pokemon::print_pokemon(bool detailed)
 {
-#ifdef DEBUG
+#ifdef DEBUGGING
     if(Pokemon::species.empty())
         return;
 

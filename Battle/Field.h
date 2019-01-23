@@ -64,6 +64,6 @@ private:
     bool active_open(FIELD_POSITION pos);
 };
 
-Players get_player_from_position(int pos);
+Players get_player_from_position(FIELD_POSITION pos);
 
 #endif //POKEMON_SIM_FIELD_H

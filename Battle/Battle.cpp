@@ -399,12 +399,12 @@ void Battle::reset_temp_field_status()
     {
         Battle::active_field.active_pokes[i]->reset_types();
 
-        //TODO: DOESNT WORK IN DOUBLES CORRECTLY
+        //TODO: DOESNT WORK IN DOUBLES CORRECTLY DUE TO WIDEGAURD AND THE LIKE
         if(!Battle::active_field.active_pokes[i]->is_protected())
             Battle::active_field.active_pokes[i]->clear_protect_turns();
         Battle::active_field.active_pokes[i]->reset_protect();
 #if BATTLE_TYPE != SINGLE_BATTLE
-        WARN_MSG("Protect clearing is only properly supported in single battles\n");
+        WARN_MSG("Protect clearing is only properly supported in single battles due to team wide protects\n");
 #endif
     }
 }
@@ -753,7 +753,7 @@ void Battle::load_game_moves()
 
 void Battle::print_battle(bool detailed)
 {
-#ifdef DEBUG
+#ifdef DEBUGGING
     Battle::active_field.print_field(detailed);
 
     DEBUG_MSG("Player ONE party pokemon:\n");

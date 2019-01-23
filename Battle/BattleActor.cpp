@@ -67,7 +67,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             break;;
     }
 
-    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " chose action: ");
+    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << "'s " << field.active_pokes[pos]->get_species() << " chose action: ");
     if(message.move_command == Commands::COMMAND_SWAP)
     {
         DEBUG_MSG("SWAP, sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");

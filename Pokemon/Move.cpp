@@ -178,7 +178,7 @@ void Move::load_move(std::string move_name)
 //Printing moves
 void Move::print_move()
 {
-#ifdef DEBUG
+#ifdef DEBUGGING
     DEBUG_MSG("Name: " << Move::name << "\n");
     DEBUG_MSG("Damage Type: " << Move::damage_type << "\n");
     DEBUG_MSG("Type: " << Move::type << "\n");

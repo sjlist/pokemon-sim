@@ -26,6 +26,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
 {
     int friendly_offset = get_player_from_position(atk_pos)*FIELD_POSITION::NUM_POSITIONS/2;
     int enemy_offset = FIELD_POSITION::NUM_POSITIONS/2 - friendly_offset;
+    Targets::num_valid_targets = 0;
     switch(attack_target)
     {
 #if BATTLE_TYPE == SINGLE_BATTLE
@@ -54,15 +55,50 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
             break;;
 #endif
 #if BATTLE_TYPE == DOUBLE_BATTLE
-        case ADJACENT_ALL:
-        case ADJACENT_ENEMY:
+        case SELF:
+            Targets::valid_targets[0] = atk_pos;
+            Targets::num_valid_targets = 1;
+            break;;
+        case ALL_ALL:
+            for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+            {
+                Targets::valid_targets[i] = static_cast<FIELD_POSITION>(i);
+            }
+            Targets::num_valid_targets = FIELD_POSITION::NUM_POSITIONS;
+            break;;
         case ALL_OTHERS:
+        case ADJACENT_ALL:
+            for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+            {
+                if(static_cast<FIELD_POSITION>(i) != atk_pos)
+                {
+                    Targets::valid_targets[Targets::num_valid_targets] = static_cast<FIELD_POSITION>(i);
+                    Targets::num_valid_targets++;
+                }
+            }
+            break;;
         case ALL_ENEMY:
+        case ADJACENT_ENEMY:
+            for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+            {
+                if(get_player_from_position(static_cast<FIELD_POSITION>(i)) != get_player_from_position(atk_pos))
+                {
+                    Targets::valid_targets[Targets::num_valid_targets] = static_cast<FIELD_POSITION>(i);
+                    Targets::num_valid_targets++;
+                }
+            }
+            break;;
         case ADJACENT_FRIENDLY:
         case ALL_FRIENDLY:
-        case SELF:
-        case ALL_ALL:
-            ERR_MSG("Double Battles not supported yet\n");
+            for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+            {
+                if(get_player_from_position(static_cast<FIELD_POSITION>(i)) == get_player_from_position(atk_pos))
+                {
+                    Targets::valid_targets[Targets::num_valid_targets] = static_cast<FIELD_POSITION>(i);
+                    Targets::num_valid_targets++;
+                }
+            }
+            break;;
 #endif
 #if BATTLE_TYPE == TRIPLE_BATTLE
         case ADJACENT_ALL:
