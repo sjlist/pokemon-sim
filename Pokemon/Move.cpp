@@ -93,6 +93,11 @@ bool Move::ignores_protect()
     return !Move::protectable;
 }
 
+bool Move::must_be_used_first_turn()
+{
+    return Move::first_turn;
+}
+
 // SET FUNCS
 bool Move::use()
 {
@@ -138,8 +143,9 @@ void Move::load_move(std::string move_name)
 
     Move::move_targets = string_to_target(move_tree.get<std::string>("targeting"));
     Move::num_targets = move_tree.get<int>("num_targets");
-    Move::protectable = !move_tree.count("protectable");
 
+    Move::protectable = !move_tree.count("protectable");
+    Move::first_turn = move_tree.count("first_turn");
 
     if(move_tree.count("damage_info"))
     {

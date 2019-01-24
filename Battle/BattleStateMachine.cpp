@@ -141,7 +141,13 @@ int BattleStateMachine::run(BattleState state)
                         atk_r = Attack_Result::SWAP;
                     //default to a attack
                     else if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
-                        atk_r = BattleStateMachine::battle.attack(prio.at(i), messages[prio.at(i)].target_pos, messages[prio.at(i)].move_num);
+                    {
+                        atk_r = BattleStateMachine::battle.attack(
+                                prio.at(i),
+                                messages[prio.at(i)].target_pos,
+                                messages[prio.at(i)].move_num);
+                        BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->first_turn = false;
+                    }
                     else
                         ERR_MSG("Unhandled action option\n");
 
@@ -308,6 +314,7 @@ int BattleStateMachine::run(BattleState state)
                                           << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->get_species() << " flinched\n");
 
                                 prio = BattleStateMachine::remove_priority_list(removed, prio);
+                                BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->first_turn = false;
                             }
                             break;;
 

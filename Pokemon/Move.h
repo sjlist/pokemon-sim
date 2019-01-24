@@ -43,6 +43,7 @@ public:
     int get_num_targets();
     bool makes_contact();
     bool ignores_protect();
+    bool must_be_used_first_turn();
 
     void reset();
 
@@ -67,6 +68,7 @@ private:
     bool protectable;
 
     int current_pp;
+    bool first_turn;
 };
 
 

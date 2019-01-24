@@ -1,0 +1,24 @@
+{
+  "damage_type": "physical",
+  "type": "NORMAL",
+  "priority": 3,
+  "pp": 16,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "first_turn": true,
+  "contact": true,
+  "damage_info":
+  {
+    "power": 40,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "FLINCH",
+      "chance": 100
+    }
+  }
+}

@@ -99,9 +99,14 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     else
         move = &Battle::game_moves[Game_Moves::MOVE_STRUGGLE];
 
-
     DEBUG_MSG("P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos]->get_species()
            << " used " << move->get_name() << "\n");
+
+    if(move->must_be_used_first_turn() && !Battle::active_field.active_pokes[atk_pos]->first_turn)
+    {
+        DEBUG_MSG("But it failed\n");
+        return Attack_Result::NO_ATTACK;
+    }
 
     if(Battle::roll_chance(move->get_crit()))
         crit = true;

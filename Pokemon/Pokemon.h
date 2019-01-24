@@ -55,6 +55,7 @@ public:
 
     int status_turns;
     bool to_be_swapped;
+    bool first_turn;
 
     void print_pokemon(bool detailed=false);
 

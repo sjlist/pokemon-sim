@@ -88,6 +88,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
     if(Field::active_pokes[pos] == nullptr)
     {
         Field::active_pokes[pos] = poke;
+        Field::active_pokes[pos]->first_turn = true;
         Field::active_pokes[pos]->set_active(true);
         return Field::handle_entrance(pos);
     }
