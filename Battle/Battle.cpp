@@ -28,10 +28,14 @@ Party* Battle::get_party(Players player)
     return &Parties[player];
 }
 
-bool Battle::send_out(FIELD_POSITION pos, int poke_position)
+Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
 {
-    if(poke_position < 0 || poke_position > 5)
+    if(poke_position < -1 || poke_position > 5)
         ERR_MSG("Invlaid party position\n");
+
+    if(poke_position == -1)
+        return Attack_Result::NO_ATTACK;
+
     Players player = get_player_from_position(pos);
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
@@ -46,9 +50,9 @@ bool Battle::send_out(FIELD_POSITION pos, int poke_position)
      && Battle::active_field.active_pokes[pos]->get_current_hp() == 0)
     {
         Battle::handle_faint(pos);
-        return false;
+        return Attack_Result::FAINT;
     }
-    return true;
+    return Attack_Result::HIT;
 }
 
 void Battle::return_poke(FIELD_POSITION pos)
@@ -62,7 +66,7 @@ void Battle::return_poke(FIELD_POSITION pos)
     Battle::active_field.return_poke(pos);
 };
 
-bool Battle::swap_poke(FIELD_POSITION pos, int poke_position)
+Attack_Result Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 {
 
     Battle::return_poke(pos);
@@ -126,6 +130,12 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 {
     std::pair<Attack_Result, float> res;
 
+    if(Battle::active_field.active_pokes[def_pos] == nullptr)
+    {
+        DEBUG_MSG("Attack Failed due to no pokemon being in slot: " << get_string_from_field_position(def_pos) << std::endl);
+        return Attack_Result::NO_ATTACK;
+    }
+
     // roll for hit
     if(!Battle::roll_acc(move.get_acc(),
                          Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::ACC),
@@ -133,12 +143,6 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         DEBUG_MSG(move.get_name() << " missed\n");
         return Attack_Result::MISS;
-    }
-
-    if(!Battle::active_field.active_pokes[def_pos]->is_alive())
-    {
-        DEBUG_MSG("Attack Failed\n");
-        return Attack_Result::NO_ATTACK;
     }
 
     if(Battle::active_field.active_pokes[def_pos]->is_protected() && !move.ignores_protect())
@@ -376,7 +380,7 @@ bool Battle::has_lost(Players player)
 {
     for(int i = 0; i < 6; i++)
     {
-        if(Battle::Parties[player].party_pokes[i].is_alive() && !Battle::Parties[player].party_pokes[i].is_active())
+        if(Battle::Parties[player].party_pokes[i].is_alive())
         {
             return false;
         }
@@ -399,12 +403,16 @@ void Battle::reset_temp_field_status()
 {
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
+        if(Battle::active_field.active_pokes[i] == nullptr)
+            continue;
+
         Battle::active_field.active_pokes[i]->reset_types();
 
         //TODO: DOESNT WORK IN DOUBLES CORRECTLY DUE TO WIDEGAURD AND THE LIKE
         if(!Battle::active_field.active_pokes[i]->is_protected())
             Battle::active_field.active_pokes[i]->clear_protect_turns();
         Battle::active_field.active_pokes[i]->reset_protect();
+
 #if BATTLE_TYPE != SINGLE_BATTLE
         //WARN_MSG("Protect clearing is only properly supported in single battles due to team wide protects\n");
 #endif
@@ -485,7 +493,9 @@ bool Battle::handle_end_turn_field_status()
     bool fainted = false;
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        if(!Battle::handle_end_turn_statuses(static_cast<FIELD_POSITION>(i)))
+        if(Battle::active_field.active_pokes[i] == nullptr)
+            continue;
+        else if(!Battle::handle_end_turn_statuses(static_cast<FIELD_POSITION>(i)))
         {
             Battle::handle_faint(static_cast<FIELD_POSITION>(i));
             fainted = true;

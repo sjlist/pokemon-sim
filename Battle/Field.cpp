@@ -184,7 +184,9 @@ void Field::print_field(bool detailed)
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
         DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << std::endl);
-        if(Field::active_pokes[i]->is_active())
+        if(Field::active_pokes[i] == nullptr)
+            DEBUG_MSG("NO POKEMON\n");
+        else if(Field::active_pokes[i]->is_active())
             Field::active_pokes[i]->print_pokemon(detailed);
         DEBUG_MSG(std::endl);
     }
@@ -219,6 +221,7 @@ void Field::print_field(bool detailed)
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
 {
     if(Field::leech_seed_positions[pos] != FIELD_POSITION::NO_POSITION
+    && Field::active_pokes[Field::leech_seed_positions[pos]] != nullptr
     && Field::active_pokes[Field::leech_seed_positions[pos]]->is_alive())
     {
         int damage = Field::active_pokes[pos]->get_stat(STAT::HP) / 8.0;
