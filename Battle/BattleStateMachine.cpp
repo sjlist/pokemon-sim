@@ -408,14 +408,16 @@ int BattleStateMachine::end_battle()
     else
         ERR_MSG("No loser, can't end battle\n");
 
-    if(loser != 0)
+    if(loser == 1 || loser == -1)
     {
         DEBUG_MSG("Player " << ((loser + 1) / 2) + 1 << " has lost the battle!\n");
     }
-    else
+    else if(loser == 0)
     {
         ERR_MSG("TIED\n");
     }
+    else
+        ERR_MSG("How did you get this battle result?\n");
 
 
     return loser;
