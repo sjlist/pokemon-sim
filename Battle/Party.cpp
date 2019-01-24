@@ -23,7 +23,7 @@ void Party::reset()
 
 void Party::print_party(bool detailed)
 {
-#ifdef DEBUG
+#ifdef DEBUGGING
     for(int i = 0; i < 6; i++)
         if (detailed)
             Party::party_pokes[i].print_pokemon(detailed);

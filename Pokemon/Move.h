@@ -13,6 +13,7 @@
 #include <string>
 
 static const int MAX_PRIO = 5;
+static const int FAINT_PRIO = -10;
 static const int MAX_EFFECTS = 4;
 
 enum move_damage_type

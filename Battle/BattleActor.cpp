@@ -57,17 +57,17 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             if(message.move_num != 5)
             {
                 move = field.active_pokes[pos]->moves[message.move_num];
-                message.target_pos = BattleActor::choose_target(pos, move.get_num_targets(), move.get_move_targets());
+                message.target_pos = BattleActor::choose_target(pos, move.get_num_targets(), move.get_move_targets(), field);
 
             }
             else
             {
-                message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY);
+                message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY, field);
             }
             break;;
     }
 
-    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " chose action: ");
+    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << "'s " << field.active_pokes[pos]->get_species() << " chose action: ");
     if(message.move_command == Commands::COMMAND_SWAP)
     {
         DEBUG_MSG("SWAP, sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
@@ -124,7 +124,9 @@ int BattleActor::choose_pokemon(Party* party)
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
-        if(party->party_pokes[i].is_alive() && !party->party_pokes[i].is_active())
+        if(party->party_pokes[i].is_alive()
+        && !party->party_pokes[i].is_active()
+        && !party->party_pokes[i].to_be_swapped)
         {
             pokes[num_pokes] = i;
             num_pokes++;
@@ -134,16 +136,32 @@ int BattleActor::choose_pokemon(Party* party)
         return -1;
 
     selection = BattleActor::make_choice(0, num_pokes - 1);
+    party->party_pokes[pokes[selection]].to_be_swapped = true;
     return pokes[selection];
 }
 
-FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_targets, TARGETS targets)
+FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_targets, TARGETS targets, Field field)
 {
+
     if(num_targets == 1)
     {
         BattleActor::actor_targeting.get_valid_targets(targets, atk_pos);
-        int rand_target = BattleActor::make_choice(0, BattleActor::actor_targeting.get_num_valid_targets() - 1);
-        return BattleActor::actor_targeting.valid_targets[rand_target];
+        FIELD_POSITION alive_targets [FIELD_POSITION::NUM_POSITIONS];
+        int num_alive_targets = 0;
+
+        //determine which of the valid move targets are actually alive
+        for(int i = 0; i < BattleActor::actor_targeting.get_num_valid_targets(); i++)
+        {
+            if(field.active_pokes[BattleActor::actor_targeting.valid_targets[i]] != nullptr)
+            {
+                alive_targets[num_alive_targets] = BattleActor::actor_targeting.valid_targets[i];
+                num_alive_targets++;
+            }
+        }
+
+        // choose a pokemon who is alive
+        int rand_target = BattleActor::make_choice(0, num_alive_targets - 1);
+        return alive_targets[rand_target];
     }
     else
     {

@@ -5,6 +5,7 @@
 #include <Battle/Players.h>
 #include <Battle/Field.h>
 #include <Utils/Logging.h>
+#include <Battle/Field_Positions.h>
 
 Field::Field()
 {
@@ -25,6 +26,14 @@ Field::Field()
         Field::leech_seed_positions[i] = FIELD_POSITION::NO_POSITION;
         Field::active_pokes[i] = nullptr;
     }
+}
+
+bool Field::position_alive(FIELD_POSITION pos)
+{
+    if(Field::active_pokes[pos] == nullptr)
+        return false;
+
+    return Field::active_pokes[pos]->is_alive();
 }
 
 void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
@@ -167,10 +176,10 @@ void Field::reset_field_obj()
 {
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        Field::stealth_rocks[get_player_from_position(i)] = false;
-        Field::sticky_web[get_player_from_position(i)] = false;
-        Field::spikes[get_player_from_position(i)] = 0;
-        Field::toxic_spikes[get_player_from_position(i)] = 0;
+        Field::stealth_rocks[get_player_from_position(static_cast<FIELD_POSITION>(i))] = false;
+        Field::sticky_web[get_player_from_position(static_cast<FIELD_POSITION>(i))] = false;
+        Field::spikes[get_player_from_position(static_cast<FIELD_POSITION>(i))] = 0;
+        Field::toxic_spikes[get_player_from_position(static_cast<FIELD_POSITION>(i))] = 0;
 
         Field::leech_seed_positions[i] = FIELD_POSITION::NO_POSITION;
     }
@@ -178,18 +187,17 @@ void Field::reset_field_obj()
 
 void Field::print_field(bool detailed)
 {
-#ifdef DEBUG
-    DEBUG_MSG("ACTIVE POKEMON: " << "\nPLAYER ONE\n");
-    if(Field::active_pokes[Players::PLAYER_ONE]->is_active())
-        Field::active_pokes[Players::PLAYER_ONE]->print_pokemon(detailed);
-    else
-        DEBUG_MSG("NONE\n");
-
-    DEBUG_MSG("\nPLAYER TWO\n");
-    if(Field::active_pokes[Players::PLAYER_TWO]->is_active())
-        Field::active_pokes[Players::PLAYER_TWO]->print_pokemon(detailed);
-    else
-        DEBUG_MSG("NONE\n");
+#ifdef DEBUGGING
+    DEBUG_MSG("ACTIVE POKEMON: " << std::endl);
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << std::endl);
+        if(Field::active_pokes[i] == nullptr)
+            DEBUG_MSG("NO POKEMON\n");
+        else if(Field::active_pokes[i]->is_active())
+            Field::active_pokes[i]->print_pokemon(detailed);
+        DEBUG_MSG(std::endl);
+    }
 
     if(detailed)
     {
@@ -221,11 +229,11 @@ void Field::print_field(bool detailed)
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
 {
     if(Field::leech_seed_positions[pos] != FIELD_POSITION::NO_POSITION
-    && Field::active_pokes[Field::leech_seed_positions[pos]]->is_alive())
+    && Field::position_alive(Field::leech_seed_positions[pos]))
     {
         int damage = Field::active_pokes[pos]->get_stat(STAT::HP) / 8.0;
         DEBUG_MSG(Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
-             << " sapped some life from " << Field::active_pokes[Field::leech_seed_positions[pos]]->get_species() << std::endl);
+             << " sapped some life from " << Field::active_pokes[pos]->get_species() << std::endl);
         Field::active_pokes[Field::leech_seed_positions[pos]]->heal_damage(damage);
         return Field::active_pokes[pos]->deal_damage(damage);
     }
@@ -233,7 +241,7 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
     return true;
 }
 
-Players get_player_from_position(int pos)
+Players get_player_from_position(FIELD_POSITION pos)
 {
     if(pos == FIELD_POSITION::PLAYER_1_0
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE

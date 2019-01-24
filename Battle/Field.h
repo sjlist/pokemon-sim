@@ -44,6 +44,7 @@ public:
 
     void modify_field_obj(Field_Objects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos);
     bool handle_end_turn_field_obj(FIELD_POSITION pos);
+    bool position_alive(FIELD_POSITION pos);
 
     Pokemon *active_pokes [NUM_POSITIONS];
     FIELD_POSITION leech_seed_positions [NUM_POSITIONS];
@@ -64,6 +65,6 @@ private:
     bool active_open(FIELD_POSITION pos);
 };
 
-Players get_player_from_position(int pos);
+Players get_player_from_position(FIELD_POSITION pos);
 
 #endif //POKEMON_SIM_FIELD_H

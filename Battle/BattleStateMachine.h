@@ -42,7 +42,10 @@ private:
     bool battle_over();
     int end_battle();
 
+    bool handle_end_turn_swapping(FIELD_POSITION pos);
+
     int make_choice(int min, int max);
+    std::vector<FIELD_POSITION> create_speed_list();
     std::vector<FIELD_POSITION> create_priority_list(BattleMessage* messages);
     std::vector<FIELD_POSITION> remove_priority_list(int action, std::vector<FIELD_POSITION> prio_list);
     int moves_later(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list);

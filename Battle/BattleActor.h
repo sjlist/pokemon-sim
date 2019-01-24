@@ -20,7 +20,9 @@ enum class Actions
 enum Commands
 {
     COMMAND_ATTACK = 0,
-    COMMAND_SWAP
+    COMMAND_SWAP,
+    COMMAND_NONE,
+    NUM_COMMANDS
 };
 
 class BattleMessage
@@ -55,7 +57,7 @@ private:
 
     int make_choice(int min, int max);
 
-    FIELD_POSITION choose_target(FIELD_POSITION atk_pos, int num_moves, TARGETS targets);
+    FIELD_POSITION choose_target(FIELD_POSITION atk_pos, int num_moves, TARGETS targets, Field field);
     int choose_move(Pokemon* poke);
 
     bool roll_chance(float chance);

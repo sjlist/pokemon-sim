@@ -354,6 +354,7 @@ void Pokemon::reset()
         Pokemon::v_status_turns[i] = 0;
 
     Pokemon::reset_protect();
+    Pokemon::to_be_swapped = false;
 }
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
@@ -393,6 +394,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
     Pokemon::volatile_status = 0;
+    Pokemon::to_be_swapped = false;
 }
 
 void Pokemon::load_species(std::string species_name)
@@ -470,7 +472,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
 
 void Pokemon::print_pokemon(bool detailed)
 {
-#ifdef DEBUG
+#ifdef DEBUGGING
     if(Pokemon::species.empty())
         return;
 

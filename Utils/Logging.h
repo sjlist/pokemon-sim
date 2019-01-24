@@ -7,6 +7,7 @@
 
 #include <Config.h>
 
+#include <cassert>
 #include <iostream>
 
 #if DEBUG_LEVEL >= 3

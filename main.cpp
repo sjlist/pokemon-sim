@@ -33,7 +33,6 @@ int main()
     std::cout << std::endl;
     std::cout << "Player 1 won " << wins[2] / (float)max_runs * 100 << "% of the time\n";
     std::cout << "Player 2 won " << wins[0] / (float)max_runs * 100 << "% of the time\n";
-    std::cout << "Players tied " << wins[1] / (float)max_runs * 100 << "% of the time\n";
     std::cout << "Max turn count " << max_turns << "\n";
     std::cout << "Average turn count " << tot_turns / (float)max_runs << "\n";
 }

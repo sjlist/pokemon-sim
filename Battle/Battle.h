@@ -46,14 +46,15 @@ public:
     void update_generator(long seed);
 
 
-    bool send_out(FIELD_POSITION pos, int poke_position);
+    Attack_Result send_out(FIELD_POSITION pos, int poke_position);
     void return_poke(FIELD_POSITION pos);
-    bool swap_poke(FIELD_POSITION pos, int poke_position);
+    Attack_Result swap_poke(FIELD_POSITION pos, int poke_position);
     bool can_swap(Players player);
 
     Party* get_party(Players player);
 
     Attack_Result attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move);
+    bool handle_end_turn_statuses(FIELD_POSITION pos);
     bool handle_end_turn_field_status();
     void reset_temp_field_status();
 
@@ -63,16 +64,15 @@ private:
     void load_teams(std::vector<std::string> team_names);
     void load_game_moves();
 
-    Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
-    std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit);
-    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move);
+    Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+    std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
 
     Attack_Result handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender);
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);
     Attack_Result handle_v_status_mask(FIELD_POSITION pos, int status_mask, int move_num = -1);
     Attack_Result handle_v_status(FIELD_POSITION pos, int v_status, int move_num);
     bool handle_end_turn_status(FIELD_POSITION pos);
-    bool handle_end_turn_statuses(FIELD_POSITION pos);
 
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage);
 
@@ -81,7 +81,7 @@ private:
     bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
-    float calculate_damage_modifier(Move move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
+    float calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
 
     std::mt19937 generator;
 
