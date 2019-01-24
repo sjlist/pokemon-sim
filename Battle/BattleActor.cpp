@@ -124,7 +124,9 @@ int BattleActor::choose_pokemon(Party* party)
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
-        if(party->party_pokes[i].is_alive() && !party->party_pokes[i].is_active())
+        if(party->party_pokes[i].is_alive()
+        && !party->party_pokes[i].is_active()
+        && !party->party_pokes[i].to_be_swapped)
         {
             pokes[num_pokes] = i;
             num_pokes++;
@@ -134,6 +136,7 @@ int BattleActor::choose_pokemon(Party* party)
         return -1;
 
     selection = BattleActor::make_choice(0, num_pokes - 1);
+    party->party_pokes[pokes[selection]].to_be_swapped = true;
     return pokes[selection];
 }
 

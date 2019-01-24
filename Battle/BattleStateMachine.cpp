@@ -54,8 +54,8 @@ int BattleStateMachine::run(BattleState state)
 
     BattleStateMachine::turn_count = 0;
 
-    BattleMessage messages [BattleStateMachine::num_players];
-    std::vector<FIELD_POSITION> prio (BattleStateMachine::num_players);
+    BattleMessage messages [FIELD_POSITION::NUM_POSITIONS];
+    std::vector<FIELD_POSITION> prio (FIELD_POSITION::NUM_POSITIONS);
 
     while(true)
     {
@@ -77,11 +77,15 @@ int BattleStateMachine::run(BattleState state)
 //                                            get_player_from_position(i)
 //                                            )));
 //                }
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
-                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_1, 1);
 
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
+#if BATTLE_TYPE == DOUBLE_BATTLE
+                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_1, 1);
+#endif
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_0, 0);
+#if BATTLE_TYPE == DOUBLE_BATTLE
                 BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_2_1, 1);
+#endif
 
                 DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
@@ -89,7 +93,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 40)
+                if(BattleStateMachine::turn_count == 5)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i]->get_current_hp() == 0)
@@ -115,7 +119,7 @@ int BattleStateMachine::run(BattleState state)
                 break;
 
             case BattleState::TURN_EXECUTE:
-                for(int i = 0; i < BattleStateMachine::num_players; i++)
+                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
                     //Determine what attack to do
                     //if there is no attack to execute for that field position, aka it fainted earlier in the turn
@@ -466,10 +470,10 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     return prio_list;
 }
 
-// Does th epokemon at pos move later than the current action. If not return, otherwise return the index in the priority list pos takes its action
+// Does the pokemon at pos move later than the current action. If not return, otherwise return the index in the priority list pos takes its action
 int BattleStateMachine::moves_later(FIELD_POSITION pos, int current_action, std::vector<FIELD_POSITION> prio_list)
 {
-    for(int j = (current_action + 1); j < BattleStateMachine::num_players; j++)
+    for(int j = (current_action + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
     {
         if (pos == prio_list.at(j))
         {

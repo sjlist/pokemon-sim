@@ -54,6 +54,7 @@ public:
     void clear_protect_turns();
 
     int status_turns;
+    bool to_be_swapped;
 
     void print_pokemon(bool detailed=false);
 

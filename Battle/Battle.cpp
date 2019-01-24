@@ -35,6 +35,8 @@ bool Battle::send_out(FIELD_POSITION pos, int poke_position)
     Players player = get_player_from_position(pos);
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
+    Parties[player].party_pokes[poke_position].to_be_swapped = false;
+
     // reset status turns for badly poisoned
     if(Parties[player].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
         Parties[player].party_pokes[poke_position].status_turns = 0;
@@ -374,7 +376,7 @@ bool Battle::has_lost(Players player)
 {
     for(int i = 0; i < 6; i++)
     {
-        if(Battle::Parties[player].party_pokes[i].is_alive())
+        if(Battle::Parties[player].party_pokes[i].is_alive() && !Battle::Parties[player].party_pokes[i].is_active())
         {
             return false;
         }
@@ -404,7 +406,7 @@ void Battle::reset_temp_field_status()
             Battle::active_field.active_pokes[i]->clear_protect_turns();
         Battle::active_field.active_pokes[i]->reset_protect();
 #if BATTLE_TYPE != SINGLE_BATTLE
-        WARN_MSG("Protect clearing is only properly supported in single battles due to team wide protects\n");
+        //WARN_MSG("Protect clearing is only properly supported in single battles due to team wide protects\n");
 #endif
     }
 }
@@ -481,16 +483,13 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
 bool Battle::handle_end_turn_field_status()
 {
     bool fainted = false;
-    if(!Battle::handle_end_turn_statuses(FIELD_POSITION::PLAYER_1_0))
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        Battle::handle_faint(FIELD_POSITION::PLAYER_1_0);
-        fainted = true;
-    }
-
-    if(!Battle::handle_end_turn_statuses(FIELD_POSITION::PLAYER_2_0))
-    {
-        Battle::handle_faint(FIELD_POSITION::PLAYER_2_0);
-        fainted = true;
+        if(!Battle::handle_end_turn_statuses(static_cast<FIELD_POSITION>(i)))
+        {
+            Battle::handle_faint(static_cast<FIELD_POSITION>(i));
+            fainted = true;
+        }
     }
 
     return fainted;
