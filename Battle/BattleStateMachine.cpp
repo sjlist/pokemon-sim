@@ -479,7 +479,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
 {
     std::vector<FIELD_POSITION> prio_list (FIELD_POSITION::NUM_POSITIONS);
     int move_prio, choice;
-    std::map<FIELD_POSITION, int> prio_map;
+    std::vector<int> prio_map (FIELD_POSITION::NUM_POSITIONS);
 
     for(int pos = FIELD_POSITION::PLAYER_1_0; pos < FIELD_POSITION::NUM_POSITIONS; pos++)
     {
@@ -497,15 +497,15 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
             default:
                 ERR_MSG("Unsupported Command " << messages[pos].move_command << "\n");
         }
-        prio_map[static_cast<FIELD_POSITION>(pos)] = move_prio;
+        prio_map.at(pos) = move_prio;
     }
 #if BATTLE_TYPE == SINGLE_BATTLE
-    if(prio_map[FIELD_POSITION::PLAYER_1_0] > prio_map[FIELD_POSITION::PLAYER_2_0])
+    if(prio_map.at(FIELD_POSITION::PLAYER_1_0) > prio_map.at(FIELD_POSITION::PLAYER_2_0))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
     }
-    else if(prio_map[FIELD_POSITION::PLAYER_1_0] < prio_map[FIELD_POSITION::PLAYER_2_0])
+    else if(prio_map.at(FIELD_POSITION::PLAYER_1_0) < prio_map.at(FIELD_POSITION::PLAYER_2_0))
     {
         prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
         prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
@@ -546,7 +546,7 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
         {
             //if i prio is less than j prio, swap
-            if(prio_map[prio_list.at(i)] < prio_map[prio_list.at(j)])
+            if(prio_map.at(prio_list.at(i)) < prio_map.at(prio_list.at(j)))
             {
                 temp = prio_list.at(i);
                 prio_list.at(i) = prio_list.at(j);
@@ -563,8 +563,8 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
         {
             //if i prio is equal to j prio, compare speeds, if slower then swap
             //but skip this check if both pokes are fainted
-            if(prio_map[prio_list.at(i)] == prio_map[prio_list.at(j)]
-            && prio_map[prio_list.at(i)] != FAINT_PRIO
+            if(prio_map.at(prio_list.at(i)) == prio_map.at(prio_list.at(j))
+            && prio_map.at(prio_list.at(i)) != FAINT_PRIO
             && BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
              < BattleStateMachine::battle.active_field.active_pokes[prio_list.at(j)]->get_stat(STAT::SPE))
             {
@@ -580,8 +580,8 @@ std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessa
     //TODO: HANDLE 3 OR 4 WAY TIES CORRECTLY
     for(int i = 0; i < (FIELD_POSITION::NUM_POSITIONS - 1); i++)
     {
-        if(prio_map[prio_list.at(i)] == prio_map[prio_list.at(i+1)]
-        && prio_map[prio_list.at(i)] != FAINT_PRIO
+        if(prio_map.at(prio_list.at(i)) == prio_map.at(prio_list.at(i+1))
+        && prio_map.at(prio_list.at(i)) != FAINT_PRIO
         && (BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
          == BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i+1)]->get_stat(STAT::SPE)))
         {
