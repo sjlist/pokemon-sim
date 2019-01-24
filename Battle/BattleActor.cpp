@@ -146,7 +146,7 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
     if(num_targets == 1)
     {
         BattleActor::actor_targeting.get_valid_targets(targets, atk_pos);
-        FIELD_POSITION alive_targets [BattleActor::actor_targeting.get_num_valid_targets()];
+        FIELD_POSITION alive_targets [FIELD_POSITION::NUM_POSITIONS];
         int num_alive_targets = 0;
 
         //determine which of the valid move targets are actually alive

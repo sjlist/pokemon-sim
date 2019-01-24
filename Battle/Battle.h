@@ -54,6 +54,7 @@ public:
     Party* get_party(Players player);
 
     Attack_Result attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move);
+    bool handle_end_turn_statuses(FIELD_POSITION pos);
     bool handle_end_turn_field_status();
     void reset_temp_field_status();
 
@@ -72,7 +73,6 @@ private:
     Attack_Result handle_v_status_mask(FIELD_POSITION pos, int status_mask, int move_num = -1);
     Attack_Result handle_v_status(FIELD_POSITION pos, int v_status, int move_num);
     bool handle_end_turn_status(FIELD_POSITION pos);
-    bool handle_end_turn_statuses(FIELD_POSITION pos);
 
     Attack_Result handle_move_effects(Effect move_effect, FIELD_POSITION atk_pos, FIELD_POSITION def_pos, float damage);
 

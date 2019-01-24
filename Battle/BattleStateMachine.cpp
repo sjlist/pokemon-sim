@@ -55,7 +55,7 @@ int BattleStateMachine::run(BattleState state)
     BattleStateMachine::turn_count = 0;
 
     BattleMessage messages [FIELD_POSITION::NUM_POSITIONS];
-    std::vector<FIELD_POSITION> prio (FIELD_POSITION::NUM_POSITIONS);
+    std::vector<FIELD_POSITION> prio (FIELD_POSITION::NUM_POSITIONS), speed_list (FIELD_POSITION::NUM_POSITIONS);
 
     while(true)
     {
@@ -93,7 +93,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
-                if(BattleStateMachine::turn_count == 25)
+                if(BattleStateMachine::turn_count == 48)
                     DEBUG_MSG("HERERE\n");
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                     if(BattleStateMachine::battle.active_field.active_pokes[i] != nullptr
@@ -151,8 +151,8 @@ int BattleStateMachine::run(BattleState state)
                             if(messages[prio.at(i)].move_command == Commands::COMMAND_ATTACK)
                             {
                                 //if attacking and trying to swap an opponent, both the attacker and defender must be alive to execute the swap
-                                if((!BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->is_alive()
-                                 || !BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->is_alive())
+                                if((!BattleStateMachine::battle.active_field.position_alive(prio.at(i))
+                                 || !BattleStateMachine::battle.active_field.position_alive(messages[prio.at(i)].target_pos))
                                  && !BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->moves[messages[prio.at(i)].move_num].get_move_effect(-1).does_target_self())
                                     goto swap_end;
 
@@ -231,8 +231,8 @@ int BattleStateMachine::run(BattleState state)
                                 swap_end:;
 
                                 // If both the attacker and defender are alive, no need to handle faints
-                                if (BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->is_alive()
-                                 && BattleStateMachine::battle.active_field.active_pokes[prio.at(i)]->is_alive())
+                                if (BattleStateMachine::battle.active_field.position_alive(messages[prio.at(i)].target_pos)
+                                 && BattleStateMachine::battle.active_field.position_alive(prio.at(i)))
                                     break;;
                             }
 
@@ -329,63 +329,19 @@ int BattleStateMachine::run(BattleState state)
                     state = BattleState::TURN_END;
                 break;;
             case BattleState::TURN_END:
-                if(battle.handle_end_turn_field_status())
+                speed_list = BattleStateMachine::create_speed_list();
+                for(int i =0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
-                    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                    if(!BattleStateMachine::battle.handle_end_turn_statuses(speed_list.at(i)))
                     {
-                        if(BattleStateMachine::battle.active_field.active_pokes[static_cast<FIELD_POSITION>(i)] != nullptr
-                        && !BattleStateMachine::battle.active_field.active_pokes[static_cast<FIELD_POSITION>(i)]->is_alive())
-                        {
-                            if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
-                            {
-                                state = BattleState::BATTLE_END;
-                            }
-                            else
-                            {
-                                while (true)
-                                {
-                                    Attack_Result swap_res = BattleStateMachine::battle.swap_poke(
-                                            static_cast<FIELD_POSITION>(i),
-                                            BattleStateMachine::actor.choose_pokemon(
-                                                    BattleStateMachine::battle.get_party(
-                                                            get_player_from_position(
-                                                                    static_cast<FIELD_POSITION>(i)))));
+                        if(BattleStateMachine::battle.has_lost(get_player_from_position(speed_list.at(i))))
+                            return BattleStateMachine::end_battle();
 
-                                    // if the poke fainted on entrance
-                                    if (swap_res == Attack_Result::FAINT)
-                                    {
-                                        //check if player has lost
-                                        if (BattleStateMachine::battle.has_lost(
-                                                get_player_from_position(static_cast<FIELD_POSITION>(i))))
-                                            break;
-                                    }
-                                        //else if there is no other pokemon to try to send out
-                                    else if (swap_res == Attack_Result::NO_ATTACK)
-                                    {
-                                        break;
-                                    }
-                                    else if(swap_res == Attack_Result::HIT)
-                                    {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        ERR_MSG("Unhandled Swap Result\n");
-                                    }
-                                }
-                            }
-                        }
+                        if(!BattleStateMachine::handle_end_turn_swapping(speed_list.at(i)))
+                            return BattleStateMachine::end_battle();
                     }
                 }
                 BattleStateMachine::battle.reset_temp_field_status();
-
-                for(int i = 0; i < 6; i++)
-                {
-                    if(BattleStateMachine::battle.get_party(Players::PLAYER_ONE)->party_pokes[i].to_be_swapped)
-                        ERR_MSG("WHY\n");
-                    if(BattleStateMachine::battle.get_party(Players::PLAYER_TWO)->party_pokes[i].to_be_swapped)
-                        ERR_MSG("WHY\n");
-                }
 
                 if(BattleStateMachine::battle_over())
                     state = BattleState::BATTLE_END;
@@ -400,6 +356,43 @@ int BattleStateMachine::run(BattleState state)
         }
     }
 
+}
+
+bool BattleStateMachine::handle_end_turn_swapping(FIELD_POSITION pos)
+{
+    while (true)
+    {
+        Attack_Result swap_res = BattleStateMachine::battle.swap_poke(
+                pos,
+                BattleStateMachine::actor.choose_pokemon(
+                        BattleStateMachine::battle.get_party(
+                                get_player_from_position(
+                                        pos))));
+
+        // if the poke fainted on entrance
+        if (swap_res == Attack_Result::FAINT)
+        {
+            //check if player has lost
+            if (BattleStateMachine::battle.has_lost(
+                    get_player_from_position(pos)))
+                return false;
+        }
+            //else if there is no other pokemon to try to send out
+        else if (swap_res == Attack_Result::NO_ATTACK)
+        {
+            break;
+        }
+        else if(swap_res == Attack_Result::HIT)
+        {
+            break;
+        }
+        else
+        {
+            ERR_MSG("Unhandled Swap Result\n");
+        }
+    }
+
+    return true;
 }
 
 int BattleStateMachine::end_battle()
@@ -421,11 +414,65 @@ int BattleStateMachine::end_battle()
     }
     else
     {
-        DEBUG_MSG("TIED\n");
+        ERR_MSG("TIED\n");
     }
 
 
     return loser;
+}
+
+std::vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
+{
+    std::vector<FIELD_POSITION> speed_list (FIELD_POSITION::NUM_POSITIONS);
+    FIELD_POSITION temp;
+    int choice;
+
+    // initialize the prio list to be in order of the field positions, just to load the values in
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        speed_list.at(i) = static_cast<FIELD_POSITION>(i);
+    }
+
+    //bubble sort by poke speed
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        {
+            //if speed of prio i is less than speed of prio j, swap
+            // if i is fainted, assume slower even if both are mullptrs
+            if(BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)] == nullptr
+            || (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(j)] != nullptr
+            && (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)]->get_stat(STAT::SPE)
+              < BattleStateMachine::battle.active_field.active_pokes[speed_list.at(j)]->get_stat(STAT::SPE))))
+            {
+                temp = speed_list.at(i);
+                speed_list.at(i) = speed_list.at(j);
+                speed_list.at(j) = temp;
+
+            }
+        }
+    }
+
+    //handle speed ties
+    //TODO: HANDLE 3 OR 4 WAY TIES CORRECTLY
+    for(int i = 0; i < (FIELD_POSITION::NUM_POSITIONS - 1); i++)
+    {
+        if(BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)] != nullptr
+        && BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i+1)] != nullptr
+        && (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)]->get_stat(STAT::SPE)
+         == BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i+1)]->get_stat(STAT::SPE)))
+        {
+            choice = BattleStateMachine::make_choice(0, 1);
+            if(choice == 1)
+            {
+                temp = speed_list.at(i);
+                speed_list.at(i) = speed_list.at(i+1);
+                speed_list.at(i+1) = temp;
+            }
+        }
+    }
+
+    return speed_list;
 }
 
 std::vector<FIELD_POSITION> BattleStateMachine::create_priority_list(BattleMessage* messages)

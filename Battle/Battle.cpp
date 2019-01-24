@@ -191,7 +191,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     }
 
     // Handle returning faint if needed
-    if(!Battle::active_field.active_pokes[def_pos]->is_alive() || !Battle::active_field.active_pokes[atk_pos]->is_alive())
+    if(!Battle::active_field.position_alive(def_pos) || !Battle::active_field.position_alive(atk_pos))
         return Attack_Result::FAINT;
 
     return res.first;
@@ -320,7 +320,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             else
                 Battle::active_field.active_pokes[effect_target]->deal_damage(Battle::active_field.active_pokes[effect_target]->get_stat(STAT::HP)
                                                                      * move_effect.get_percent_recoil());
-            if(Battle::active_field.active_pokes[effect_target]->is_alive())
+            if(Battle::active_field.position_alive(effect_target))
             {
                 Battle::handle_faint(effect_target);
                 return Attack_Result::FAINT;
@@ -498,6 +498,8 @@ bool Battle::handle_end_turn_field_status()
         else if(!Battle::handle_end_turn_statuses(static_cast<FIELD_POSITION>(i)))
         {
             Battle::handle_faint(static_cast<FIELD_POSITION>(i));
+            if(Battle::has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
+                return true;
             fainted = true;
         }
     }
@@ -507,9 +509,18 @@ bool Battle::handle_end_turn_field_status()
 
 bool Battle::handle_end_turn_statuses(FIELD_POSITION pos)
 {
-    return Battle::handle_end_turn_status(pos)
-       && !(Battle::handle_v_status_mask(pos, turn_end_v_status_mask) == Attack_Result::FAINT)
-       && Battle::active_field.handle_end_turn_field_obj(pos);
+    if(!Battle::active_field.position_alive(pos))
+        return true;
+
+    if(Battle::handle_end_turn_status(pos)
+    && !(Battle::handle_v_status_mask(pos, turn_end_v_status_mask) == Attack_Result::FAINT)
+    && Battle::active_field.handle_end_turn_field_obj(pos))
+        return true;
+    else
+    {
+        Battle::handle_faint(pos);
+        return false;
+    }
 }
 
 bool Battle::handle_end_turn_status(FIELD_POSITION pos)

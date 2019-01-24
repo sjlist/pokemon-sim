@@ -28,6 +28,14 @@ Field::Field()
     }
 }
 
+bool Field::position_alive(FIELD_POSITION pos)
+{
+    if(Field::active_pokes[pos] == nullptr)
+        return false;
+
+    return Field::active_pokes[pos]->is_alive();
+}
+
 void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
 {
     switch(obj)
@@ -221,12 +229,11 @@ void Field::print_field(bool detailed)
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
 {
     if(Field::leech_seed_positions[pos] != FIELD_POSITION::NO_POSITION
-    && Field::active_pokes[Field::leech_seed_positions[pos]] != nullptr
-    && Field::active_pokes[Field::leech_seed_positions[pos]]->is_alive())
+    && Field::position_alive(Field::leech_seed_positions[pos]))
     {
         int damage = Field::active_pokes[pos]->get_stat(STAT::HP) / 8.0;
         DEBUG_MSG(Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
-             << " sapped some life from " << Field::active_pokes[Field::leech_seed_positions[pos]]->get_species() << std::endl);
+             << " sapped some life from " << Field::active_pokes[pos]->get_species() << std::endl);
         Field::active_pokes[Field::leech_seed_positions[pos]]->heal_damage(damage);
         return Field::active_pokes[pos]->deal_damage(damage);
     }
