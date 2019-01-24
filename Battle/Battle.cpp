@@ -77,7 +77,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 {
     Attack_Result res;
     bool crit = false;
-    Move move;
+    Move* move;
 
     res = Battle::handle_pre_attack_status(atk_pos);
     if(res != Attack_Result::HIT)
@@ -94,21 +94,21 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         {
             ERR_MSG("Not enough PP\n");
         }
-        move = Battle::active_field.active_pokes[atk_pos]->moves[move_number];
+        move = &Battle::active_field.active_pokes[atk_pos]->moves[move_number];
     }
     else
-        move = Battle::game_moves[Game_Moves::MOVE_STRUGGLE];
+        move = &Battle::game_moves[Game_Moves::MOVE_STRUGGLE];
 
 
     DEBUG_MSG("P" << get_player_from_position(atk_pos) + 1  << "'s " << Battle::active_field.active_pokes[atk_pos]->get_species()
-           << " used " << move.get_name() << "\n");
+           << " used " << move->get_name() << "\n");
 
-    if(Battle::roll_chance(move.get_crit()))
+    if(Battle::roll_chance(move->get_crit()))
         crit = true;
 
     if(def_pos == FIELD_POSITION::ALL_TARGETS)
     {
-        Battle::Battle_Targets.get_valid_targets(move.get_move_targets(), atk_pos);
+        Battle::Battle_Targets.get_valid_targets(move->get_move_targets(), atk_pos);
         for(int i = 0; i < Battle::Battle_Targets.get_num_valid_targets(); i++)
         {
             if(Battle::attack_target(
@@ -126,7 +126,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     return res;
 }
 
-Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
+Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
 {
     std::pair<Attack_Result, float> res;
 
@@ -137,21 +137,21 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     }
 
     // roll for hit
-    if(!Battle::roll_acc(move.get_acc(),
+    if(!Battle::roll_acc(move->get_acc(),
                          Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::ACC),
                          Battle::active_field.active_pokes[def_pos]->get_stat(STAT::EVA)))
     {
-        DEBUG_MSG(move.get_name() << " missed\n");
+        DEBUG_MSG(move->get_name() << " missed\n");
         return Attack_Result::MISS;
     }
 
-    if(Battle::active_field.active_pokes[def_pos]->is_protected() && !move.ignores_protect())
+    if(Battle::active_field.active_pokes[def_pos]->is_protected() && !move->ignores_protect())
     {
         DEBUG_MSG(Battle::active_field.active_pokes[def_pos]->get_species() << " is protected\n");
         return Attack_Result::NO_ATTACK;
     }
 
-    switch(move.get_damage_type())
+    switch(move->get_damage_type())
     {
         case move_damage_type::MOVE_PHYSICAL:
         case move_damage_type::MOVE_SPECIAL:
@@ -163,16 +163,16 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             res.first = Attack_Result::NO_ATTACK;
             break;
         default:
-            ERR_MSG("Unhandled attack type" << move.get_damage_type() << "\n");
+            ERR_MSG("Unhandled attack type" << move->get_damage_type() << "\n");
     }
 
     // Handling move effects
     for(int i = 0; i < MAX_EFFECTS; i++)
     {
-        if (move.get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
+        if (move->get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
         {
             res.first = Battle::handle_move_effects(
-                    move.get_move_effect(i), atk_pos, def_pos, res.second);
+                    move->get_move_effect(i), atk_pos, def_pos, res.second);
             if (res.first == Attack_Result::SWAP)
                 return res.first;
         }
@@ -180,7 +180,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             break;
     }
 
-    if(move.makes_contact())
+    if(move->makes_contact())
     {
         if(res.first == Attack_Result::HIT)
         {
@@ -198,25 +198,25 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 }
 
 
-std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move, bool crit)
+std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
 {
     float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
 
-    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move.get_num_targets(), crit);
+    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move->get_num_targets(), crit);
 
     if(damage_mod == 0)
     {
         DEBUG_MSG("P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos]->get_species()
-                  << " is immune to " << type_to_string(move.get_type()) << " type moves\n");
+                  << " is immune to " << type_to_string(move->get_type()) << " type moves\n");
         return std::make_pair(Attack_Result::IMMUNE, 0);
     }
 
-    if(move.get_power() == 0)
+    if(move->get_power() == 0)
         return std::make_pair(Attack_Result::HIT, 0);
 
     // determine the effective stats to use
-    if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL)
+    if(move->get_damage_type() == move_damage_type::MOVE_PHYSICAL)
     {
         eff_atk = Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::ATK);
         eff_def = Battle::active_field.active_pokes[def_pos]->get_stat(STAT::DEF);
@@ -242,12 +242,12 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
     return std::make_pair(Attack_Result::HIT, damage_dealt);
 }
 
-int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move move)
+int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
 {
-    if(move.get_power() != -1)
-        return move.get_power();
+    if(move->get_power() != -1)
+        return move->get_power();
 
-    if(move.get_name() == "Gyro_Ball")
+    if(move->get_name() == "Gyro_Ball")
     {
         return (25.0 * Battle::active_field.active_pokes[def_pos]->get_stat(STAT::SPE) /
                 Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE)) + 1;
@@ -606,7 +606,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
             if(roll_chance(Battle::game_moves[Game_Moves::MOVE_CONFUSION].get_acc()))
             {
                 DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " hurt itself in its confusion\n");
-                if(Battle::attack_damage(pos, pos, Battle::game_moves[Game_Moves::MOVE_CONFUSION], false).first == Attack_Result::FAINT)
+                if(Battle::attack_damage(pos, pos, &Battle::game_moves[Game_Moves::MOVE_CONFUSION], false).first == Attack_Result::FAINT)
                     return Attack_Result::FAINT;
                 else
                     return Attack_Result::NO_ATTACK;
@@ -669,7 +669,7 @@ bool Battle::roll_chance(float chance)
     return c < chance;
 }
 
-float Battle::calculate_damage_modifier(Move move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit)
+float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit)
 {
     float damage_modifier = 1;
 
@@ -679,7 +679,7 @@ float Battle::calculate_damage_modifier(Move move, Pokemon* attacker, Pokemon* d
         damage_modifier *= 1.5;
     }
 
-    damage_modifier *= calculate_type_damage_modifier(defender->get_type(), move.get_type());
+    damage_modifier *= calculate_type_damage_modifier(defender->get_type(), move->get_type());
 
     if(damage_modifier >= 2)
         DEBUG_MSG("It's super effective\n");
@@ -689,21 +689,21 @@ float Battle::calculate_damage_modifier(Move move, Pokemon* attacker, Pokemon* d
     if(num_targets > 1)
         damage_modifier *= 0.75;
 
-    if((Battle::active_field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::WATER)
-    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::FIRE))
+    if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::WATER)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
         damage_modifier *= 1.5;
 
-    if((Battle::active_field.weather_state == Weather::RAIN && move.get_type() == PokeTypes::FIRE)
-    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move.get_type() == PokeTypes::WATER))
+    if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
         damage_modifier *= 0.5;
 
-    if(is_stab(attacker->get_type(), move.get_type()))
+    if(is_stab(attacker->get_type(), move->get_type()))
         damage_modifier *= 1.5;
 
-    if(move.get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker->get_status() == STATUS::BURNED)
+    if(move->get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker->get_status() == STATUS::BURNED)
         damage_modifier *= 0.5;
 
-    if(move.get_type() == PokeTypes::GROUND && !defender->is_grounded())
+    if(move->get_type() == PokeTypes::GROUND && !defender->is_grounded())
         damage_modifier = 0;
 
     return damage_modifier;
