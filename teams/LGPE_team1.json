@@ -161,15 +161,15 @@
   },
   "5":
   {
-    "species": "Togekiss",
+    "species": "Eevee-Starter",
     "evs":
     {
       "0": 252,
-      "1": 0,
-      "2": 0,
-      "3": 4,
+      "1": 252,
+      "2": 4,
+      "3": 0,
       "4": 0,
-      "5": 252
+      "5": 0
     },
     "ivs":
     {
@@ -180,15 +180,15 @@
       "4": 31,
       "5": 31
     },
-    "nature": "TIMID",
+    "nature": "ADAMANT",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Roost",
-      "MOVE1": "Toxic",
+      "MOVE0": "Sappy_Seed",
+      "MOVE1": "Sizzly_Slide",
       "MOVE2": "Air_Slash",
-      "MOVE3": "Thunder_Wave"
+      "MOVE3": "Protect"
     }
   }
 }

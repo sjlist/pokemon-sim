@@ -1,0 +1,13 @@
+{
+  "HP": 65,
+  "ATK": 75,
+  "DEF": 70,
+  "SPA": 65,
+  "SPD": 85,
+  "SPE": 75,
+  "TYPES":
+  {
+    "TYPE0" : "NORMAL",
+    "TYPE1" : "NONE"
+  }
+}
