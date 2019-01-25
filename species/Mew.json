@@ -1,0 +1,13 @@
+{
+  "HP":100,
+  "ATK": 100,
+  "DEF": 100,
+  "SPA": 100,
+  "SPD": 100,
+  "SPE": 100,
+  "TYPES":
+  {
+    "TYPE0" : "PSYCHIC",
+    "TYPE1" : "NONE"
+  }
+}

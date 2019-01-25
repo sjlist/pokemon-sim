@@ -83,6 +83,11 @@ int Move::get_num_targets()
     return Move::num_targets;
 }
 
+int Move::get_num_hits()
+{
+    return Move::num_hits;
+}
+
 bool Move::makes_contact()
 {
     return Move::contact;
@@ -146,6 +151,15 @@ void Move::load_move(std::string move_name)
 
     Move::protectable = !move_tree.count("protectable");
     Move::first_turn = move_tree.count("first_turn");
+
+    if(move_tree.count("num_hits"))
+    {
+        Move::num_hits = move_tree.get<int>("num_hits");
+    }
+    else
+    {
+        Move::num_hits = 1;
+    }
 
     if(move_tree.count("damage_info"))
     {

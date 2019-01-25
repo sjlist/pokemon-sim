@@ -75,7 +75,7 @@ Attack_Result Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
-    Attack_Result res;
+    Attack_Result res = Attack_Result::HIT, temp_res;
     bool crit = false;
     Move* move;
 
@@ -126,7 +126,12 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         }
     }
     else
-        res = Battle::attack_target(atk_pos, def_pos, move, crit);
+        for(int i = 0; i < move->get_num_hits(); i++)
+        {
+            temp_res = Battle::attack_target(atk_pos, def_pos, move, crit);
+            if(res == Attack_Result::HIT)
+                res = temp_res;
+        }
 
     return res;
 }

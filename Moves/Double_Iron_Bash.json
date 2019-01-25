@@ -1,0 +1,25 @@
+{
+  "damage_type": "physical",
+  "type": "STEEL",
+  "priority": 0,
+  "pp": 8,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "first_turn": true,
+  "contact": true,
+  "num_hits": 2,
+  "damage_info":
+  {
+    "power": 60,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+    "effect0":
+    {
+      "effect": "FLINCH",
+      "chance": 30
+    }
+  }
+}

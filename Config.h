@@ -9,14 +9,14 @@
 
 #include <string>
 
-const std::string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
+const std::string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
 
-#define BATTLE_TYPE SINGLE_BATTLE
+#define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 300
 
-#define DEBUG_LEVEL 3
+#define DEBUG_LEVEL 4
 
-#if DEBUG_LEVEL >= 3
+#if DEBUG_LEVEL >= 4
 #define DEBUGGING
 #endif
 

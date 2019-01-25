@@ -41,6 +41,7 @@ public:
     int get_priority();
     TARGETS get_move_targets();
     int get_num_targets();
+    int get_num_hits();
     bool makes_contact();
     bool ignores_protect();
     bool must_be_used_first_turn();
@@ -66,6 +67,7 @@ private:
     int last_effect;
     bool contact;
     bool protectable;
+    int num_hits;
 
     int current_pp;
     bool first_turn;

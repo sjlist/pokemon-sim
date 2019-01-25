@@ -1,0 +1,13 @@
+{
+  "HP":105,
+  "ATK": 105,
+  "DEF": 75,
+  "SPA": 65,
+  "SPD": 100,
+  "SPE": 50,
+  "TYPES":
+  {
+    "TYPE0" : "DARK",
+    "TYPE1" : "POISON"
+  }
+}

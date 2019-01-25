@@ -1,0 +1,13 @@
+{
+  "HP":105,
+  "ATK": 130,
+  "DEF": 120,
+  "SPA": 45,
+  "SPD": 45,
+  "SPE": 40,
+  "TYPES":
+  {
+    "TYPE0" : "ROCK",
+    "TYPE1" : "GROUND"
+  }
+}

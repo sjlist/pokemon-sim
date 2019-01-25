@@ -1,135 +1,7 @@
 {
   "0":
   {
-    "species": "Ferrothorn",
-    "evs":
-    {
-      "0": 252,
-      "1": 0,
-      "2": 252,
-      "3": 0,
-      "4": 4,
-      "5": 0
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "CAREFUL",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Stealth_Rocks",
-      "MOVE1": "Spikes",
-      "MOVE2": "Leech_Seed",
-      "MOVE3": "Gyro_Ball"
-    }
-  },
-  "1":
-  {
-    "species": "Garchomp",
-    "evs":
-    {
-      "0": 4,
-      "1": 252,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 252
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "JOLLY",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Fire_Fang",
-      "MOVE1": "Earthquake",
-      "MOVE2": "Dragon_Claw",
-      "MOVE3": "Swords_Dance"
-    }
-  },
-  "2":
-  {
-    "species": "Dragonite",
-    "evs":
-    {
-      "0": 4,
-      "1": 252,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 252
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "JOLLY",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Dragon_Claw",
-      "MOVE2": "Extreme_Speed",
-      "MOVE3": "Dragon_Dance"
-    }
-  },
-  "3":
-  {
-    "species": "Aerodactyl",
-    "evs":
-    {
-      "0": 4,
-      "1": 252,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 252
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "JOLLY",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Earthquake",
-      "MOVE2": "Wing_Attack",
-      "MOVE3": "Taunt"
-    }
-  },
-  "4":
-  {
-    "species": "Gengar",
+    "species": "Mew",
     "evs":
     {
       "0": 4,
@@ -153,10 +25,138 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Shadow_Ball",
-      "MOVE1": "Sludge_Bomb",
-      "MOVE2": "Will-O-Wisp",
-      "MOVE3": "Volt_Switch"
+      "MOVE0": "Taunt",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Roost",
+      "MOVE3": "Flamethrower"
+    }
+  },
+  "1":
+  {
+    "species": "Rhydon",
+    "evs":
+    {
+      "0": 252,
+      "1": 252,
+      "2": 4,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "ADAMANT",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Earthquake",
+      "MOVE2": "Rock_Slide",
+      "MOVE3": "Toxic"
+    }
+  },
+  "2":
+  {
+    "species": "Alolan_Muk",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 252,
+      "3": 0,
+      "4": 4,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "CAREFUL",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Toxic",
+      "MOVE1": "Rest",
+      "MOVE2": "Crunch",
+      "MOVE3": "Fire_Punch"
+    }
+  },
+  "3":
+  {
+    "species": "Melmetal",
+    "evs":
+    {
+      "0": 4,
+      "1": 252,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "ADAMANT",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Rest",
+      "MOVE1": "Earthquake",
+      "MOVE2": "Thunder_Wave",
+      "MOVE3": "Double_Iron_Bash"
+    }
+  },
+  "4":
+  {
+    "species": "Dragalge",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 240,
+      "5": 52
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "CAREFUL",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Toxic_Spikes",
+      "MOVE1": "Sludge_Wave",
+      "MOVE2": "Toxic",
+      "MOVE3": "Dragon_Tail"
     }
   },
   "5":
@@ -186,9 +186,9 @@
     "moves":
     {
       "MOVE0": "Roost",
-      "MOVE1": "Nasty_Plot",
+      "MOVE1": "Toxic",
       "MOVE2": "Air_Slash",
-      "MOVE3": "Fake_Out"
+      "MOVE3": "Thunder_Wave"
     }
   }
 }

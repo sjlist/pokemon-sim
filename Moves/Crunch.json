@@ -1,0 +1,25 @@
+{
+  "damage_type": "physical",
+  "type": "DARK",
+  "priority": 0,
+  "pp": 24,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "contact": true,
+  "damage_info":
+  {
+    "power": 80,
+    "crit_chance": 5
+  },
+  "effects":
+  {
+      "effect0":
+      {
+        "effect": "STAT_CHANGE",
+        "chance": 20,
+        "stat": "DEF",
+        "stages": -1
+      }
+  }
+}

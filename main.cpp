@@ -8,9 +8,9 @@
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 100000;
+    int wins [3] = {0, 0, 0}, max_runs = 100000000;
     int num_runs = 1, winner, max_turns = 0, tot_turns = 0;
-    BattleStateMachine BSM = *new BattleStateMachine();
+    BattleStateMachine BSM = *new BattleStateMachine(2593196269);
     winner = BSM.run() + 1;
     wins[winner] += 1;
     if(BSM.get_turn_count() > max_turns)
