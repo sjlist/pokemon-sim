@@ -166,7 +166,7 @@ void Pokemon::heal_damage(int damage)
 
 bool Pokemon::set_status(STATUS new_status)
 {
-    if(Pokemon::status != STATUS::NO_STATUS)
+    if(Pokemon::status != STATUS::NO_STATUS && new_status != STATUS::NO_STATUS)
     {
         DEBUG_MSG(Pokemon::species << " is already " << status_to_string(Pokemon::status) << " and cannot be " << status_to_string(new_status) << "\n");
         return false;

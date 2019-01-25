@@ -129,7 +129,9 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         for(int i = 0; i < move->get_num_hits(); i++)
         {
             temp_res = Battle::attack_target(atk_pos, def_pos, move, crit);
-            if(res == Attack_Result::HIT)
+            if(res == Attack_Result::HIT
+            || (temp_res == Attack_Result::FAINT && res != Attack_Result::SWAP)
+            || (temp_res == Attack_Result::SWAP))
                 res = temp_res;
         }
 
@@ -139,6 +141,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
 {
     std::pair<Attack_Result, float> res;
+    Attack_Result temp_res;
 
     if(Battle::active_field.active_pokes[def_pos] == nullptr)
     {
@@ -181,8 +184,15 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         if (move->get_move_effect(i).get_effect() != NO_MOVE_EFFECT)
         {
-            res.first = Battle::handle_move_effects(
+            temp_res = Battle::handle_move_effects(
                     move->get_move_effect(i), atk_pos, def_pos, res.second);
+
+            //if temp result isnt a hit as thats the default so I dont care about it
+            // and the current result isn't faint or the temp result is swap, then overwrite the current result
+            if(temp_res != Attack_Result::HIT
+            && (res.first != Attack_Result::FAINT || temp_res == Attack_Result::SWAP))
+                res.first = temp_res;
+
             if (res.first == Attack_Result::SWAP)
                 return res.first;
         }
@@ -289,7 +299,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
                 return Attack_Result::FLINCHED;
             }
 
-            return Attack_Result::MISS;
+            return Attack_Result::HIT;
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
