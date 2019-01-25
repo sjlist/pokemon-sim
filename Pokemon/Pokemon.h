@@ -34,7 +34,7 @@ public:
 
     bool use_move(int move_number);
     void set_active(bool state);
-    bool deal_damage(float damage);
+    bool deal_damage(float damage, bool ignore_sub = false);
     void heal_damage(int damage);
     bool set_status(STATUS new_status);
     bool set_volatile_status(VOLATILE_STATUS v_status);
@@ -44,6 +44,8 @@ public:
     void increment_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
     void increment_protect_turns();
     void remove_type(int type_num);
+    bool setup_substitute();
+
 
     void reset_types();
     void reset_protect();
@@ -76,6 +78,8 @@ private:
     std::string species;
     bool protect_active;
     int protect_turns;
+
+    float substitute_hp;
 
     int get_stat_mod(STAT stat);
 

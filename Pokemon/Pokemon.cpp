@@ -139,10 +139,31 @@ bool Pokemon::use_move(int move_number)
     return Pokemon::moves[move_number].use();
 }
 
-bool Pokemon::deal_damage(float damage)
+bool Pokemon::setup_substitute()
 {
+    if(Pokemon::current_hp <= (Pokemon::base_stats[STAT::HP] / 4) || Pokemon::substitute_hp != 0)
+        return false;
+
+    Pokemon::current_hp -= (Pokemon::base_stats[STAT::HP] / 4);
+    Pokemon::substitute_hp = (Pokemon::base_stats[STAT::HP] / 4);
+    return true;
+}
+
+bool Pokemon::deal_damage(float damage, bool ignore_sub)
+{
+    if(Pokemon::substitute_hp > 0 && !ignore_sub)
+    {
+        DEBUG_MSG("Substitue took damage for " << Pokemon::species << std::endl);
+        Pokemon::substitute_hp -= damage;
+        if(Pokemon::substitute_hp <= 0)
+        {
+            Pokemon::substitute_hp = 0;
+            DEBUG_MSG("Substitue faded\n");
+        }
+        return true;
+    }
     DEBUG_MSG("Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::species << "\n");
-    Pokemon::current_hp = Pokemon::current_hp - damage;
+    Pokemon::current_hp -=  damage;
 
     if(Pokemon::current_hp <= 0)
     {

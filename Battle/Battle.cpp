@@ -223,7 +223,7 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
     float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
 
-    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], move->get_num_targets(), crit);
+    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], Battle::Battle_Targets.get_num_valid_targets(), crit);
 
     if(damage_mod == 0)
     {
@@ -389,6 +389,14 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             {
                 DEBUG_MSG("But it failed\n");
                 return Attack_Result::MISS;
+            }
+        case MOVE_EFFECTS::SUBSTITUTE:
+            if(Battle::active_field.active_pokes[effect_target]->setup_substitute())
+                return Attack_Result::HIT;
+            else
+            {
+                DEBUG_MSG("But it failed\n");
+                return Attack_Result::NO_ATTACK;
             }
         default:
             ERR_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");

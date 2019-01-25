@@ -1,0 +1,14 @@
+{
+  "damage_type": "special",
+  "type": "FAIRY",
+  "priority": 0,
+  "pp": 16,
+  "acc": 100,
+  "targeting": "ADJACENT_ENEMY",
+  "num_targets": 0,
+  "damage_info":
+  {
+    "power": 80,
+    "crit_chance": 5
+  }
+}
