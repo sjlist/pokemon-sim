@@ -8,9 +8,10 @@
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 100000000;
+    int wins [3] = {0, 0, 0}, max_runs = 10;
     int num_runs = 1, winner, max_turns = 0, tot_turns = 0;
-    BattleStateMachine BSM = *new BattleStateMachine(2593196269);
+    std::cout << "RUN: " << num_runs << std::endl;
+    BattleStateMachine BSM = *new BattleStateMachine(RAND_SEED);
     winner = BSM.run() + 1;
     wins[winner] += 1;
     if(BSM.get_turn_count() > max_turns)

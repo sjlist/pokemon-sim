@@ -14,7 +14,9 @@ const std::string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
 #define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 300
 
-#define DEBUG_LEVEL 4
+#define RAND_SEED 2593196269
+
+#define DEBUG_LEVEL 1
 
 #if DEBUG_LEVEL >= 4
 #define DEBUGGING
