@@ -197,28 +197,28 @@ bool Pokemon::set_status(STATUS new_status)
     {
         case STATUS::ASLEEP:
             Pokemon::status_turns = 0;
-            break;;
+            break;
         case STATUS::BURNED:
             if(Pokemon::type[0] == PokeTypes::FIRE || Pokemon::type[1] == PokeTypes::FIRE)
             {
                 DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
             }
-            break;;
+            break;
         case STATUS::FROZEN:
             if(Pokemon::type[0] == PokeTypes::ICE || Pokemon::type[1] == PokeTypes::ICE)
             {
                 DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
             }
-            break;;
+            break;
         case STATUS::PARALYZED:
             if(Pokemon::type[0] == PokeTypes::ELECTRIC || Pokemon::type[1] == PokeTypes::ELECTRIC)
             {
                 DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
             }
-            break;;
+            break;
         case STATUS::BADLY_POISONED:
             Pokemon::status_turns = 0;
         case STATUS::POISONED:
@@ -227,7 +227,7 @@ bool Pokemon::set_status(STATUS new_status)
                 DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
                 return false;
             }
-            break;;
+            break;
         case STATUS::NO_STATUS:
             break;
         default:
@@ -296,6 +296,11 @@ void Pokemon::clear_stat_mods()
 void Pokemon::clear_volatile_status(VOLATILE_STATUS v_status)
 {
     Pokemon::volatile_status &= ~(v_status);
+}
+
+void Pokemon::clear_volatile_status_mask(int v_status_mask)
+{
+    Pokemon::volatile_status &= ~(v_status_mask);
 }
 
 void Pokemon::clear_volatile_statuses()
@@ -470,7 +475,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
             case STAT::HP:
                 Pokemon::base_stats[i] = calculate_hp(level, Pokemon::base_stats[i], evs[i], ivs[i]);
                 Pokemon::current_hp = Pokemon::base_stats[i];
-                break;;
+                break;
             case STAT::ATK:
             case STAT::DEF:
             case STAT::SPA:
@@ -478,11 +483,11 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
             case STAT::SPE:
                 nature_mod = get_nature_mod(nature, (STAT)i);
                 Pokemon::base_stats[i] = calculate_stat_single(level, Pokemon::base_stats[i], evs[i], ivs[i], nature_mod);
-                break;;
+                break;
             case STAT::ACC:
             case STAT::EVA:
                 Pokemon::base_stats[i] = 1;
-                break;;
+                break;
             default:
                 ERR_MSG("Unhandled stat " << i << std::endl);
         }

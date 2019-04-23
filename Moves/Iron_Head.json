@@ -15,7 +15,8 @@
   {
     "effect0":
     {
-      "effect": "FLINCH",
+      "effect": "VOLATILE_STATUS",
+      "status": "FLINCHED",
       "chance": 30
     }
   },

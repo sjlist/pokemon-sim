@@ -11,7 +11,6 @@
 #include <string>
 
 std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
-        {"FLINCH", MOVE_EFFECTS::FLINCH},
         {"SWAP", MOVE_EFFECTS::SWAP},
         {"STATUS", MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT},
         {"VOLATILE_STATUS", MOVE_EFFECTS::VOLATILE_STATUS_EFFECT},
@@ -128,7 +127,7 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             break;
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             Effect::status_effect = string_to_status(effect_tree.get<std::string>("status"));
-            break;;
+            break;
         case MOVE_EFFECTS::STAT_CHANGE:
             Effect::stat_changed = string_to_stat(effect_tree.get<std::string>("stat"));
             Effect::stages_changes = effect_tree.get<int>("stages");
@@ -158,7 +157,6 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
             }
             break;
         case MOVE_EFFECTS::SWAP:
-        case MOVE_EFFECTS::FLINCH:
         case MOVE_EFFECTS::PROTECT:
         case MOVE_EFFECTS::SUBSTITUTE:
             break;

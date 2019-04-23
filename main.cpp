@@ -8,7 +8,7 @@
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 10;
+    int wins [3] = {0, 0, 0}, max_runs = 10000;
     int num_runs = 1, winner, max_turns = 0, tot_turns = 0;
     std::cout << "RUN: " << num_runs << std::endl;
     BattleStateMachine BSM = *new BattleStateMachine(RAND_SEED);

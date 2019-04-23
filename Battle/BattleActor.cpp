@@ -49,7 +49,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             if(message.reserve_poke == -1)
                 action = Actions::CHOOSE_MOVE;
             else
-                break;;
+                break;
 
         case Actions::CHOOSE_MOVE:
             message.move_command = Commands::COMMAND_ATTACK;
@@ -64,7 +64,7 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             {
                 message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY, field);
             }
-            break;;
+            break;
     }
 
     DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << "'s " << field.active_pokes[pos]->get_species() << " chose action: ");

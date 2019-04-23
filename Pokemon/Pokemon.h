@@ -51,6 +51,7 @@ public:
     void reset_protect();
     void clear_stat_mods();
     void clear_volatile_status(VOLATILE_STATUS v_status);
+    void clear_volatile_status_mask(int v_status_mask);
     void clear_volatile_statuses();
     void clear_v_status_turns(VOLATILE_STATUS_NUMBERS v_status);
     void clear_protect_turns();

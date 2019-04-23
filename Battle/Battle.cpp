@@ -57,7 +57,6 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
 
 void Battle::return_poke(FIELD_POSITION pos)
 {
-
     DEBUG_MSG("Returning " << Battle::active_field.active_pokes[pos]->get_species() << "\n");
     Battle::active_field.active_pokes[pos]->clear_stat_mods();
     Battle::active_field.active_pokes[pos]->clear_volatile_statuses();
@@ -68,7 +67,6 @@ void Battle::return_poke(FIELD_POSITION pos)
 
 Attack_Result Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 {
-
     Battle::return_poke(pos);
     return Battle::send_out(pos, poke_position);
 }
@@ -171,7 +169,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             res = Battle::attack_damage(atk_pos, def_pos, move, crit);
             if(res.first == Attack_Result::IMMUNE)
                 return res.first;
-            break;;
+            break;
         case move_damage_type::MOVE_STATUS:
             res.first = Attack_Result::NO_ATTACK;
             break;
@@ -293,13 +291,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
     {
         case MOVE_EFFECTS::SWAP:
             return Attack_Result::SWAP;
-        case MOVE_EFFECTS::FLINCH:
-            if(Battle::roll_chance(move_effect.get_effect_chance()))
-            {
-                return Attack_Result::FLINCHED;
-            }
 
-            return Attack_Result::HIT;
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
             if(Battle::roll_chance(move_effect.get_effect_chance()))
             {
@@ -435,6 +427,7 @@ void Battle::reset_temp_field_status()
             continue;
 
         Battle::active_field.active_pokes[i]->reset_types();
+        Battle::active_field.active_pokes[i]->clear_volatile_status_mask(turn_end_v_status_mask_clear);
 
         //TODO: DOESNT WORK IN DOUBLES CORRECTLY DUE TO WIDEGAURD AND THE LIKE
         if(!Battle::active_field.active_pokes[i]->is_protected())
@@ -466,6 +459,7 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
 {
     switch(Battle::active_field.active_pokes[pos]->get_status())
     {
+        //TODO: MATCH STYLE OF CONFUSION
         case STATUS::ASLEEP:
             DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " is asleep\n");
             if(Battle::active_field.active_pokes[pos]->status_turns == 0)
@@ -564,18 +558,18 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
             DEBUG_MSG(" burned\n");
             DEBUG_MSG("Burn ");
             damage = Battle::active_field.active_pokes[pos]->get_stat(STAT::HP) / 16.0;
-            break;;
+            break;
         case STATUS::POISONED:
             DEBUG_MSG(" poisoned\n");
             DEBUG_MSG( "Poison ");
             damage = Battle::active_field.active_pokes[pos]->get_stat(STAT::HP) / 8.0;
-            break;;
+            break;
         case STATUS::BADLY_POISONED:
             DEBUG_MSG(" badly poisoned\n");
             DEBUG_MSG("Poison ");
             Battle::active_field.active_pokes[pos]->status_turns++;
             damage = Battle::active_field.active_pokes[pos]->get_stat(STAT::HP) / 16.0 * Battle::active_field.active_pokes[pos]->status_turns;
-            break;;
+            break;
         default:
             return true;
     }
@@ -609,7 +603,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
             {
                 case 0:
                     Battle::active_field.active_pokes[pos]->increment_v_status_turns(NUM_CONFUSION);
-                    break;;
+                    break;
                 case 1:
                 case 2:
                 case 3:
@@ -621,7 +615,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                         return Attack_Result::HIT;
                     }
                     Battle::active_field.active_pokes[pos]->increment_v_status_turns(NUM_CONFUSION);
-                    break;;
+                    break;
                 case 4:
                     Battle::active_field.active_pokes[pos]->clear_v_status_turns(NUM_CONFUSION);
                     Battle::active_field.active_pokes[pos]->clear_volatile_status(VOLATILE_STATUS::CONFUSION);
@@ -667,6 +661,8 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
         case VOLATILE_STATUS::EMBARGO:
         case VOLATILE_STATUS::ENCORE:
         case VOLATILE_STATUS::FLINCHED:
+            DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " flinched\n");
+            return Attack_Result::NO_ATTACK;
         case VOLATILE_STATUS::HEALBLOCK:
         case VOLATILE_STATUS::IDENTIFIED:
         case VOLATILE_STATUS::INFATUATION:

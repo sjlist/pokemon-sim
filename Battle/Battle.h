@@ -19,7 +19,6 @@ enum class Attack_Result
     FAINT,
     HIT,
     NO_PP,
-    FLINCHED,
     SWAP,
     IMMUNE,
     NUM_ATTACK_RESLUTS,

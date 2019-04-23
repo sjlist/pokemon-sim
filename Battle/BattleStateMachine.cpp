@@ -64,7 +64,7 @@ int BattleStateMachine::run(BattleState state)
             case BattleState::BATTLE_INIT:
                 BattleStateMachine::init();
                 state = BattleState::BATTLE_START;
-                break;;
+                break;
             case BattleState::BATTLE_START:
                 //get pokemon to send out
 
@@ -89,7 +89,7 @@ int BattleStateMachine::run(BattleState state)
 
                 DEBUG_MSG("\n\n\n--------------BATTLE START--------------\n");
                 state = BattleState::TURN_START;
-                break;;
+                break;
             case BattleState::TURN_START:
                 BattleStateMachine::turn_count++;
 #ifdef DEBUGGING
@@ -228,7 +228,7 @@ int BattleStateMachine::run(BattleState state)
                                 }
 
                                 if (messages[prio.at(i)].move_command == Commands::COMMAND_SWAP)
-                                    break;;
+                                    break;
 
                                 removed = BattleStateMachine::moves_later(swap_pos, i, prio);
                                 if (removed != -1)
@@ -239,7 +239,7 @@ int BattleStateMachine::run(BattleState state)
                                 // If both the attacker and defender are alive, no need to handle faints
                                 if (BattleStateMachine::battle.active_field.position_alive(messages[prio.at(i)].target_pos)
                                  && BattleStateMachine::battle.active_field.position_alive(prio.at(i)))
-                                    break;;
+                                    break;
                             }
 
                         case Attack_Result::FAINT:
@@ -304,26 +304,14 @@ int BattleStateMachine::run(BattleState state)
                             }
                             if(BattleStateMachine::battle_over())
                                 return BattleStateMachine::end_battle();
-                            break;;
-
-                        case Attack_Result::FLINCHED:
-                            removed = BattleStateMachine::moves_later(messages[prio.at(i)].target_pos, i, prio);
-                            if( removed != -1 )
-                            {
-                                DEBUG_MSG("P" << get_player_from_position(messages[prio.at(i)].target_pos) + 1 << "'s "
-                                          << BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->get_species() << " flinched\n");
-
-                                prio = BattleStateMachine::remove_priority_list(removed, prio);
-                                BattleStateMachine::battle.active_field.active_pokes[messages[prio.at(i)].target_pos]->first_turn = false;
-                            }
-                            break;;
+                            break;
 
                         case Attack_Result::HIT:
                         case Attack_Result::IMMUNE:
                         case Attack_Result::NO_PP:
                         case Attack_Result::MISS:
                         case Attack_Result::NO_ATTACK:
-                            break;;
+                            break;
                         default:
                             ERR_MSG("Unhandled attack result\n");
                     }
@@ -334,7 +322,7 @@ int BattleStateMachine::run(BattleState state)
 
                 if(state == BattleState::TURN_EXECUTE)
                     state = BattleState::TURN_END;
-                break;;
+                break;
             case BattleState::TURN_END:
                 speed_list = BattleStateMachine::create_speed_list();
                 for(int i =0; i < FIELD_POSITION::NUM_POSITIONS; i++)
@@ -355,7 +343,7 @@ int BattleStateMachine::run(BattleState state)
 
                 if(state == BattleState::TURN_END)
                     state = BattleState::TURN_START;
-                break;;
+                break;
             case BattleState::BATTLE_END:
                 return BattleStateMachine::end_battle();
             default:

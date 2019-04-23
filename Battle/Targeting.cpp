@@ -39,7 +39,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
             else
                 Targets::valid_targets[0] = FIELD_POSITION::PLAYER_1_0;
             Targets::num_valid_targets = 1;
-            break;;
+            break;
         case ADJACENT_FRIENDLY:
         case ALL_FRIENDLY:
             Targets::num_valid_targets = 0;
@@ -47,25 +47,25 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
         case SELF:
             Targets::valid_targets[0] = atk_pos;
             Targets::num_valid_targets = 1;
-            break;;
+            break;
         case ALL_ALL:
             Targets::valid_targets[0] = FIELD_POSITION::PLAYER_1_0;
             Targets::valid_targets[1] = FIELD_POSITION::PLAYER_2_0;
             Targets::num_valid_targets = 2;
-            break;;
+            break;
 #endif
 #if BATTLE_TYPE == DOUBLE_BATTLE
         case SELF:
             Targets::valid_targets[0] = atk_pos;
             Targets::num_valid_targets = 1;
-            break;;
+            break;
         case ALL_ALL:
             for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
             {
                 Targets::valid_targets[i] = static_cast<FIELD_POSITION>(i);
             }
             Targets::num_valid_targets = FIELD_POSITION::NUM_POSITIONS;
-            break;;
+            break;
         case ALL_OTHERS:
         case ADJACENT_ALL:
             for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
@@ -76,7 +76,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
                     Targets::num_valid_targets++;
                 }
             }
-            break;;
+            break;
         case ALL_ENEMY:
         case ADJACENT_ENEMY:
             for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
@@ -87,7 +87,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
                     Targets::num_valid_targets++;
                 }
             }
-            break;;
+            break;
         case ADJACENT_FRIENDLY:
         case ALL_FRIENDLY:
             for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
@@ -98,7 +98,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
                     Targets::num_valid_targets++;
                 }
             }
-            break;;
+            break;
 #endif
 #if BATTLE_TYPE == TRIPLE_BATTLE
         case ADJACENT_ALL:
