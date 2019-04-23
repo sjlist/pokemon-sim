@@ -18,6 +18,7 @@ const std::string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
 
 #if DEBUG_LEVEL >= 4
 #define DEBUGGING
+#define DEBUG_TURN 7
 #endif
 
 #endif /* POKEMON_SIM_CONFIG_H */
