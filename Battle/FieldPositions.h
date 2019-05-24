@@ -2,8 +2,8 @@
 // Created by slist on 1/3/19.
 //
 
-#ifndef POKEMON_SIM_FIELD_POSITIONS_H
-#define POKEMON_SIM_FIELD_POSITIONS_H
+#ifndef POKEMON_SIM_FIELDPOSITIONS_H
+#define POKEMON_SIM_FIELDPOSITIONS_H
 
 #include <Config.h>
 
@@ -30,4 +30,4 @@ enum FIELD_POSITION
 
 std::string get_string_from_field_position(FIELD_POSITION pos);
 
-#endif //POKEMON_SIM_FIELD_POSITIONS_H
+#endif //POKEMON_SIM_FIELDPOSITIONS_H

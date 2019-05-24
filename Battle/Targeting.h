@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_TARGETING_H
 #define POKEMON_SIM_TARGETING_H
 
-#include <Battle/Field_Positions.h>
+#include <Battle/FieldPositions.h>
 
 #include <string>
 

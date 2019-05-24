@@ -5,7 +5,7 @@
 #include <Battle/Players.h>
 #include <Battle/Field.h>
 #include <Utils/Logging.h>
-#include <Battle/Field_Positions.h>
+#include <Battle/FieldPositions.h>
 
 Field::Field()
 {
@@ -36,19 +36,19 @@ bool Field::position_alive(FIELD_POSITION pos)
     return Field::active_pokes[pos]->is_alive();
 }
 
-void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
+void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
 {
     switch(obj)
     {
-        case Field_Objects::STEALTH_ROCKS:
+        case FieldObjects::STEALTH_ROCKS:
             DEBUG_MSG("Rocks are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::stealth_rocks[get_player_from_position(def_pos)] = true;
             break;
-        case Field_Objects::STICKY_WEB:
+        case FieldObjects::STICKY_WEB:
             DEBUG_MSG("Sticky web is scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::sticky_web[get_player_from_position(def_pos)] = true;
             break;
-        case Field_Objects::SPIKES:
+        case FieldObjects::SPIKES:
             DEBUG_MSG("Spikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::spikes[get_player_from_position(def_pos)] += 1;
 
@@ -56,28 +56,29 @@ void Field::modify_field_obj(Field_Objects obj, FIELD_POSITION def_pos, FIELD_PO
                 Field::spikes[get_player_from_position(def_pos)] = 3;
 
             break;
-        case Field_Objects::TOXIC_SPIKES:
+        case FieldObjects::TOXIC_SPIKES:
             DEBUG_MSG("Toxic pikes are scattered all around P" << get_player_from_position(def_pos) + 1 << "'s field\n");
             Field::toxic_spikes[get_player_from_position(def_pos)] += 1;
             break;
-        case Field_Objects::LEECH_SEED:
+        case FieldObjects::LEECH_SEED:
             if(Field::active_pokes[def_pos]->get_type()[0] != PokeTypes::GRASS
             && Field::active_pokes[def_pos]->get_type()[1] != PokeTypes::GRASS
             && Field::leech_seed_positions[def_pos] == FIELD_POSITION::NO_POSITION)
             {
                 DEBUG_MSG(Field::active_pokes[def_pos]->get_species() << " is now seeded\n");
                 Field::leech_seed_positions[def_pos] = atk_pos;
-            } else
+            }
+            else
             {
                 DEBUG_MSG("Leech seed failed\n");
             }
             break;
-        case Field_Objects::CLEAR:
+        case FieldObjects::CLEAR:
             DEBUG_MSG("Clearing Field Objects\n");
             Field::reset_field_obj();
             break;
-        case Field_Objects::WEATHER:
-        case Field_Objects::TRICK_ROOM:
+        case FieldObjects::WEATHER:
+        case FieldObjects::TRICK_ROOM:
         default:
             ERR_MSG("Unhandled field object\n");
     }

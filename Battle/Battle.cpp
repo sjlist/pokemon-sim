@@ -459,31 +459,32 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
 {
     switch(Battle::active_field.active_pokes[pos]->get_status())
     {
-        //TODO: MATCH STYLE OF CONFUSION
         case STATUS::ASLEEP:
             DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " is asleep\n");
-            if(Battle::active_field.active_pokes[pos]->status_turns == 0)
+            switch(Battle::active_field.active_pokes[pos]->status_turns)
             {
-                Battle::active_field.active_pokes[pos]->status_turns++;
-                return Attack_Result::NO_ATTACK;
-            }
-            else if(Battle::active_field.active_pokes[pos]->status_turns < 3)
-            {
-                if(Battle::roll_chance((float)2/3))
-                {
+                case 0:
                     Battle::active_field.active_pokes[pos]->status_turns++;
                     return Attack_Result::NO_ATTACK;
-                }
-                else
-                {
+                case 1:
+                case 2:
+                    if(Battle::roll_chance((float)2/3))
+                    {
+                        Battle::active_field.active_pokes[pos]->status_turns++;
+                        return Attack_Result::NO_ATTACK;
+                    }
+                    else
+                    {
+                        DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " woke up!\n");
+                        Battle::active_field.active_pokes[pos]->set_status(STATUS::NO_STATUS);
+                    }
+                    break;
+                case 3:
                     DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " woke up!\n");
                     Battle::active_field.active_pokes[pos]->set_status(STATUS::NO_STATUS);
-                }
-            }
-            else
-            {
-                DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " woke up!\n");
-                Battle::active_field.active_pokes[pos]->set_status(STATUS::NO_STATUS);
+                    break;
+                default:
+                    ERR_MSG("Invliad Sleep Turns " << Battle::active_field.active_pokes[pos]->status_turns << "\n");
             }
             return Attack_Result::HIT;
         case STATUS::PARALYZED:
@@ -493,7 +494,6 @@ Attack_Result Battle::handle_pre_attack_status(FIELD_POSITION pos)
                 DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " is paralyzed\n");
                 return Attack_Result::NO_ATTACK;
             }
-
             return Attack_Result::HIT;
         case STATUS::FROZEN:
             if(Battle::roll_chance(0.8))
@@ -655,14 +655,14 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                 return Attack_Result::HIT;
             }
             ERR_MSG("Impossible Taunt status handling\n");
+        case VOLATILE_STATUS::FLINCHED:
+            DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " flinched\n");
+            return Attack_Result::NO_ATTACK;
         case VOLATILE_STATUS::BOUND:
         case VOLATILE_STATUS::CANT_ESCAPE:
         case VOLATILE_STATUS::CURSE:
         case VOLATILE_STATUS::EMBARGO:
         case VOLATILE_STATUS::ENCORE:
-        case VOLATILE_STATUS::FLINCHED:
-            DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " flinched\n");
-            return Attack_Result::NO_ATTACK;
         case VOLATILE_STATUS::HEALBLOCK:
         case VOLATILE_STATUS::IDENTIFIED:
         case VOLATILE_STATUS::INFATUATION:

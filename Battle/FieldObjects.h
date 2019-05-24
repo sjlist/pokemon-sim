@@ -2,12 +2,12 @@
 // Created by slist on 1/9/19.
 //
 
-#ifndef POKEMON_SIM_FIELD_OBJECTS_H
-#define POKEMON_SIM_FIELD_OBJECTS_H
+#ifndef POKEMON_SIM_FIELDOBJECTS_H
+#define POKEMON_SIM_FIELDOBJECTS_H
 
 #include <string>
 
-enum Field_Objects
+enum FieldObjects
 {
     STEALTH_ROCKS = 0,
     STICKY_WEB,
@@ -21,6 +21,6 @@ enum Field_Objects
     NUM_FIELD_OBJECTS
 };
 
-Field_Objects string_to_field_obj(std::string string_obj);
+FieldObjects string_to_field_obj(std::string string_obj);
 
-#endif //POKEMON_SIM_FIELD_OBJECTS_H
+#endif //POKEMON_SIM_FIELDOBJECTS_H

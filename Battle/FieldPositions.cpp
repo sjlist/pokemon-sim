@@ -2,7 +2,7 @@
 // Created by slist on 1/3/19.
 //
 
-#include <Battle/Field_Positions.h>
+#include <Battle/FieldPositions.h>
 #include <Config.h>
 #include <Utils/Logging.h>
 

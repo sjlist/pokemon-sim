@@ -69,7 +69,7 @@ int Effect::get_stages_changed()
     return Effect::stages_changes;
 }
 
-Field_Objects Effect::get_field_obj_changed()
+FieldObjects Effect::get_field_obj_changed()
 {
     return Effect::field_obj;
 }

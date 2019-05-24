@@ -5,8 +5,8 @@
 #ifndef POKEMON_SIM_EFFECT_H
 #define POKEMON_SIM_EFFECT_H
 
-#include <Battle/Field_Objects.h>
-#include <Battle/Field_Positions.h>
+#include <Battle/FieldObjects.h>
+#include <Battle/FieldPositions.h>
 #include <Pokemon/Stats.h>
 #include <Pokemon/Status.h>
 #include <Pokemon/Type.h>
@@ -47,7 +47,7 @@ public:
 
     STATUS get_effect_status_type();
 
-    Field_Objects get_field_obj_changed();
+    FieldObjects get_field_obj_changed();
 
     STAT get_stat_changed();
     int get_stages_changed();
@@ -71,7 +71,7 @@ private:
 
     VOLATILE_STATUS v_status_effect;
 
-    Field_Objects field_obj;
+    FieldObjects field_obj;
 
     STAT stat_changed;
     int stages_changes;

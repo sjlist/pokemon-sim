@@ -5,8 +5,8 @@
 #ifndef POKEMON_SIM_FIELD_H
 #define POKEMON_SIM_FIELD_H
 
-#include <Battle/Field_Objects.h>
-#include <Battle/Field_Positions.h>
+#include <Battle/FieldObjects.h>
+#include <Battle/FieldPositions.h>
 #include <Battle/Players.h>
 #include <Pokemon/Pokemon.h>
 
@@ -42,7 +42,7 @@ public:
     bool send_out(FIELD_POSITION pos, Pokemon* poke);
     void return_poke(FIELD_POSITION pos);
 
-    void modify_field_obj(Field_Objects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos);
+    void modify_field_obj(FieldObjects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos);
     bool handle_end_turn_field_obj(FIELD_POSITION pos);
     bool position_alive(FIELD_POSITION pos);
 
