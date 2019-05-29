@@ -65,6 +65,9 @@ public:
     void reset();
     void load_pokemon(boost::property_tree::ptree poke_ptree);
     Move moves[4];
+
+    //UNIT TEST HELPERS
+    void create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp);
 private:
     bool alive;
     bool active;

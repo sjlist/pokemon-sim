@@ -5,6 +5,8 @@
 #ifndef POKEMON_SIM_FIELD_H
 #define POKEMON_SIM_FIELD_H
 
+#include <gtest/gtest_prod.h>
+
 #include <Battle/FieldObjects.h>
 #include <Battle/FieldPositions.h>
 #include <Battle/Players.h>
@@ -59,6 +61,26 @@ public:
 
     void print_field(bool detailed=false);
 private:
+    //UNIT TEST
+    FRIEND_TEST(test_handle_entrance, happy_path);
+    FRIEND_TEST(test_handle_entrance, faint_spikes);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_3);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_3);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_flying_poke);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_poison_poke);
+    FRIEND_TEST(test_handle_hazard_entrance, stealth_rocks_faint);
+    FRIEND_TEST(test_handle_hazard_entrance, stealth_rocks_alive);
+    FRIEND_TEST(test_active_open, pos_open);
+    FRIEND_TEST(test_active_open, pos_open_with_poke);
+    FRIEND_TEST(test_active_open, pos_closed);
+
+
     void reset_field_obj();
     bool handle_entrance(FIELD_POSITION pos);
     bool handle_hazard_entrance(FIELD_POSITION pos);
