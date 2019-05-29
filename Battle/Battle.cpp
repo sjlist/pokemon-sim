@@ -74,8 +74,10 @@ Attack_Result Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int move_number)
 {
     Attack_Result res = Attack_Result::HIT, temp_res;
+    FIELD_POSITION attack_target;
     bool crit = false;
     Move* move;
+    int num_defenders;
 
     res = Battle::handle_pre_attack_status(atk_pos);
     if(res != Attack_Result::HIT)
@@ -109,29 +111,36 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     if(Battle::roll_chance(move->get_crit()))
         crit = true;
 
-    if(def_pos == FIELD_POSITION::ALL_TARGETS)
+    for(int j = 0; j < move->get_num_hits(); j++)
     {
         Battle::Battle_Targets.get_valid_targets(move->get_move_targets(), atk_pos);
-        for(int i = 0; i < Battle::Battle_Targets.get_num_valid_targets(); i++)
+        if(def_pos == ALL_TARGETS)
+            num_defenders = Battle::Battle_Targets.get_num_valid_targets();
+        else
+            num_defenders = 1;
+
+        for(int i = 0; i < num_defenders; i++)
         {
-            if(Battle::attack_target(
-                    atk_pos,
-                    Battle::Battle_Targets.valid_targets[i],
-                    move,
-                    crit)
-                    == Attack_Result::FAINT)
-                res = Attack_Result::FAINT;
+            if(move->get_num_targets() == 0)
+                attack_target = Battle::Battle_Targets.valid_targets[i];
+            else
+                attack_target = def_pos;
+
+            temp_res = Battle::attack_target(atk_pos, attack_target, move, crit);
+            switch(temp_res)
+            {
+                case Attack_Result::FAINT:
+                    res = temp_res;
+                    break;
+                case Attack_Result::SWAP:
+                    if(res != Attack_Result::FAINT)
+                        res = temp_res;
+                    break;
+                default:
+                    break;
+            }
         }
     }
-    else
-        for(int i = 0; i < move->get_num_hits(); i++)
-        {
-            temp_res = Battle::attack_target(atk_pos, def_pos, move, crit);
-            if(res == Attack_Result::HIT
-            || (temp_res == Attack_Result::FAINT && res != Attack_Result::SWAP)
-            || (temp_res == Attack_Result::SWAP))
-                res = temp_res;
-        }
 
     return res;
 }
@@ -145,6 +154,12 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         DEBUG_MSG("Attack Failed due to no pokemon being in slot: " << get_string_from_field_position(def_pos) << std::endl);
         return Attack_Result::NO_ATTACK;
+    }
+
+    if(!Battle::active_field.active_pokes[def_pos]->is_alive())
+    {
+        DEBUG_MSG("Attack Failed due to " << Battle::active_field.active_pokes[def_pos]->get_species() << " being fainted" << std::endl);
+        return Attack_Result::FAINT;
     }
 
     // roll for hit
