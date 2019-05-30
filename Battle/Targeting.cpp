@@ -78,6 +78,7 @@ void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
                     Targets::num_valid_targets++;
                 }
             }
+            break;
         case ALL_FRIENDLY:
             for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
             {

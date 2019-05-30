@@ -206,7 +206,7 @@ TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_1)
 {
     Targets t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
-    t.get_valid_targets(ADJACENT_ENEMY, PLAYER_1_1);
+    t.get_valid_targets(ADJACENT_FRIENDLY, PLAYER_1_1);
 #endif
 #if BATTLE_TYPE == DOUBLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -223,26 +223,249 @@ TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_2)
 {
     Targets t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
-    t.get_valid_targets(ADJACENT_ENEMY, PLAYER_1_2);
-    EXPECT_EQ(t.valid_targets[0], PLAYER_1_2);
+    t.get_valid_targets(ADJACENT_FRIENDLY, PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_1);
     EXPECT_EQ(t.get_num_valid_targets(), 1);
 #endif
 }
 
-TEST(test_get_valid_targets, ALL_ALL_1_0) {}
-TEST(test_get_valid_targets, ALL_ALL_1_1) {}
-TEST(test_get_valid_targets, ALL_ALL_1_2) {}
+TEST(test_get_valid_targets, ALL_ALL_1_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_ALL, PLAYER_1_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 4);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[4], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[5], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 6);
+#endif
+}
+TEST(test_get_valid_targets, ALL_ALL_2_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_ALL, PLAYER_2_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 4);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[4], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[5], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 6);
+#endif
+}
 
-TEST(test_get_valid_targets, ALL_OTHERS_1_0) {}
-TEST(test_get_valid_targets, ALL_OTHERS_1_1) {}
-TEST(test_get_valid_targets, ALL_OTHERS_1_2) {}
+TEST(test_get_valid_targets, ALL_OTHERS_1_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_OTHERS, PLAYER_1_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[4], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 5);
+#endif
+}
 
-TEST(test_get_valid_targets, ALL_ENEMY_1_0) {}
-TEST(test_get_valid_targets, ALL_ENEMY_1_1) {}
-TEST(test_get_valid_targets, ALL_ENEMY_1_2) {}
+TEST(test_get_valid_targets, ALL_OTHERS_1_1)
+{
+    Targets t;
+#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
+    t.get_valid_targets(ALL_OTHERS, PLAYER_1_1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[4], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 5);
+#endif
+}
 
-TEST(test_get_valid_targets, ALL_FRIENDLY_1_0) {}
-TEST(test_get_valid_targets, ALL_FRIENDLY_1_1) {}
-TEST(test_get_valid_targets, ALL_FRIENDLY_1_2) {}
+TEST(test_get_valid_targets, ALL_OTHERS_1_2)
+{
+    Targets t;
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    t.get_valid_targets(ALL_OTHERS, PLAYER_1_2);
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[3], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[4], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 5);
+#endif
+}
 
-TEST(test_get_valid_targets, SELF) {}
+TEST(test_get_valid_targets, ALL_ENEMY_1_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_ENEMY, PLAYER_1_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, ALL_ENEMY_1_2)
+{
+    Targets t;
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    t.get_valid_targets(ALL_ENEMY, PLAYER_1_2);
+
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, ALL_ENEMY_2_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_ENEMY, PLAYER_2_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_1_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, ALL_FRIENDLY_1_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_FRIENDLY, PLAYER_1_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_1_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, ALL_FRIENDLY_1_1)
+{
+    Targets t;
+#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
+    t.get_valid_targets(ALL_FRIENDLY, PLAYER_1_1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_1_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_1_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, ALL_FRIENDLY_2_0)
+{
+    Targets t;
+    t.get_valid_targets(ALL_FRIENDLY, PLAYER_2_0);
+#if BATTLE_TYPE == SINGLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+#endif
+#if BATTLE_TYPE == DOUBLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_1);
+    EXPECT_EQ(t.get_num_valid_targets(), 2);
+#endif
+#if BATTLE_TYPE == TRIPLE_BATTLE
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[1], PLAYER_2_1);
+    EXPECT_EQ(t.valid_targets[2], PLAYER_2_2);
+    EXPECT_EQ(t.get_num_valid_targets(), 3);
+#endif
+}
+
+TEST(test_get_valid_targets, SELF)
+{
+    Targets t;
+    t.get_valid_targets(SELF, PLAYER_2_0);
+    EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+
+    t.get_valid_targets(SELF, PLAYER_1_0);
+    EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
+    EXPECT_EQ(t.get_num_valid_targets(), 1);
+}
