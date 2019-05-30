@@ -108,6 +108,7 @@ endif()
 ##################################################
 set(BATTLE_TEST_FILES
         Battle/unit-tests/test-Field.cpp
+        Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(battle-tests

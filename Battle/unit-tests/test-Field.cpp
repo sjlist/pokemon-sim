@@ -71,7 +71,7 @@ TEST(test_modify_field_obj, LEECH_SEED_no_grass)
     f.active_pokes[PLAYER_2_0] = &p;
     f.modify_field_obj(FieldObjects::LEECH_SEED, PLAYER_2_0, PLAYER_1_0);
     EXPECT_EQ(f.leech_seed_positions[PLAYER_2_0], PLAYER_1_0);
-    f.modify_field_obj(FieldObjects::LEECH_SEED, PLAYER_2_0, PLAYER_1_1);
+    f.modify_field_obj(FieldObjects::LEECH_SEED, PLAYER_2_0, PLAYER_2_0);
     EXPECT_EQ(f.leech_seed_positions[PLAYER_2_0], PLAYER_1_0);
 }
 

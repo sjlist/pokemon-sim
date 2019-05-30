@@ -191,6 +191,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             && (res.first != Attack_Result::FAINT || temp_res == Attack_Result::SWAP))
                 res.first = temp_res;
 
+            // TODO: MAY NOT BE RIGHT WITH CONTACT DAMAGE
             if (res.first == Attack_Result::SWAP)
                 return res.first;
         }
