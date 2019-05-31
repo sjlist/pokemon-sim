@@ -44,8 +44,9 @@ public:
     bool send_out(FIELD_POSITION pos, Pokemon* poke);
     void return_poke(FIELD_POSITION pos);
 
-    void modify_field_obj(FieldObjects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos);
+    void modify_field_obj(FieldObjects obj, FIELD_POSITION pos, FIELD_POSITION atk_pos, int field_value = 0);
     bool handle_end_turn_field_obj(FIELD_POSITION pos);
+    void handle_end_turn_weather();
     bool position_alive(FIELD_POSITION pos);
 
     Pokemon *active_pokes [NUM_POSITIONS];
@@ -57,6 +58,7 @@ public:
 
     bool trick_room;
     Weather weather_state;
+    int weather_turns;
     Terrain terrain;
 
     void print_field(bool detailed=false);
@@ -79,7 +81,7 @@ private:
     FRIEND_TEST(test_active_open, pos_open);
     FRIEND_TEST(test_active_open, pos_open_with_poke);
     FRIEND_TEST(test_active_open, pos_closed);
-
+    FRIEND_TEST(test_reset_field_obj, happy);
 
     void reset_field_obj();
     bool handle_entrance(FIELD_POSITION pos);

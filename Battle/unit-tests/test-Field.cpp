@@ -95,13 +95,58 @@ TEST(test_modify_field_obj, LEECH_SEED_no_poke)
 TEST(test_modify_field_obj, WEATHER)
 {
     Field f;
-    EXPECT_DEATH(f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0), "");
+    f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
+    EXPECT_EQ(f.weather_state, Weather::RAIN);
 }
 
 TEST(test_modify_field_obj, TRICK_ROOM)
 {
     Field f;
     EXPECT_DEATH(f.modify_field_obj(FieldObjects::TRICK_ROOM, PLAYER_2_0, PLAYER_1_0), "");
+}
+
+TEST(test_modify_field_obj, CLEAR)
+{
+    Field f;
+    Pokemon p[FIELD_POSITION::NUM_POSITIONS];
+
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_2_0, PLAYER_1_0);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        p[i].create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
+        f.active_pokes[i] = &p[i];
+        f.modify_field_obj(FieldObjects::LEECH_SEED, static_cast<FIELD_POSITION>(i), PLAYER_1_0);
+    }
+
+    f.modify_field_obj(FieldObjects::CLEAR, PLAYER_1_0, PLAYER_2_0);
+
+    EXPECT_FALSE(f.stealth_rocks[0]);
+    EXPECT_FALSE(f.stealth_rocks[1]);
+
+    EXPECT_FALSE(f.sticky_web[0]);
+    EXPECT_FALSE(f.sticky_web[1]);
+
+    EXPECT_EQ(f.spikes[0], 0);
+    EXPECT_EQ(f.spikes[1], 0);
+
+    EXPECT_EQ(f.toxic_spikes[0], 0);
+    EXPECT_EQ(f.toxic_spikes[1], 0);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        EXPECT_EQ(f.leech_seed_positions[i], NO_POSITION);
+    }
 }
 
 TEST(test_position_alive, nullptr)
@@ -129,7 +174,7 @@ TEST(test_position_alive, alive)
     EXPECT_TRUE(f.position_alive(PLAYER_2_0));
 }
 
-TEST(test_send_out, position_filled)
+TEST(test_field_send_out, position_filled)
 {
     Field f;
     Pokemon p;
@@ -138,7 +183,7 @@ TEST(test_send_out, position_filled)
     EXPECT_DEATH(f.send_out(PLAYER_2_0, &p), "");
 }
 
-TEST(test_send_out, faint)
+TEST(test_field_send_out, faint)
 {
     Field f;
     Pokemon p;
@@ -147,7 +192,7 @@ TEST(test_send_out, faint)
     EXPECT_FALSE(f.send_out(PLAYER_2_0, &p));
 }
 
-TEST(test_send_out, happy_path)
+TEST(test_field_send_out, happy_path)
 {
     Field f;
     Pokemon p;
@@ -158,7 +203,7 @@ TEST(test_send_out, happy_path)
     EXPECT_TRUE(f.active_pokes[PLAYER_2_0]->first_turn);
 }
 
-TEST(test_return_poke, happy_path)
+TEST(test_field_return_poke, happy_path)
 {
     Field f;
     Pokemon p;
@@ -171,7 +216,7 @@ TEST(test_return_poke, happy_path)
     EXPECT_EQ(f.leech_seed_positions[PLAYER_2_0], FIELD_POSITION::NO_POSITION);
 }
 
-TEST(test_return_poke, no_poke)
+TEST(test_field_return_poke, no_poke)
 {
     Field f;
     EXPECT_DEATH(f.return_poke(PLAYER_2_0), "");
@@ -387,4 +432,127 @@ TEST(test_handle_end_turn_field_obj, LEECH_SEED_faint)
     f.modify_field_obj(FieldObjects::LEECH_SEED, PLAYER_2_0, PLAYER_1_0);
     EXPECT_FALSE(f.handle_end_turn_field_obj(PLAYER_2_0));
     EXPECT_EQ(f.active_pokes[PLAYER_1_0]->get_current_hp(), 25);
+}
+
+TEST(test_reset_field_obj, happy)
+{
+    Field f;
+    Pokemon p[FIELD_POSITION::NUM_POSITIONS];
+
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_2_0, PLAYER_1_0);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        p[i].create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
+        f.active_pokes[i] = &p[i];
+        f.modify_field_obj(FieldObjects::LEECH_SEED, static_cast<FIELD_POSITION>(i), PLAYER_1_0);
+    }
+
+    f.reset_field_obj();
+
+    EXPECT_FALSE(f.stealth_rocks[0]);
+    EXPECT_FALSE(f.stealth_rocks[1]);
+
+    EXPECT_FALSE(f.sticky_web[0]);
+    EXPECT_FALSE(f.sticky_web[1]);
+
+    EXPECT_EQ(f.spikes[0], 0);
+    EXPECT_EQ(f.spikes[1], 0);
+
+    EXPECT_EQ(f.toxic_spikes[0], 0);
+    EXPECT_EQ(f.toxic_spikes[1], 0);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        EXPECT_EQ(f.leech_seed_positions[i], NO_POSITION);
+    }
+}
+
+TEST(test_reset_field, happy)
+{
+    Field f;
+    Pokemon p[FIELD_POSITION::NUM_POSITIONS];
+
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_1_0, PLAYER_2_0);
+    f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_2_0, PLAYER_1_0);
+
+    f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        p[i].create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
+        f.active_pokes[i] = &p[i];
+        f.modify_field_obj(FieldObjects::LEECH_SEED, static_cast<FIELD_POSITION>(i), PLAYER_1_0);
+    }
+
+    f.reset();
+
+    EXPECT_FALSE(f.stealth_rocks[0]);
+    EXPECT_FALSE(f.stealth_rocks[1]);
+
+    EXPECT_FALSE(f.sticky_web[0]);
+    EXPECT_FALSE(f.sticky_web[1]);
+
+    EXPECT_EQ(f.spikes[0], 0);
+    EXPECT_EQ(f.spikes[1], 0);
+
+    EXPECT_EQ(f.toxic_spikes[0], 0);
+    EXPECT_EQ(f.toxic_spikes[1], 0);
+
+    EXPECT_EQ(f.weather_state, Weather::CLEAR_SKIES);
+    EXPECT_EQ(f.weather_turns, 0);
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        EXPECT_EQ(f.active_pokes[i], nullptr);
+        EXPECT_EQ(f.leech_seed_positions[i], NO_POSITION);
+    }
+}
+
+TEST(test_handle_end_turn_weather, turn_countdown)
+{
+    Field f;
+    f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::RAIN);
+    EXPECT_EQ(f.weather_turns, 4);
+
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::RAIN);
+    EXPECT_EQ(f.weather_turns, 3);
+
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::RAIN);
+    EXPECT_EQ(f.weather_turns, 2);
+
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::RAIN);
+    EXPECT_EQ(f.weather_turns, 1);
+
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::CLEAR_SKIES);
+    EXPECT_EQ(f.weather_turns, 0);
+
+    f.handle_end_turn_weather();
+    EXPECT_EQ(f.weather_state, Weather::CLEAR_SKIES);
+    EXPECT_EQ(f.weather_turns, 0);
 }

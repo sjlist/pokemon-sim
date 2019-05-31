@@ -36,7 +36,7 @@ bool Field::position_alive(FIELD_POSITION pos)
     return Field::active_pokes[pos]->is_alive();
 }
 
-void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos)
+void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POSITION atk_pos, int field_value)
 {
     switch(obj)
     {
@@ -83,7 +83,13 @@ void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POS
             Field::reset_field_obj();
             break;
         case FieldObjects::WEATHER:
+            //TODO: IMPLEMENT WEATHER FREEZING
+            Field::weather_state = static_cast<Weather>(field_value);
+            //TODO: WEATHER TURN EXTENDING
+            Field::weather_turns = 5;
+            break;
         case FieldObjects::TRICK_ROOM:
+        case FieldObjects::TERRAIN:
         default:
             ERR_MSG("Unhandled field object\n");
     }
@@ -184,6 +190,7 @@ void Field::reset()
 
     Field::trick_room = false;
     Field::weather_state = Weather::CLEAR_SKIES;
+    Field::weather_turns = 0;
     Field::terrain = Terrain::NO_TERRAIN;
 }
 
@@ -256,6 +263,20 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
     }
 
     return true;
+}
+
+void Field::handle_end_turn_weather()
+{
+    if (Field::weather_state != Weather::CLEAR_SKIES)
+    {
+        //TODO: HANDLE PERMANENT WEATHER
+        Field::weather_turns--;
+    }
+
+    if (Field::weather_turns == 0)
+    {
+        Field::weather_state = Weather::CLEAR_SKIES;
+    }
 }
 
 Players get_player_from_position(FIELD_POSITION pos)

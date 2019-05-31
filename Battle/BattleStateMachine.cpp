@@ -338,6 +338,8 @@ int BattleStateMachine::run(BattleState state)
                 }
                 BattleStateMachine::battle.reset_temp_field_status();
 
+                BattleStateMachine::battle.active_field.handle_end_turn_weather();
+
                 if(BattleStateMachine::battle_over())
                     state = BattleState::BATTLE_END;
 
