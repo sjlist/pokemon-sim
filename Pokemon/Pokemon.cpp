@@ -559,6 +559,7 @@ void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float p
     Pokemon::set_stats(iv_ptr, ev_ptr, level, n);
 
     Pokemon::species = "TESTEMON";
+    Pokemon::name = "TESTEMON";
 
     Pokemon::type[0] = t1;
     Pokemon::type[1] = t2;

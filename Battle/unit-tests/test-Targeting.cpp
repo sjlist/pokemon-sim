@@ -7,9 +7,17 @@
 #include <Battle/FieldPositions.h>
 #include <Battle/Targeting.h>
 
+class TargetsTest: public Targets
+{
+    FRIEND_TEST(test_is_adjacent, ADJACENT);
+    FRIEND_TEST(test_is_adjacent, SAME);
+    FRIEND_TEST(test_is_adjacent, NOT_ADJACENT);
+    FRIEND_TEST(test_get_relative_position, happy);
+};
+
 TEST(test_is_adjacent, ADJACENT)
 {
-    Targets t;
+    TargetsTest t;
     EXPECT_TRUE(t.is_adjacent(PLAYER_1_0, PLAYER_2_0));
     EXPECT_TRUE(t.is_adjacent(PLAYER_2_0, PLAYER_1_0));
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
@@ -46,7 +54,7 @@ TEST(test_is_adjacent, ADJACENT)
 
 TEST(test_is_adjacent, NOT_ADJACENT)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     EXPECT_FALSE(t.is_adjacent(PLAYER_1_0, PLAYER_1_2));
     EXPECT_FALSE(t.is_adjacent(PLAYER_1_0, PLAYER_2_2));
@@ -65,7 +73,7 @@ TEST(test_is_adjacent, NOT_ADJACENT)
 
 TEST(test_is_adjacent, SAME)
 {
-    Targets t;
+    TargetsTest t;
     EXPECT_FALSE(t.is_adjacent(PLAYER_1_0, PLAYER_1_0));
     EXPECT_FALSE(t.is_adjacent(PLAYER_2_0, PLAYER_2_0));
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
@@ -80,7 +88,7 @@ TEST(test_is_adjacent, SAME)
 
 TEST(test_get_relative_position, happy)
 {
-    Targets t;
+    TargetsTest t;
     EXPECT_EQ(t.get_relative_position(PLAYER_1_0), 0);
     EXPECT_EQ(t.get_relative_position(PLAYER_2_0), 0);
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
@@ -95,7 +103,7 @@ TEST(test_get_relative_position, happy)
 
 TEST(test_get_valid_targets, ADJACENT_ALL_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ADJACENT_ALL, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
@@ -111,7 +119,7 @@ TEST(test_get_valid_targets, ADJACENT_ALL_1_0)
 
 TEST(test_get_valid_targets, ADJACENT_ALL_1_1)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_ALL, PLAYER_1_1);
 #endif
@@ -133,7 +141,7 @@ TEST(test_get_valid_targets, ADJACENT_ALL_1_1)
 
 TEST(test_get_valid_targets, ADJACENT_ALL_1_2)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_ALL, PLAYER_1_2);
 
@@ -146,7 +154,7 @@ TEST(test_get_valid_targets, ADJACENT_ALL_1_2)
 
 TEST(test_get_valid_targets, ADJACENT_ENEMY_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ADJACENT_ENEMY, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
@@ -161,7 +169,7 @@ TEST(test_get_valid_targets, ADJACENT_ENEMY_1_0)
 
 TEST(test_get_valid_targets, ADJACENT_ENEMY_1_1)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_ENEMY, PLAYER_1_1);
 #endif
@@ -180,7 +188,7 @@ TEST(test_get_valid_targets, ADJACENT_ENEMY_1_1)
 
 TEST(test_get_valid_targets, ADJACENT_ENEMY_1_2)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_ENEMY, PLAYER_1_2);
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_1);
@@ -191,7 +199,7 @@ TEST(test_get_valid_targets, ADJACENT_ENEMY_1_2)
 
 TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ADJACENT_FRIENDLY, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.get_num_valid_targets(), 0);
@@ -204,7 +212,7 @@ TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_0)
 
 TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_1)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_FRIENDLY, PLAYER_1_1);
 #endif
@@ -221,7 +229,7 @@ TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_1)
 
 TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_2)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ADJACENT_FRIENDLY, PLAYER_1_2);
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_1);
@@ -231,7 +239,7 @@ TEST(test_get_valid_targets, ADJACENT_FRIENDLY_1_2)
 
 TEST(test_get_valid_targets, ALL_ALL_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_ALL, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -257,7 +265,7 @@ TEST(test_get_valid_targets, ALL_ALL_1_0)
 }
 TEST(test_get_valid_targets, ALL_ALL_2_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_ALL, PLAYER_2_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -284,7 +292,7 @@ TEST(test_get_valid_targets, ALL_ALL_2_0)
 
 TEST(test_get_valid_targets, ALL_OTHERS_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_OTHERS, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
@@ -308,7 +316,7 @@ TEST(test_get_valid_targets, ALL_OTHERS_1_0)
 
 TEST(test_get_valid_targets, ALL_OTHERS_1_1)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ALL_OTHERS, PLAYER_1_1);
 #endif
@@ -330,7 +338,7 @@ TEST(test_get_valid_targets, ALL_OTHERS_1_1)
 
 TEST(test_get_valid_targets, ALL_OTHERS_1_2)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ALL_OTHERS, PLAYER_1_2);
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -344,7 +352,7 @@ TEST(test_get_valid_targets, ALL_OTHERS_1_2)
 
 TEST(test_get_valid_targets, ALL_ENEMY_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_ENEMY, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
@@ -365,7 +373,7 @@ TEST(test_get_valid_targets, ALL_ENEMY_1_0)
 
 TEST(test_get_valid_targets, ALL_ENEMY_1_2)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ALL_ENEMY, PLAYER_1_2);
 
@@ -378,7 +386,7 @@ TEST(test_get_valid_targets, ALL_ENEMY_1_2)
 
 TEST(test_get_valid_targets, ALL_ENEMY_2_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_ENEMY, PLAYER_2_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -399,7 +407,7 @@ TEST(test_get_valid_targets, ALL_ENEMY_2_0)
 
 TEST(test_get_valid_targets, ALL_FRIENDLY_1_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_FRIENDLY, PLAYER_1_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_1_0);
@@ -420,7 +428,7 @@ TEST(test_get_valid_targets, ALL_FRIENDLY_1_0)
 
 TEST(test_get_valid_targets, ALL_FRIENDLY_1_1)
 {
-    Targets t;
+    TargetsTest t;
 #if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
     t.get_valid_targets(ALL_FRIENDLY, PLAYER_1_1);
 #endif
@@ -439,7 +447,7 @@ TEST(test_get_valid_targets, ALL_FRIENDLY_1_1)
 
 TEST(test_get_valid_targets, ALL_FRIENDLY_2_0)
 {
-    Targets t;
+    TargetsTest t;
     t.get_valid_targets(ALL_FRIENDLY, PLAYER_2_0);
 #if BATTLE_TYPE == SINGLE_BATTLE
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
@@ -460,7 +468,7 @@ TEST(test_get_valid_targets, ALL_FRIENDLY_2_0)
 
 TEST(test_get_valid_targets, SELF)
 {
-    Targets t;
+    TargetsTest  t;
     t.get_valid_targets(SELF, PLAYER_2_0);
     EXPECT_EQ(t.valid_targets[0], PLAYER_2_0);
     EXPECT_EQ(t.get_num_valid_targets(), 1);

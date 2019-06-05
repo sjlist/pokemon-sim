@@ -42,14 +42,11 @@ public:
     void set_single_target(FIELD_POSITION pos);
 
     void get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos);
-private:
-    FRIEND_TEST(test_is_adjacent, ADJACENT);
-    FRIEND_TEST(test_is_adjacent, SAME);
-    FRIEND_TEST(test_is_adjacent, NOT_ADJACENT);
-    FRIEND_TEST(test_get_relative_position, happy);
-
+protected:
     bool is_adjacent(FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
     int get_relative_position(FIELD_POSITION pos);
+
+private:
     int num_valid_targets;
     FIELD_POSITION single_target;
 };

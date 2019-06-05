@@ -5,6 +5,8 @@
 #ifndef POKEMON_SIM_BATTLE_H
 #define POKEMON_SIM_BATTLE_H
 
+#include <gtest/gtest_prod.h>
+
 #include <Battle/Field.h>
 #include <Battle/Party.h>
 #include <Pokemon/Pokemon.h>
@@ -59,13 +61,18 @@ public:
 
     bool has_lost(Players player);
     void print_battle(bool detailed=false);
+
+protected:
+    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
+
+    Party Parties [2];
+
 private:
     void load_teams(std::vector<std::string> team_names);
     void load_game_moves();
 
     Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
     std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
-    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
 
     Attack_Result handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender);
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);
@@ -84,7 +91,6 @@ private:
 
     std::mt19937 generator;
 
-    Party Parties [2];
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
 };
 

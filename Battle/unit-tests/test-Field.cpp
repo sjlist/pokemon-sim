@@ -7,6 +7,29 @@
 #include <Battle/Players.h>
 #include <Battle/FieldPositions.h>
 
+class FieldTest: public Field
+{
+    FRIEND_TEST(test_handle_entrance, happy_path);
+    FRIEND_TEST(test_handle_entrance, faint_spikes);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, faint_spikes_3);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, live_spikes_3);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_1);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_2);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_flying_poke);
+    FRIEND_TEST(test_handle_hazard_entrance, toxic_spikes_poison_poke);
+    FRIEND_TEST(test_handle_hazard_entrance, stealth_rocks_faint);
+    FRIEND_TEST(test_handle_hazard_entrance, stealth_rocks_alive);
+    FRIEND_TEST(test_active_open, pos_open);
+    FRIEND_TEST(test_active_open, pos_open_with_poke);
+    FRIEND_TEST(test_active_open, pos_closed);
+    FRIEND_TEST(test_reset_field_obj, happy);
+
+};
+
 TEST(test_get_Field_Positions, p1)
 {
     EXPECT_EQ(Players::PLAYER_ONE, get_player_from_position(PLAYER_1_0));
@@ -31,14 +54,14 @@ TEST(test_get_Field_Positions, p2)
 
 TEST(test_modify_field_obj, STEALTH_ROCKS)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_2_0, PLAYER_1_0);
     EXPECT_TRUE(f.stealth_rocks[Players::PLAYER_TWO]);
 }
 
 TEST(test_modify_field_obj, SPIKES)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
     EXPECT_EQ(f.spikes[Players::PLAYER_TWO], 1);
     f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
@@ -51,21 +74,21 @@ TEST(test_modify_field_obj, SPIKES)
 
 TEST(test_modify_field_obj, STICKY_WEB)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_2_0, PLAYER_1_0);
     EXPECT_TRUE(f.sticky_web[Players::PLAYER_TWO]);
 }
 
 TEST(test_modify_field_obj, TOXIC_SPIKES)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::TOXIC_SPIKES, PLAYER_2_0, PLAYER_1_0);
     EXPECT_TRUE(f.toxic_spikes[Players::PLAYER_TWO]);
 }
 
 TEST(test_modify_field_obj, LEECH_SEED_no_grass)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -77,7 +100,7 @@ TEST(test_modify_field_obj, LEECH_SEED_no_grass)
 
 TEST(test_modify_field_obj, LEECH_SEED_grass)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::GRASS, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -87,27 +110,27 @@ TEST(test_modify_field_obj, LEECH_SEED_grass)
 
 TEST(test_modify_field_obj, LEECH_SEED_no_poke)
 {
-    Field f;
+    FieldTest f;
     f.active_pokes[PLAYER_2_0] = nullptr;
     EXPECT_DEATH(f.modify_field_obj(FieldObjects::LEECH_SEED, PLAYER_2_0, PLAYER_1_0), "");
 }
 
 TEST(test_modify_field_obj, WEATHER)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
     EXPECT_EQ(f.weather_state, Weather::RAIN);
 }
 
 TEST(test_modify_field_obj, TRICK_ROOM)
 {
-    Field f;
+    FieldTest f;
     EXPECT_DEATH(f.modify_field_obj(FieldObjects::TRICK_ROOM, PLAYER_2_0, PLAYER_1_0), "");
 }
 
 TEST(test_modify_field_obj, CLEAR)
 {
-    Field f;
+    FieldTest f;
     Pokemon p[FIELD_POSITION::NUM_POSITIONS];
 
     f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
@@ -151,13 +174,13 @@ TEST(test_modify_field_obj, CLEAR)
 
 TEST(test_position_alive, nullptr)
 {
-    Field f;
+    FieldTest f;
     EXPECT_FALSE(f.position_alive(PLAYER_2_0));
 }
 
 TEST(test_position_alive, fainted)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     p.faint_poke();
@@ -167,7 +190,7 @@ TEST(test_position_alive, fainted)
 
 TEST(test_position_alive, alive)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -176,7 +199,7 @@ TEST(test_position_alive, alive)
 
 TEST(test_field_send_out, position_filled)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = new(Pokemon);
@@ -185,7 +208,7 @@ TEST(test_field_send_out, position_filled)
 
 TEST(test_field_send_out, faint)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
@@ -194,7 +217,7 @@ TEST(test_field_send_out, faint)
 
 TEST(test_field_send_out, happy_path)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.modify_field_obj(FieldObjects::SPIKES, PLAYER_2_0, PLAYER_1_0);
@@ -205,7 +228,7 @@ TEST(test_field_send_out, happy_path)
 
 TEST(test_field_return_poke, happy_path)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.send_out(PLAYER_2_0, &p);
@@ -218,13 +241,13 @@ TEST(test_field_return_poke, happy_path)
 
 TEST(test_field_return_poke, no_poke)
 {
-    Field f;
+    FieldTest f;
     EXPECT_DEATH(f.return_poke(PLAYER_2_0), "");
 }
 
 TEST(test_handle_entrance, happy_path)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -233,7 +256,7 @@ TEST(test_handle_entrance, happy_path)
 
 TEST(test_handle_entrance, faint_spikes)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -243,7 +266,7 @@ TEST(test_handle_entrance, faint_spikes)
 
 TEST(test_handle_hazard_entrance, faint_spikes_1)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -253,7 +276,7 @@ TEST(test_handle_hazard_entrance, faint_spikes_1)
 
 TEST(test_handle_hazard_entrance, live_spikes_1)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -263,7 +286,7 @@ TEST(test_handle_hazard_entrance, live_spikes_1)
 
 TEST(test_handle_hazard_entrance, faint_spikes_2)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 16);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -274,7 +297,7 @@ TEST(test_handle_hazard_entrance, faint_spikes_2)
 
 TEST(test_handle_hazard_entrance, live_spikes_2)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 17);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -285,7 +308,7 @@ TEST(test_handle_hazard_entrance, live_spikes_2)
 
 TEST(test_handle_hazard_entrance, faint_spikes_3)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 25);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -297,7 +320,7 @@ TEST(test_handle_hazard_entrance, faint_spikes_3)
 
 TEST(test_handle_hazard_entrance, live_spikes_3)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 26);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -309,7 +332,7 @@ TEST(test_handle_hazard_entrance, live_spikes_3)
 
 TEST(test_handle_hazard_entrance, toxic_spikes_1)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 26);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -320,7 +343,7 @@ TEST(test_handle_hazard_entrance, toxic_spikes_1)
 
 TEST(test_handle_hazard_entrance, toxic_spikes_2)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 26);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -332,7 +355,7 @@ TEST(test_handle_hazard_entrance, toxic_spikes_2)
 
 TEST(test_handle_hazard_entrance, toxic_spikes_flying_poke)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::FLYING, PokeTypes::NO_TYPE, Natures::QUIRKY, 26);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -343,7 +366,7 @@ TEST(test_handle_hazard_entrance, toxic_spikes_flying_poke)
 
 TEST(test_handle_hazard_entrance, toxic_spikes_poison_poke)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::POISON, PokeTypes::NO_TYPE, Natures::QUIRKY, 26);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -355,7 +378,7 @@ TEST(test_handle_hazard_entrance, toxic_spikes_poison_poke)
 
 TEST(test_handle_hazard_entrance, stealth_rocks_faint)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -365,7 +388,7 @@ TEST(test_handle_hazard_entrance, stealth_rocks_faint)
 
 TEST(test_handle_hazard_entrance, stealth_rocks_alive)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -375,13 +398,13 @@ TEST(test_handle_hazard_entrance, stealth_rocks_alive)
 
 TEST(test_active_open, pos_open)
 {
-    Field f;
+    FieldTest f;
     EXPECT_TRUE(f.active_open(PLAYER_2_0));
 }
 
 TEST(test_active_open, pos_open_with_poke)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p = *new(Pokemon);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -390,7 +413,7 @@ TEST(test_active_open, pos_open_with_poke)
 
 TEST(test_active_open, pos_closed)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -399,7 +422,7 @@ TEST(test_active_open, pos_closed)
 
 TEST(test_handle_end_turn_field_obj, happy_path)
 {
-    Field f;
+    FieldTest f;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::GRASS, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
     f.active_pokes[PLAYER_2_0] = &p;
@@ -409,7 +432,7 @@ TEST(test_handle_end_turn_field_obj, happy_path)
 
 TEST(test_handle_end_turn_field_obj, LEECH_SEED_live)
 {
-    Field f;
+    FieldTest f;
     Pokemon p1, p2;
     p1.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     p2.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
@@ -423,7 +446,7 @@ TEST(test_handle_end_turn_field_obj, LEECH_SEED_live)
 
 TEST(test_handle_end_turn_field_obj, LEECH_SEED_faint)
 {
-    Field f;
+    FieldTest f;
     Pokemon p1, p2;
     p1.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 13);
     p2.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, Natures::QUIRKY, 12);
@@ -436,7 +459,7 @@ TEST(test_handle_end_turn_field_obj, LEECH_SEED_faint)
 
 TEST(test_reset_field_obj, happy)
 {
-    Field f;
+    FieldTest f;
     Pokemon p[FIELD_POSITION::NUM_POSITIONS];
 
     f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
@@ -480,7 +503,7 @@ TEST(test_reset_field_obj, happy)
 
 TEST(test_reset_field, happy)
 {
-    Field f;
+    FieldTest f;
     Pokemon p[FIELD_POSITION::NUM_POSITIONS];
 
     f.modify_field_obj(FieldObjects::STICKY_WEB, PLAYER_1_0, PLAYER_2_0);
@@ -530,7 +553,7 @@ TEST(test_reset_field, happy)
 
 TEST(test_handle_end_turn_weather, turn_countdown)
 {
-    Field f;
+    FieldTest f;
     f.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
     f.handle_end_turn_weather();
     EXPECT_EQ(f.weather_state, Weather::RAIN);

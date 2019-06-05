@@ -30,8 +30,7 @@ set(BATTLE_FILES
         Battle/Party.h
         Battle/Players.h
         Battle/Targeting.cpp
-        Battle/Targeting.h
-        )
+        Battle/Targeting.h)
 
 set(POKEMON_FILES
         Pokemon/Effect.cpp
@@ -47,8 +46,8 @@ set(POKEMON_FILES
         Pokemon/Status.cpp
         Pokemon/Status.h
         Pokemon/Type.cpp
-        Pokemon/Type.h
-        )
+        Pokemon/Type.h)
+
 set(FILE_IO_FILES
         fileIO/loadJSON.cpp
         fileIO/loadJSON.h)
@@ -63,10 +62,11 @@ set(POKEMON_SIM_FILES
         ${BATTLE_FILES}
         Config.h)
 
+add_library(Pokemon_Battle_Sim SHARED ${POKEMON_SIM_FILES})
+
 add_executable(pokemon_sim
-    ${POKEMON_SIM_FILES}
     main.cpp)
-target_link_libraries(pokemon_sim gtest_main)
+target_link_libraries(pokemon_sim gtest_main Pokemon_Battle_Sim)
 
 ##################################################
 ### GTEST
@@ -109,14 +109,13 @@ endif()
 set(BATTLE_TEST_FILES
         Battle/unit-tests/test-Field.cpp
         Battle/unit-tests/test-Targeting.cpp
+        Battle/unit-tests/test-Battle.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(battle-tests
-        ${BATTLE_TEST_FILES}
-        ${POKEMON_SIM_FILES}
-        Config.h)
+        ${BATTLE_TEST_FILES})
 
-target_link_libraries(battle-tests gtest_main)
+target_link_libraries(battle-tests gtest_main Pokemon_Battle_Sim)
 add_test(NAME battle-tests COMMAND battle-tests)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

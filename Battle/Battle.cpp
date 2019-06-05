@@ -37,6 +37,12 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
         return Attack_Result::NO_ATTACK;
 
     Players player = get_player_from_position(pos);
+    if(!Parties[player].party_pokes[poke_position].is_alive())
+        ERR_MSG("Pokemon fained, cannot send out\n");
+
+    if(Parties[player].party_pokes[poke_position].is_active())
+        ERR_MSG("Pokemon already active, cannot send out\n");
+
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
     Parties[player].party_pokes[poke_position].to_be_swapped = false;
@@ -46,8 +52,7 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
         Parties[player].party_pokes[poke_position].status_turns = 0;
 
     // if send out failed, the poke fainted and the poke's hp was 0, handle a faint and return false
-    if(!Battle::active_field.send_out(pos, &Parties[player].party_pokes[poke_position])
-     && Battle::active_field.active_pokes[pos]->get_current_hp() == 0)
+    if(!Battle::active_field.send_out(pos, &Parties[player].party_pokes[poke_position]))
     {
         Battle::handle_faint(pos);
         return Attack_Result::FAINT;
@@ -277,6 +282,7 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move*
 
 Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender)
 {
+    //NOT IMPLEMENTED YET
     return Attack_Result::HIT;
 }
 
