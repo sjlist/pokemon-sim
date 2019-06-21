@@ -37,6 +37,12 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
         return Attack_Result::NO_ATTACK;
 
     Players player = get_player_from_position(pos);
+    if(!Parties[player].party_pokes[poke_position].is_alive())
+        ERR_MSG("Pokemon fained, cannot send out\n");
+
+    if(Parties[player].party_pokes[poke_position].is_active())
+        ERR_MSG("Pokemon already active, cannot send out\n");
+
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
     Parties[player].party_pokes[poke_position].to_be_swapped = false;
@@ -46,8 +52,7 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
         Parties[player].party_pokes[poke_position].status_turns = 0;
 
     // if send out failed, the poke fainted and the poke's hp was 0, handle a faint and return false
-    if(!Battle::active_field.send_out(pos, &Parties[player].party_pokes[poke_position])
-     && Battle::active_field.active_pokes[pos]->get_current_hp() == 0)
+    if(!Battle::active_field.send_out(pos, &Parties[player].party_pokes[poke_position]))
     {
         Battle::handle_faint(pos);
         return Attack_Result::FAINT;
@@ -206,6 +211,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
             && (res.first != Attack_Result::FAINT || temp_res == Attack_Result::SWAP))
                 res.first = temp_res;
 
+            // TODO: MAY NOT BE RIGHT WITH CONTACT DAMAGE
             if (res.first == Attack_Result::SWAP)
                 return res.first;
         }
@@ -291,6 +297,7 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move*
 
 Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender)
 {
+    //NOT IMPLEMENTED YET
     return Attack_Result::HIT;
 }
 
@@ -712,12 +719,6 @@ float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* 
 {
     float damage_modifier = 1;
 
-    if(crit)
-    {
-        DEBUG_MSG("Critical Hit\n");
-        damage_modifier *= 1.5;
-    }
-
     damage_modifier *= calculate_type_damage_modifier(defender->get_type(), move->get_type());
 
     if(damage_modifier >= 2)
@@ -725,16 +726,28 @@ float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* 
     else if(damage_modifier > 0 && damage_modifier < 1)
         DEBUG_MSG("It's not very effective\n");
 
+    if(crit)
+    {
+        DEBUG_MSG("Critical Hit\n");
+        damage_modifier *= 1.5;
+    }
+
     if(num_targets > 1)
         damage_modifier *= 0.75;
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::WATER)
-    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
+    || (Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::WATER)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
         damage_modifier *= 1.5;
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::FIRE)
     || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
         damage_modifier *= 0.5;
+
+    if((Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
+        damage_modifier = 0;
 
     if(is_stab(attacker->get_type(), move->get_type()))
         damage_modifier *= 1.5;

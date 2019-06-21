@@ -97,8 +97,5 @@ std::string type_to_string(PokeTypes type)
 
 bool is_stab(PokeTypes* pokemon_type, PokeTypes move_type)
 {
-    if(pokemon_type[0] == move_type || (pokemon_type[1] == move_type && pokemon_type[1] != PokeTypes::NO_TYPE))
-        return true;
-    else
-        return false;
+    return (pokemon_type[0] == move_type || (pokemon_type[1] == move_type && pokemon_type[1] != PokeTypes::NO_TYPE));
 }

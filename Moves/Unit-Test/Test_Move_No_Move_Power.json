@@ -1,0 +1,14 @@
+{
+  "damage_type": "special",
+  "type": "NORMAL",
+  "priority": 0,
+  "pp": 32,
+  "acc": 100,
+  "targeting": "ADJACENT_ALL",
+  "num_targets": 1,
+  "damage_info":
+  {
+    "power": -1,
+    "crit_chance": 5
+  }
+}

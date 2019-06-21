@@ -6,6 +6,7 @@
 #define POKEMON_SIM_TARGETING_H
 
 #include <Battle/FieldPositions.h>
+#include <gtest/gtest_prod.h>
 
 #include <string>
 
@@ -41,6 +42,10 @@ public:
     void set_single_target(FIELD_POSITION pos);
 
     void get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos);
+protected:
+    bool is_adjacent(FIELD_POSITION atk_pos, FIELD_POSITION def_pos);
+    int get_relative_position(FIELD_POSITION pos);
+
 private:
     int num_valid_targets;
     FIELD_POSITION single_target;

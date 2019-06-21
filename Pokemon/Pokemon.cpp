@@ -25,6 +25,10 @@ Pokemon::Pokemon()
     Pokemon::active = false;
     Pokemon::alive = false;
     Pokemon::status = STATUS::NO_STATUS;
+    Pokemon::substitute_hp = 0;
+    Pokemon::current_hp = 0;
+    Pokemon::protect_active = false;
+    Pokemon::protect_turns = 0;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
         Pokemon::stat_modifiers[stat] = 0;
     for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
@@ -520,4 +524,50 @@ void Pokemon::print_pokemon(bool detailed)
     DEBUG_MSG("Current HP: " << round(Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n");
     DEBUG_MSG("STATUS: " << status_to_string(Pokemon::status) << "\n");
 #endif
+}
+
+
+// UNIT TEST HELPERS
+void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp)
+{
+    int evs [STAT::NUM_STATS], ivs [STAT::NUM_STATS];
+    auto ev_ptr = evs;
+    auto iv_ptr = ivs;
+
+    Pokemon::level = 50;
+
+    for(int i = 0; i < STAT::NUM_STATS; i++)
+    {
+        evs[i] = 0;
+        ivs[i] = 0;
+    }
+
+    Pokemon::alive = true;
+    Pokemon::active = true;
+    Pokemon::status = STATUS::NO_STATUS;
+    Pokemon::status_turns = 0;
+    Pokemon::volatile_status = 0;
+    Pokemon::to_be_swapped = false;
+
+    Pokemon::base_stats[STAT::HP]  = 40;
+    Pokemon::base_stats[STAT::ATK] = 100;
+    Pokemon::base_stats[STAT::DEF] = 100;
+    Pokemon::base_stats[STAT::SPA] = 100;
+    Pokemon::base_stats[STAT::SPD] = 100;
+    Pokemon::base_stats[STAT::SPE] = 100;
+
+    Pokemon::set_stats(iv_ptr, ev_ptr, level, n);
+
+    Pokemon::species = "TESTEMON";
+    Pokemon::name = "TESTEMON";
+
+    Pokemon::type[0] = t1;
+    Pokemon::type[1] = t2;
+
+    Pokemon::current_type[0] = Pokemon::type[0];
+    Pokemon::current_type[1] = Pokemon::type[1];
+
+    Pokemon::current_hp = Pokemon::base_stats[STAT::HP] * pcent_hp / 100;
+    Pokemon::protect_active = false;
+    Pokemon::protect_turns = 0;
 }
