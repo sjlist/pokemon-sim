@@ -26,9 +26,9 @@ Pokemon::Pokemon()
     Pokemon::alive = false;
     Pokemon::status = STATUS::NO_STATUS;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
-    {
         Pokemon::stat_modifiers[stat] = 0;
-    }
+    for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
+        Pokemon::v_status_turns[i] = 0;
 }
 
 // STATE CHECKING FUNCTIONS

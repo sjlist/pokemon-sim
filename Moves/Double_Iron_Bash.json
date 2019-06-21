@@ -6,7 +6,6 @@
   "acc": 100,
   "targeting": "ADJACENT_ALL",
   "num_targets": 1,
-  "first_turn": true,
   "contact": true,
   "num_hits": 2,
   "damage_info":

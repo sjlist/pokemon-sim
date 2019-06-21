@@ -1,1 +1,2 @@
 Pass a pointer to random num gen and not the seed
+Refactor main to be the file that takes messages in a passes them into the statemachine
