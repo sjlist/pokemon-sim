@@ -30,9 +30,9 @@ Pokemon::Pokemon()
     Pokemon::protect_active = false;
     Pokemon::protect_turns = 0;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
-    {
         Pokemon::stat_modifiers[stat] = 0;
-    }
+    for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
+        Pokemon::v_status_turns[i] = 0;
 }
 
 // STATE CHECKING FUNCTIONS

@@ -1,0 +1,194 @@
+{
+  "4":
+  {
+    "species": "Mew",
+    "evs":
+    {
+      "0": 4,
+      "1": 0,
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Taunt",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Roost",
+      "MOVE3": "Flamethrower"
+    }
+  },
+  "0":
+  {
+    "species": "Rhydon",
+    "evs":
+    {
+      "0": 252,
+      "1": 252,
+      "2": 4,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "ADAMANT",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Stealth_Rocks",
+      "MOVE1": "Earthquake",
+      "MOVE2": "Rock_Slide",
+      "MOVE3": "Toxic"
+    }
+  },
+  "2":
+  {
+    "species": "Alolan_Muk",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 252,
+      "3": 0,
+      "4": 4,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "CAREFUL",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Toxic",
+      "MOVE1": "Rest",
+      "MOVE2": "Crunch",
+      "MOVE3": "Fire_Punch"
+    }
+  },
+  "3":
+  {
+    "species": "Melmetal",
+    "evs":
+    {
+      "0": 4,
+      "1": 252,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "ADAMANT",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Double_Iron_Bash",
+      "MOVE1": "Double_Iron_Bash",
+      "MOVE2": "Double_Iron_Bash",
+      "MOVE3": "Double_Iron_Bash"
+    }
+  },
+  "1":
+  {
+    "species": "Alakazam-Mega",
+    "evs":
+    {
+      "0": 4,
+      "1": 0,
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Shadow_Ball",
+      "MOVE1": "Psychic",
+      "MOVE2": "Calm_Mind",
+      "MOVE3": "Substitute"
+    }
+  },
+  "5":
+  {
+    "species": "Eevee-Starter",
+    "evs":
+    {
+      "0": 252,
+      "1": 252,
+      "2": 4,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "ADAMANT",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Sappy_Seed",
+      "MOVE1": "Sizzly_Slide",
+      "MOVE2": "Air_Slash",
+      "MOVE3": "Protect"
+    }
+  }
+}
