@@ -21,6 +21,22 @@ class BattleTest: public Battle
     FRIEND_TEST(test_get_move_power, happy);
     FRIEND_TEST(test_get_move_power, gyro_ball);
     FRIEND_TEST(test_get_move_power, bad_move_power);
+    FRIEND_TEST(test_calc_damage_modifiers, stab);
+    FRIEND_TEST(test_calc_damage_modifiers, super_effective);
+    FRIEND_TEST(test_calc_damage_modifiers, super_effective_stab);
+    FRIEND_TEST(test_calc_damage_modifiers, not_very_effective);
+    FRIEND_TEST(test_calc_damage_modifiers, not_very_effective_stab);
+    FRIEND_TEST(test_calc_damage_modifiers, normal);
+    FRIEND_TEST(test_calc_damage_modifiers, weather_boost);
+    FRIEND_TEST(test_calc_damage_modifiers, weather_reduce);
+    FRIEND_TEST(test_calc_damage_modifiers, weather_extremes);
+    FRIEND_TEST(test_calc_damage_modifiers, burned_physical);
+    FRIEND_TEST(test_calc_damage_modifiers, burned_special);
+    FRIEND_TEST(test_calc_damage_modifiers, 2_targets);
+    FRIEND_TEST(test_calc_damage_modifiers, grounded);
+    FRIEND_TEST(test_calc_damage_modifiers, crit);
+    FRIEND_TEST(test_has_lost, no_loss);
+    FRIEND_TEST(test_has_lost, lost);
 };
 
 TEST(test_get_party, happy)
@@ -179,4 +195,200 @@ TEST(test_get_move_power, bad_move_power)
     p.moves[0].load_move("Gyro_Ball");
     b.active_field.active_pokes[PLAYER_1_0] = &p;
     EXPECT_DEATH(b.get_move_power(PLAYER_1_0, PLAYER_2_0, &b.active_field.active_pokes[0]->moves[0]), "");
+}
+
+TEST(test_calc_damage_modifiers, normal)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Fire_Fang");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1);
+}
+
+TEST(test_calc_damage_modifiers, stab)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Crunch");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1.5);
+}
+
+TEST(test_calc_damage_modifiers, super_effective)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::PSYCHIC, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Crunch");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 2);
+}
+
+TEST(test_calc_damage_modifiers, super_effective_stab)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::PSYCHIC, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Crunch");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 3);
+}
+
+TEST(test_calc_damage_modifiers, not_very_effective)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Crunch");
+
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.5);
+}
+
+TEST(test_calc_damage_modifiers, not_very_effective_stab)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Crunch");
+
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.75);
+}
+
+TEST(test_calc_damage_modifiers, weather_boost)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m1, m2;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m1.load_move("Scald");
+    m2.load_move("Fire_Fang");
+
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
+    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 1.5);
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HARSH_SUNLIGHT);
+    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 1.5);
+}
+
+TEST(test_calc_damage_modifiers, weather_reduce)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m1, m2;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m1.load_move("Scald");
+    m2.load_move("Fire_Fang");
+
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
+    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 0.5);
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HARSH_SUNLIGHT);
+    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 0.5);
+}
+
+TEST(test_calc_damage_modifiers, weather_extremes)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m1, m2;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m1.load_move("Scald");
+    m2.load_move("Fire_Fang");
+
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HEAVY_RAIN);
+    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 1.5);
+    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 0);
+    b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::EXTREMELY_HARSH_SUNLIGHT);
+    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 1.5);
+    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 0);
+}
+
+TEST(test_calc_damage_modifiers, burned_physical)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p1.set_status(BURNED);
+    m.load_move("Fire_Fang");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.5);
+}
+
+TEST(test_calc_damage_modifiers, burned_special)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p1.set_status(BURNED);
+    m.load_move("Scald");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1);
+}
+
+TEST(test_calc_damage_modifiers, 2_targets)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Scald");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 2, false), 0.75);
+}
+
+TEST(test_calc_damage_modifiers, grounded)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::FLYING, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Earthquake");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 2, false), 0);
+}
+
+TEST(test_calc_damage_modifiers, crit)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    m.load_move("Earthquake");
+    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, true), 1.5);
+}
+
+TEST(test_has_lost, no_loss)
+{
+    BattleTest b;
+    Pokemon p;
+    p.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    b.Parties[PLAYER_ONE].party_pokes[0] = p;
+
+    EXPECT_FALSE(b.has_lost(PLAYER_ONE));
+}
+
+TEST(test_has_lost, lost)
+{
+    BattleTest b;
+    Pokemon p;
+    p.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
+    p.faint_poke();
+    b.Parties[PLAYER_ONE].party_pokes[0] = p;
+
+    EXPECT_TRUE(b.has_lost(PLAYER_ONE));
 }

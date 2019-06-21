@@ -704,12 +704,6 @@ float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* 
 {
     float damage_modifier = 1;
 
-    if(crit)
-    {
-        DEBUG_MSG("Critical Hit\n");
-        damage_modifier *= 1.5;
-    }
-
     damage_modifier *= calculate_type_damage_modifier(defender->get_type(), move->get_type());
 
     if(damage_modifier >= 2)
@@ -717,16 +711,28 @@ float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* 
     else if(damage_modifier > 0 && damage_modifier < 1)
         DEBUG_MSG("It's not very effective\n");
 
+    if(crit)
+    {
+        DEBUG_MSG("Critical Hit\n");
+        damage_modifier *= 1.5;
+    }
+
     if(num_targets > 1)
         damage_modifier *= 0.75;
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::WATER)
-    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
+    || (Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::WATER)
+    || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
         damage_modifier *= 1.5;
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::FIRE)
     || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
         damage_modifier *= 0.5;
+
+    if((Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::FIRE)
+    || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
+        damage_modifier = 0;
 
     if(is_stab(attacker->get_type(), move->get_type()))
         damage_modifier *= 1.5;
