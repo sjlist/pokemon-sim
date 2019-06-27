@@ -5,7 +5,12 @@
 #include <Battle/Players.h>
 #include <Battle/Field.h>
 #include <Utils/Logging.h>
+<<<<<<< Updated upstream
 #include <Battle/FieldPositions.h>
+=======
+#include <Battle/Field_Positions.h>
+using namespace std;
+>>>>>>> Stashed changes
 
 Field::Field()
 {
@@ -105,7 +110,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
         return Field::handle_entrance(pos);
     }
     else
-        ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << std::endl);
+        ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << endl);
 }
 
 void Field::return_poke(FIELD_POSITION pos)
@@ -210,15 +215,15 @@ void Field::reset_field_obj()
 void Field::print_field(bool detailed)
 {
 #ifdef DEBUGGING
-    DEBUG_MSG("ACTIVE POKEMON: " << std::endl);
+    DEBUG_MSG("ACTIVE POKEMON: " << endl);
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << std::endl);
+        DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << endl);
         if(Field::active_pokes[i] == nullptr)
             DEBUG_MSG("NO POKEMON\n");
         else if(Field::active_pokes[i]->is_active())
             Field::active_pokes[i]->print_pokemon(detailed);
-        DEBUG_MSG(std::endl);
+        DEBUG_MSG(endl);
     }
 
     if(detailed)
@@ -254,10 +259,15 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
     && Field::position_alive(Field::leech_seed_positions[pos]))
     {
         int damage = Field::active_pokes[pos]->get_stat(STAT::HP) / 8.0;
+<<<<<<< Updated upstream
         DEBUG_MSG("P" << get_player_from_position(Field::leech_seed_positions[pos]) + 1 << "'s "
              << Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
              << " sapped some life from P" << get_player_from_position(pos) + 1 << "'s "
              << Field::active_pokes[pos]->get_species() << std::endl);
+=======
+        DEBUG_MSG(Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
+             << " sapped some life from " << Field::active_pokes[pos]->get_species() << endl);
+>>>>>>> Stashed changes
         Field::active_pokes[Field::leech_seed_positions[pos]]->heal_damage(damage);
         return Field::active_pokes[pos]->deal_damage(damage);
     }

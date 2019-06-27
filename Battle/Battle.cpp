@@ -15,12 +15,13 @@
 #include <vector>
 #include <cstdlib>
 #include <random>
+using namespace std;
 
 Battle::Battle() = default;
 
 Battle::Battle(long seed)
 {
-    Battle::generator = std::mt19937(seed);
+    Battle::generator = mt19937(seed);
 }
 
 Party* Battle::get_party(Players player)
@@ -62,6 +63,10 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
 
 void Battle::return_poke(FIELD_POSITION pos)
 {
+    if(Battle::active_field.active_pokes[pos] == nullptr)
+    {
+        ERR_MSG("Can't return a pokemon that doesn't exist");
+    }
     DEBUG_MSG("Returning " << Battle::active_field.active_pokes[pos]->get_species() << "\n");
     Battle::active_field.active_pokes[pos]->clear_stat_mods();
     Battle::active_field.active_pokes[pos]->clear_volatile_statuses();
@@ -152,18 +157,18 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 
 Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
 {
-    std::pair<Attack_Result, float> res;
+    pair<Attack_Result, float> res;
     Attack_Result temp_res;
 
     if(Battle::active_field.active_pokes[def_pos] == nullptr)
     {
-        DEBUG_MSG("Attack Failed due to no pokemon being in slot: " << get_string_from_field_position(def_pos) << std::endl);
+        DEBUG_MSG("Attack Failed due to no pokemon being in slot: " << get_string_from_field_position(def_pos) << endl);
         return Attack_Result::NO_ATTACK;
     }
 
     if(!Battle::active_field.active_pokes[def_pos]->is_alive())
     {
-        DEBUG_MSG("Attack Failed due to " << Battle::active_field.active_pokes[def_pos]->get_species() << " being fainted" << std::endl);
+        DEBUG_MSG("Attack Failed due to " << Battle::active_field.active_pokes[def_pos]->get_species() << " being fainted" << endl);
         return Attack_Result::FAINT;
     }
 
@@ -237,7 +242,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 }
 
 
-std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
+pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
 {
     float eff_atk, eff_def, damage_dealt, move_power;
     float damage_mod;
@@ -248,11 +253,11 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
     {
         DEBUG_MSG("P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos]->get_species()
                   << " is immune to " << type_to_string(move->get_type()) << " type moves\n");
-        return std::make_pair(Attack_Result::IMMUNE, 0);
+        return make_pair(Attack_Result::IMMUNE, 0);
     }
 
     if(move->get_power() == 0)
-        return std::make_pair(Attack_Result::HIT, 0);
+        return make_pair(Attack_Result::HIT, 0);
 
     // determine the effective stats to use
     if(move->get_damage_type() == move_damage_type::MOVE_PHYSICAL)
@@ -275,10 +280,10 @@ std::pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FI
     if(!Battle::active_field.active_pokes[def_pos]->deal_damage(damage_dealt))
     {
         Battle::handle_faint(def_pos);
-        return std::make_pair(Attack_Result::FAINT, damage_dealt);
+        return make_pair(Attack_Result::FAINT, damage_dealt);
     }
 
-    return std::make_pair(Attack_Result::HIT, damage_dealt);
+    return make_pair(Attack_Result::HIT, damage_dealt);
 }
 
 int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
@@ -465,7 +470,7 @@ void Battle::reset_temp_field_status()
 float Battle::calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier)
 {
     float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
-    float damage_adjustment = std::uniform_int_distribution<int>{85, 100}(Battle::generator) / 100.0;
+    float damage_adjustment = uniform_int_distribution<int>{85, 100}(Battle::generator) / 100.0;
 
     return base_damage * damage_adjustment;
 }
@@ -664,7 +669,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
                 if(Battle::active_field.active_pokes[pos]->moves[move_num].get_damage_type() == move_damage_type::MOVE_STATUS)
                 {
                     DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " is taunted and can't use "
-                           << Battle::active_field.active_pokes[pos]->moves[move_num].get_name() << std::endl);
+                           << Battle::active_field.active_pokes[pos]->moves[move_num].get_name() << endl);
                     return Attack_Result::NO_ATTACK;
                 }
                 return Attack_Result::HIT;
@@ -711,7 +716,7 @@ bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod)
 
 bool Battle::roll_chance(float chance)
 {
-    float c = std::uniform_real_distribution<float>{0, 1}(Battle::generator);
+    float c = uniform_real_distribution<float>{0, 1}(Battle::generator);
     return c < chance;
 }
 
@@ -771,50 +776,39 @@ void Battle::reset()
 
 void Battle::update_generator(long seed)
 {
-    Battle::generator = std::mt19937(seed);
+    Battle::generator = mt19937(seed);
 }
 
-void Battle::load_battle(std::vector<std::string> team_choice)
+void Battle::load_battle(Players player, string team_name)
 {
-    Battle::load_teams(team_choice);
+    Battle::load_teams(player, team_name);
     Battle::load_game_moves();
 }
 
-void Battle::load_teams(std::vector<std::string> team_names)
+void Battle::load_teams(Players player, string team_name)
 {
-    boost::property_tree::ptree team_1 = load_json_file("teams/" + team_names[Players::PLAYER_ONE] + ".json");
-    boost::property_tree::ptree team_2 = load_json_file("teams/"  + team_names[Players::PLAYER_TWO] + ".json");
+    boost::property_tree::ptree team = load_json_file("teams/" + team_name + ".json");
     int i = 0;
-    bool done [] = {false, false};
 
-    while(!(done[Players::PLAYER_ONE] && done[Players::PLAYER_TWO]) && i < 6)
+    while(!Parties[player].loaded  && i < 6)
     {
-        if(!done[Players::PLAYER_ONE])
+
+        try
         {
-            try
-            {
-                Parties[Players::PLAYER_ONE].party_pokes[i].load_pokemon(team_1.get_child(std::to_string(i)));
-            }
-            catch(...)
-            {
-                DEBUG_MSG("Finished importing " << team_names[Players::PLAYER_ONE] << "\n");
-                done[Players::PLAYER_ONE] = true;
-            }
+            Parties[player].party_pokes[i].load_pokemon(team.get_child(to_string(i)));
         }
-        if(!done[Players::PLAYER_TWO])
+        catch(...)
         {
-            try
-            {
-                Parties[Players::PLAYER_TWO].party_pokes[i].load_pokemon(team_2.get_child(std::to_string(i)));
-            }
-            catch(...)
-            {
-                DEBUG_MSG("Finished importing " << team_names[Players::PLAYER_TWO] << "\n");
-                done[Players::PLAYER_TWO] = true;
-            }
+            Parties[player].loaded = true;
         }
+
         i++;
+        if(i == 6)
+        {
+            Parties[player].loaded = true;
+        }
     }
+    DEBUG_MSG("Finished importing " << team_name << "\n");
 }
 
 void Battle::load_game_moves()
@@ -832,6 +826,6 @@ void Battle::print_battle(bool detailed)
     Battle::Parties[Players::PLAYER_ONE].print_party(detailed);
     DEBUG_MSG("\nPlayer TWO party pokemon:\n");
     Battle::Parties[Players::PLAYER_TWO].print_party(detailed);
-    DEBUG_MSG(std::endl);
+    DEBUG_MSG(endl);
 #endif
 }

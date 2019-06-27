@@ -10,10 +10,11 @@
 #include <Battle/Field.h>
 #include <Battle/Party.h>
 #include <Pokemon/Pokemon.h>
+#include <Battle/Players.h>
 
 #include <vector>
 #include <random>
-
+using namespace std;
 
 enum class Attack_Result
 {
@@ -42,7 +43,7 @@ public:
     Field active_field;
     Targets Battle_Targets;
 
-    void load_battle(std::vector<std::string> team_choice);
+    void load_battle(Players player, string team_name);
     void reset();
     void update_generator(long seed);
 
@@ -69,11 +70,16 @@ protected:
     Party Parties [2];
 
 private:
-    void load_teams(std::vector<std::string> team_names);
+    void load_teams(Players player, string team_name);
     void load_game_moves();
 
     Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+<<<<<<< Updated upstream
     std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+=======
+    pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
+>>>>>>> Stashed changes
 
     Attack_Result handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender);
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);
@@ -89,7 +95,7 @@ private:
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
     float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
 
-    std::mt19937 generator;
+    mt19937 generator;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
 };

@@ -18,6 +18,8 @@ set(BATTLE_FILES
         Battle/BattleActor.cpp
         Battle/BattleActor.h
         Battle/BattleConfig.h
+        Battle/BattleMessage.cpp
+        Battle/BattleMessage.h
         Battle/BattleStateMachine.cpp
         Battle/BattleStateMachine.h
         Battle/Field.cpp

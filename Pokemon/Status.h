@@ -6,6 +6,7 @@
 #define POKEMON_SIM_STATUS_H
 
 #include <string>
+using namespace std;
 
 enum STATUS
 {
@@ -68,10 +69,10 @@ static unsigned int turn_end_v_status_mask = 0;
 
 static unsigned int turn_end_v_status_mask_clear = (VOLATILE_STATUS::FLINCHED);
 
-STATUS string_to_status(std::string status_string);
-std::string status_to_string(STATUS status);
+STATUS string_to_status(string status_string);
+string status_to_string(STATUS status);
 
-VOLATILE_STATUS string_to_v_status(std::string status_string);
-std::string v_status_to_string(VOLATILE_STATUS v_status);
+VOLATILE_STATUS string_to_v_status(string status_string);
+string v_status_to_string(VOLATILE_STATUS v_status);
 
 #endif //POKEMON_SIM_STATUS_H

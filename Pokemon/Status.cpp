@@ -7,8 +7,9 @@
 
 #include <string>
 #include <map>
+using namespace std;
 
-std::map<std::string, STATUS> string_status_map = {
+map<string, STATUS> string_status_map = {
         { "PARALYZED", STATUS::PARALYZED },
         { "POISONED", STATUS::POISONED },
         { "BADLY_POISONED", STATUS::BADLY_POISONED },
@@ -18,7 +19,7 @@ std::map<std::string, STATUS> string_status_map = {
         { "NONE", STATUS::NO_STATUS }
 };
 
-std::map<STATUS, std::string> status_string_map = {
+map<STATUS, string> status_string_map = {
         { STATUS::PARALYZED, "PARALYZED"},
         { STATUS::POISONED , "POISONED"},
         { STATUS::BADLY_POISONED, "BADLY_POISONED" },
@@ -28,7 +29,7 @@ std::map<STATUS, std::string> status_string_map = {
         { STATUS::NO_STATUS, "NONE" }
 };
 
-std::map<std::string, VOLATILE_STATUS> string_v_status_map = {
+map<string, VOLATILE_STATUS> string_v_status_map = {
         { "BOUND", VOLATILE_STATUS::BOUND },
         { "CANT_ESCAPE", VOLATILE_STATUS::CANT_ESCAPE },
         { "CONFUSION", VOLATILE_STATUS::CONFUSION },
@@ -46,7 +47,7 @@ std::map<std::string, VOLATILE_STATUS> string_v_status_map = {
         { "TORMENT", VOLATILE_STATUS::TORMENT }
 };
 
-std::map<VOLATILE_STATUS, std::string> v_status_string_map = {
+map<VOLATILE_STATUS, string> v_status_string_map = {
         { VOLATILE_STATUS::BOUND, "BOUND" },
         { VOLATILE_STATUS::CANT_ESCAPE, "CANT ESCAPE" },
         { VOLATILE_STATUS::CONFUSION, "CONFUSED" },
@@ -64,22 +65,22 @@ std::map<VOLATILE_STATUS, std::string> v_status_string_map = {
         { VOLATILE_STATUS::TORMENT, "TORMENTED" }
 };
 
-STATUS string_to_status(std::string status_string)
+STATUS string_to_status(string status_string)
 {
     return string_status_map[status_string];
 }
 
-std::string status_to_string(STATUS status)
+string status_to_string(STATUS status)
 {
     return status_string_map[status];
 }
 
-VOLATILE_STATUS string_to_v_status(std::string status_string)
+VOLATILE_STATUS string_to_v_status(string status_string)
 {
     return string_v_status_map[status_string];
 }
 
-std::string v_status_to_string(VOLATILE_STATUS v_status)
+string v_status_to_string(VOLATILE_STATUS v_status)
 {
     return v_status_string_map[v_status];
 }

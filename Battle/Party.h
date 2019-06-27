@@ -13,6 +13,7 @@ public:
     Pokemon party_pokes [6];
     void print_party(bool detailed);
     void reset();
+    bool loaded = false;
 };
 
 #endif //POKEMON_SIM_PARTY_H

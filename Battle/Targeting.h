@@ -9,6 +9,7 @@
 #include <gtest/gtest_prod.h>
 
 #include <string>
+using namespace std;
 
 //Nameing Scheme of targeting
 //Relative position to attacking pokemon: adjacent, all, others, or self (special case)
@@ -51,6 +52,6 @@ private:
     FIELD_POSITION single_target;
 };
 
-TARGETS string_to_target(std::string target_string);
+TARGETS string_to_target(string target_string);
 
 #endif //POKEMON_SIM_TARGETING_H

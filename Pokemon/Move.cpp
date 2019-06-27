@@ -13,8 +13,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <map>
 #include <string>
+using namespace std;
 
-static std::map<std::string, move_damage_type> string_move_damage_type_map = {
+static map<string, move_damage_type> string_move_damage_type_map = {
         { "NONE", move_damage_type::NO_DAMAGE_TYPE},
         { "physical", move_damage_type::MOVE_PHYSICAL },
         { "special", move_damage_type::MOVE_SPECIAL},
@@ -25,7 +26,7 @@ Move::Move()
 {}
 
 //GET FUNCS
-std::string Move::get_name()
+string Move::get_name()
 {
     return Move::name;
 }
@@ -123,7 +124,7 @@ void Move::reset()
     Move::current_pp = Move::max_pp;
 }
 
-void Move::load_move(std::string move_name)
+void Move::load_move(string move_name)
 {
     Move::name = move_name;
     boost::property_tree::ptree move_tree, tmp_tree;
@@ -135,18 +136,18 @@ void Move::load_move(std::string move_name)
     }
     catch(...)
     {
-        ERR_MSG("Failed to read move " << move_name << std::endl);
+        ERR_MSG("Failed to read move " << move_name << endl);
     }
 
-    Move::type = string_to_type(move_tree.get<std::string>("type"));
+    Move::type = string_to_type(move_tree.get<string>("type"));
 
     Move::acc = (float)move_tree.get<int>("acc", 0) / 100;
     Move::max_pp = move_tree.get<int>("pp", 0);
     Move::current_pp = Move::max_pp;
     Move::priority = move_tree.get<int>("priority", 0);
-    Move::damage_type = string_move_damage_type_map[move_tree.get<std::string>("damage_type")];
+    Move::damage_type = string_move_damage_type_map[move_tree.get<string>("damage_type")];
 
-    Move::move_targets = string_to_target(move_tree.get<std::string>("targeting"));
+    Move::move_targets = string_to_target(move_tree.get<string>("targeting"));
     Move::num_targets = move_tree.get<int>("num_targets");
 
     Move::protectable = !move_tree.count("protectable");
@@ -176,9 +177,9 @@ void Move::load_move(std::string move_name)
     {
         tmp_tree = move_tree.get_child("effects");
         int i = 0;
-        while(tmp_tree.count("effect" + std::to_string(i)))
+        while(tmp_tree.count("effect" + to_string(i)))
         {
-            Move::move_effects[i].load_effect(tmp_tree.get_child("effect" + std::to_string(i)));
+            Move::move_effects[i].load_effect(tmp_tree.get_child("effect" + to_string(i)));
             i++;
         }
         Move::last_effect = i - 1;
