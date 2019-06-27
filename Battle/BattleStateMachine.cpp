@@ -564,9 +564,9 @@ void BattleStateMachine::remove_message_from_stack(FIELD_POSITION pos)
 }
 
 
-Battle BattleStateMachine::get_battle()
+Battle* BattleStateMachine::get_battle()
 {
-    return battle;
+    return &battle;
 }
 
 int BattleStateMachine::get_turn_count()

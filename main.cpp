@@ -41,7 +41,6 @@ int main()
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
 
     BattleStateMachine BSM;
-    Battle temp_battle;
     pair<BattleNotification, FIELD_POSITION> res = make_pair(BattleNotification::TEAM_CHOICE, PLAYER_1_0);
     BattleActor actors [2];
     long seed;
@@ -60,8 +59,7 @@ int main()
         while(res.first != BattleNotification::PLAYER_LOST)
         {
             res = BSM.run(message);
-            temp_battle = BSM.get_battle();
-            message = request_message_from_actor(res.first, res.second, actors, &temp_battle);
+            message = request_message_from_actor(res.first, res.second, actors, BSM.get_battle());
         }
 
         res.first = BattleNotification::POKEMON_ACTION; // set res.first to be something other than PLAYER_LOST

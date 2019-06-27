@@ -40,7 +40,7 @@ public:
     void update_random_seed();
 
     pair<BattleNotification, FIELD_POSITION> run(BattleMessage message);
-    Battle get_battle();
+    Battle* get_battle();
     int get_turn_count();
     long get_seed();
     void reset();
