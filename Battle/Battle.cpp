@@ -441,8 +441,12 @@ bool Battle::can_swap(Players player)
     for(int i = 0; i < 6; i++)
     {
         if(Battle::Parties[player].party_pokes[i].is_alive() && !Battle::Parties[player].party_pokes[i].is_active())
+        {
+            DEBUG_MSG("Player " << (player + 1) << " can swap\n");
             return true;
+        }
     }
+    DEBUG_MSG("Player " << (player + 1) << " cannot swap\n");
     return false;
 }
 

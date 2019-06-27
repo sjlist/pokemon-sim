@@ -118,6 +118,19 @@ void BattleStateMachine::update_random_seed()
                         ERR_MSG("Pokemon started the turn fainted\n");
                 }
 
+                for(int i = 0; i < NUM_PLAYERS; i++)
+                {
+                    Party* p = battle.get_party(static_cast<Players>(i));
+                    for(int j = 0; j < 6; j++)
+                    {
+                        if(p->party_pokes[j].is_active())
+                            break;
+                        if(j == 5)
+                            ERR_MSG("Player " << (i + 1) << " has no active pokes\n");
+                    }
+                }
+                //TODO ADD DOES HAVE ACTIVE POKES?
+
 #endif
                 if(BattleStateMachine::turn_count >= MAX_TURN_COUNT)
                     ERR_MSG("Exceeded max turn count\n");
@@ -205,7 +218,7 @@ void BattleStateMachine::update_random_seed()
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(swap_pos)))
                                 goto swap_end;
 
-                            // FOR ATTACKING MOVES THAT SWAP
+                        // FOR ATTACKING MOVES THAT SWAP
                             if (action_message.move_command == Commands::COMMAND_ATTACK)
                             {
                                 // get reserve poke for whatever team needs to swap, if attacking
@@ -416,11 +429,6 @@ void BattleStateMachine::sort_message_stack()
     int move_prio, prio_choice, i = 0, num_messages = BattleStateMachine::turn_messages.size();
     vector<int> prio_map (FIELD_POSITION::NUM_POSITIONS);
 
-    if(num_messages > 4)
-    {
-        ERR_MSG("OH NO");
-    }
-
     while(!BattleStateMachine::turn_messages.empty())
     {
         messages[i] = BattleStateMachine::turn_messages.front();
@@ -542,7 +550,7 @@ void BattleStateMachine::sort_message_stack()
         }
     }
 #endif
-    reverse(prio_list.begin(), prio_list.end());
+    //reverse(prio_list.begin(), prio_list.end());
     for(i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
         BattleStateMachine::turn_messages.insert(turn_messages.begin(), messages[prio_list[i]]);
