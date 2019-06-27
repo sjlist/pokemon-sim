@@ -5,8 +5,6 @@
 #ifndef POKEMON_SIM_BATTLE_H
 #define POKEMON_SIM_BATTLE_H
 
-#include <gtest/gtest_prod.h>
-
 #include <Battle/Field.h>
 #include <Battle/Party.h>
 #include <Pokemon/Pokemon.h>
@@ -74,12 +72,7 @@ private:
     void load_game_moves();
 
     Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
-<<<<<<< Updated upstream
-    std::pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
-=======
     pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
-    int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
->>>>>>> Stashed changes
 
     Attack_Result handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender);
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);

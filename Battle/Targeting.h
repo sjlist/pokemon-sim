@@ -6,7 +6,6 @@
 #define POKEMON_SIM_TARGETING_H
 
 #include <Battle/FieldPositions.h>
-#include <gtest/gtest_prod.h>
 
 #include <string>
 using namespace std;

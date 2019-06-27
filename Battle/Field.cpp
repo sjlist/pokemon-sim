@@ -5,12 +5,8 @@
 #include <Battle/Players.h>
 #include <Battle/Field.h>
 #include <Utils/Logging.h>
-<<<<<<< Updated upstream
 #include <Battle/FieldPositions.h>
-=======
-#include <Battle/Field_Positions.h>
 using namespace std;
->>>>>>> Stashed changes
 
 Field::Field()
 {
@@ -68,7 +64,7 @@ void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POS
         case FieldObjects::LEECH_SEED:
             if(Field::active_pokes[def_pos] == nullptr)
             {
-                ERR_MSG("No Pokemon as position " << get_string_from_field_position(def_pos) << std::endl);
+                ERR_MSG("No Pokemon as position " << get_string_from_field_position(def_pos) << endl);
             }
 
             if(Field::active_pokes[def_pos]->get_type()[0] != PokeTypes::GRASS
@@ -122,7 +118,7 @@ void Field::return_poke(FIELD_POSITION pos)
         Field::active_pokes[pos] = nullptr;
     }
     else
-        ERR_MSG("No Pokemon to return in " << get_string_from_field_position(pos) << std::endl);
+        ERR_MSG("No Pokemon to return in " << get_string_from_field_position(pos) << endl);
 }
 
 bool Field::handle_entrance(FIELD_POSITION pos)
@@ -259,15 +255,10 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
     && Field::position_alive(Field::leech_seed_positions[pos]))
     {
         int damage = Field::active_pokes[pos]->get_stat(STAT::HP) / 8.0;
-<<<<<<< Updated upstream
         DEBUG_MSG("P" << get_player_from_position(Field::leech_seed_positions[pos]) + 1 << "'s "
              << Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
              << " sapped some life from P" << get_player_from_position(pos) + 1 << "'s "
-             << Field::active_pokes[pos]->get_species() << std::endl);
-=======
-        DEBUG_MSG(Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
-             << " sapped some life from " << Field::active_pokes[pos]->get_species() << endl);
->>>>>>> Stashed changes
+             << Field::active_pokes[pos]->get_species() << endl);
         Field::active_pokes[Field::leech_seed_positions[pos]]->heal_damage(damage);
         return Field::active_pokes[pos]->deal_damage(damage);
     }
