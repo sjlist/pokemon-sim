@@ -125,6 +125,8 @@ void BattleStateMachine::update_random_seed()
                     {
                         if(p->party_pokes[j].is_active())
                             break;
+                        if(p->party_pokes[j].to_be_swapped)
+                            ERR_MSG("Player " << (i+1) << "'s " << p->party_pokes[j].get_species() << " started the turn to be swapped\n");
                         if(j == 5)
                             ERR_MSG("Player " << (i + 1) << " has no active pokes\n");
                     }
@@ -145,7 +147,7 @@ void BattleStateMachine::update_random_seed()
                 {
                     if(message.pos == static_cast<FIELD_POSITION>(i))
                     {
-                        turn_messages.insert(turn_messages.begin(), message);
+                        turn_messages.push_back(message);
                         i++;
                         if(i < FIELD_POSITION::NUM_POSITIONS)
                             return make_pair(BattleNotification::POKEMON_ACTION, static_cast<FIELD_POSITION>(i));
@@ -163,14 +165,14 @@ void BattleStateMachine::update_random_seed()
             case BattleState::TURN_EXECUTE:
                 if(message.move_command != Commands::COMMAND_NONE)
                 {
-                    BattleStateMachine::turn_messages.insert(turn_messages.begin(), message);
+                    BattleStateMachine::turn_messages.push_back(message);
 
                 }
 
                 while(!turn_messages.empty())
                 {
-                    action_message = turn_messages.front();
-                    turn_messages.erase(turn_messages.begin());
+                    action_message = turn_messages.back();
+                    turn_messages.pop_back();
 
                     //Determine what attack to do
                     //if there is no attack to execute for that field position, aka it fainted earlier in the turn
@@ -431,10 +433,12 @@ void BattleStateMachine::sort_message_stack()
 
     while(!BattleStateMachine::turn_messages.empty())
     {
-        messages[i] = BattleStateMachine::turn_messages.front();
-        BattleStateMachine::turn_messages.erase(turn_messages.begin());
+        messages[i] = BattleStateMachine::turn_messages.back();
+        BattleStateMachine::turn_messages.pop_back();
         i++;
     }
+
+    reverse(begin(messages), end(messages));
 
     for(int i = 0; i < num_messages; i++)
     {
@@ -550,10 +554,10 @@ void BattleStateMachine::sort_message_stack()
         }
     }
 #endif
-    //reverse(prio_list.begin(), prio_list.end());
+    reverse(begin(prio_list), end(prio_list));
     for(i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        BattleStateMachine::turn_messages.insert(turn_messages.begin(), messages[prio_list[i]]);
+        BattleStateMachine::turn_messages.push_back(messages[prio_list[i]]);
     }
 }
 

@@ -21,6 +21,7 @@ Field::Field()
     Field::trick_room = false;
     Field::terrain = Terrain::NO_TERRAIN;
     Field::weather_state = Weather::CLEAR_SKIES;
+    Field::weather_turns = 0;
 
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {

@@ -2,4 +2,4 @@ Pass a pointer to random num gen and not the seed
 Remove #ifdefs for battle types, should be all one engine, passed in at battle init
 UNIT TESTSSSSSS BAYBEEEE
 Rework State Machine to use boost fsm
-Refactor main to be the file that takes messages in a passes them into the statemachine
+Player 1 wins 0.5% more than Player 2 in double battles

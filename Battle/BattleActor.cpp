@@ -142,7 +142,9 @@ int BattleActor::choose_pokemon(Party* party)
         }
     }
     if(num_pokes == 0)
+    {
         return -1;
+    }
 
     selection = BattleActor::make_choice(0, num_pokes - 1);
     party->party_pokes[pokes[selection]].to_be_swapped = true;

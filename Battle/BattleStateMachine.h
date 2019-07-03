@@ -45,6 +45,13 @@ public:
     long get_seed();
     void reset();
     int get_battle_result();
+
+protected:
+    void sort_message_stack();
+    vector<FIELD_POSITION> create_speed_list();
+    BattleState state;
+
+    vector<BattleMessage> turn_messages;
 private:
     void init(Players player, string team_name);
 
@@ -58,15 +65,10 @@ private:
 
     void validate_battle_message(BattleMessage message);
 
-    BattleState state;
-
-    vector<BattleMessage> turn_messages;
     vector<FIELD_POSITION> speed_list;
 
     int make_choice(int min, int max);
-    void sort_message_stack();
 
-    vector<FIELD_POSITION> create_speed_list();
     void remove_message_from_stack(FIELD_POSITION pos);
 };
 

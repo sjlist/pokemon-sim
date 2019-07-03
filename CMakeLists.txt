@@ -109,9 +109,10 @@ endif()
 ### UNIT TESTS
 ##################################################
 set(BATTLE_TEST_FILES
-        Battle/unit-tests/test-Field.cpp
-        Battle/unit-tests/test-Targeting.cpp
-        Battle/unit-tests/test-Battle.cpp
+        #Battle/unit-tests/test-Field.cpp
+        #Battle/unit-tests/test-Targeting.cpp
+        #Battle/unit-tests/test-Battle.cpp
+        Battle/unit-tests/test-BattleStateMachine.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(battle-tests
