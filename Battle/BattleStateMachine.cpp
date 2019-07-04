@@ -202,7 +202,7 @@ void BattleStateMachine::update_random_seed()
                             {
                                 //if attacking and trying to swap an opponent, both the attacker and defender must be alive to execute the swap
                                 if((!BattleStateMachine::battle.active_field.position_alive(action_message.pos)
-                                    || !BattleStateMachine::battle.active_field.position_alive(action_message.target_pos))
+                                 || !BattleStateMachine::battle.active_field.position_alive(action_message.target_pos))
                                  && !BattleStateMachine::battle.active_field.active_pokes[action_message.pos]->moves[action_message.move_num].get_move_effect(-1).does_target_self())
                                     goto swap_end;
 
@@ -237,8 +237,7 @@ void BattleStateMachine::update_random_seed()
                             //swap pokes!
                             BattleStateMachine::battle.swap_poke(swap_pos, reserve_poke);
 
-                            if (action_message.move_command != Commands::COMMAND_SWAP)
-                                BattleStateMachine::remove_message_from_stack(swap_pos);
+                            BattleStateMachine::remove_message_from_stack(swap_pos);
 
                             swap_end:;
 
@@ -316,7 +315,12 @@ void BattleStateMachine::update_random_seed()
                     {
                         if(message.pos == static_cast<FIELD_POSITION>(i))
                         {
-                            BattleStateMachine::battle.swap_poke(message.pos, message.reserve_poke);
+                            if(BattleStateMachine::battle.swap_poke(message.pos, message.reserve_poke) == Attack_Result::FAINT)
+                            {
+                                if(BattleStateMachine::battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
+                                    return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
+                            }
+
                             message.pos = NO_POSITION; // A little hacky.. trying to avoid swapping multiple times with the same message if there are no pokemon left in the party
                             i--;
                         }
@@ -369,55 +373,77 @@ int BattleStateMachine::get_battle_result()
     return loser;
 }
 
+// Driver function to sort the 2D vector
+// on basis of a particular column
+bool sortcol( const vector<int>& v1, const vector<int>& v2 )
+{
+    return v1[1] > v2[1];
+}
+
+void swap_in_place(vector<vector<int>>& v, int src, int dest)
+{
+    auto temp = v[src];
+    v[src] = v[dest];
+    v[dest] = temp;
+}
+
 vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
 {
-    vector<FIELD_POSITION> speed_list (FIELD_POSITION::NUM_POSITIONS);
-    FIELD_POSITION temp;
-    int choice;
+        vector<vector<int>> speed_map (FIELD_POSITION::NUM_POSITIONS), speed_tie_list;
+        vector<FIELD_POSITION> speed_list (FIELD_POSITION::NUM_POSITIONS);
+        vector<BattleMessage> temp_messages (FIELD_POSITION::NUM_POSITIONS);
 
-    // initialize the prio list to be in order of the field positions, just to load the values in
-    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-    {
-        speed_list.at(i) = static_cast<FIELD_POSITION>(i);
-    }
+        int prio_choice, map_base;
 
-    //bubble sort by poke speed
-    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-    {
-        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
         {
-            //if speed of prio i is less than speed of prio j, swap
-            // if i is fainted, assume slower even if both are mullptrs
-            if(BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)] == nullptr
-            || (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(j)] != nullptr
-            && (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)]->get_stat(STAT::SPE)
-              < BattleStateMachine::battle.active_field.active_pokes[speed_list.at(j)]->get_stat(STAT::SPE))))
-            {
-                temp = speed_list.at(i);
-                speed_list.at(i) = speed_list.at(j);
-                speed_list.at(j) = temp;
+            if(BattleStateMachine::battle.active_field.active_pokes[i] != nullptr)
+                speed_map.at(i) = {i, static_cast<int>(BattleStateMachine::battle.active_field.active_pokes[i]->get_stat(STAT::SPE))};
+            else
+                speed_map.at(i) = {i, 0};
+        }
 
+        sort(speed_map.begin(), speed_map.end(), sortcol);
+        // Prio map is now sorted by priority and speed, but ties need to be handled randomly
+
+
+        speed_tie_list.push_back(speed_map.front());
+        for(int i = 1; i < speed_map.size(); i++)
+        {
+            if(speed_map.at(i)[1] == speed_tie_list.back()[1])
+            {
+                speed_tie_list.push_back(speed_map.at(i));
+            }
+            else
+            {
+                for(int j = 0; j < speed_tie_list.size(); j++)
+                {
+                    prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                    map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
+                    swap_in_place(speed_map, map_base, map_base + prio_choice);
+                }
+                speed_tie_list.clear();
+
+                if(i != (speed_map.size() - 1))
+                {
+                    speed_tie_list.push_back(speed_map.at(i+1));
+                    i++;
+                }
             }
         }
-    }
-
-    //handle speed ties
-    //TODO: HANDLE 3 OR 4 WAY TIES CORRECTLY
-    for(int i = 0; i < (FIELD_POSITION::NUM_POSITIONS - 1); i++)
-    {
-        if(BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)] != nullptr
-        && BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i+1)] != nullptr
-        && (BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i)]->get_stat(STAT::SPE)
-         == BattleStateMachine::battle.active_field.active_pokes[speed_list.at(i+1)]->get_stat(STAT::SPE)))
+        if(!speed_tie_list.empty())
         {
-            choice = BattleStateMachine::make_choice(0, 1);
-            if(choice == 1)
+            for (int j = 0; j < speed_tie_list.size(); j++)
             {
-                temp = speed_list.at(i);
-                speed_list.at(i) = speed_list.at(i+1);
-                speed_list.at(i+1) = temp;
+                prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                map_base = speed_map.size() - speed_tie_list.size() + j;
+                swap_in_place(speed_map, map_base, map_base + prio_choice);
             }
         }
+
+    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    {
+        speed_list.at(i) = static_cast<FIELD_POSITION>(speed_map.at(i)[0]);
     }
 
     return speed_list;
@@ -426,139 +452,77 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
 void BattleStateMachine::sort_message_stack()
 {
     vector<FIELD_POSITION> prio_list (FIELD_POSITION::NUM_POSITIONS);
-    vector<BattleMessage> messages (FIELD_POSITION::NUM_POSITIONS);
+    vector<vector<int>> prio_map (FIELD_POSITION::NUM_POSITIONS), speed_tie_list;
+    vector<BattleMessage> temp_messages (FIELD_POSITION::NUM_POSITIONS);
 
-    int move_prio, prio_choice, i = 0, num_messages = BattleStateMachine::turn_messages.size();
-    vector<int> prio_map (FIELD_POSITION::NUM_POSITIONS);
-
-    while(!BattleStateMachine::turn_messages.empty())
-    {
-        messages[i] = BattleStateMachine::turn_messages.back();
-        BattleStateMachine::turn_messages.pop_back();
-        i++;
-    }
-
-    reverse(begin(messages), end(messages));
+    int move_prio, prio_choice, num_messages = BattleStateMachine::turn_messages.size(), map_base;
 
     for(int i = 0; i < num_messages; i++)
     {
-        switch(messages[i].move_command)
+        switch(turn_messages[i].move_command)
         {
             case Commands::COMMAND_SWAP:
-                move_prio = MAX_PRIO + 1;
+                move_prio = (MAX_PRIO + 1) * MAX_SPEED + 1;
                 break;
             case Commands::COMMAND_ATTACK:
-                move_prio = BattleStateMachine::battle.active_field.active_pokes[messages[i].pos]->moves[messages[i].move_num].get_priority();
+                move_prio = BattleStateMachine::battle.active_field.active_pokes[turn_messages[i].pos]->moves[turn_messages[i].move_num].get_priority() * MAX_SPEED;
+                move_prio += BattleStateMachine::battle.active_field.active_pokes[turn_messages[i].pos]->get_stat(STAT::SPE);
                 break;
             case Commands::COMMAND_NONE:
-                move_prio = FAINT_PRIO;
+                move_prio = FAINT_PRIO * MAX_SPEED;
                 break;
             default:
-                ERR_MSG("Unsupported Command " << messages[i].move_command << "\n");
+                ERR_MSG("Unsupported Command " << turn_messages[i].move_command << "\n");
         }
-        prio_map.at(messages[i].pos) = move_prio;
-    }
-#if BATTLE_TYPE == SINGLE_BATTLE
-    if(prio_map.at(FIELD_POSITION::PLAYER_1_0) > prio_map.at(FIELD_POSITION::PLAYER_2_0))
-    {
-        prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
-        prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
-    }
-    else if(prio_map.at(FIELD_POSITION::PLAYER_1_0) < prio_map.at(FIELD_POSITION::PLAYER_2_0))
-    {
-        prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
-        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
-    }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
-          > BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
-    {
-        prio_list.at(0) = FIELD_POSITION::PLAYER_1_0;
-        prio_list.at(1) = FIELD_POSITION::PLAYER_2_0;
-    }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
-          < BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
-    {
-        prio_list.at(0) = FIELD_POSITION::PLAYER_2_0;
-        prio_list.at(1) = FIELD_POSITION::PLAYER_1_0;
-    }
-    else if(BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_1_0]->get_stat(STAT::SPE)
-         == BattleStateMachine::battle.active_field.active_pokes[FIELD_POSITION::PLAYER_2_0]->get_stat(STAT::SPE))
-    {
-        prio_choice = BattleStateMachine::make_choice(0, 1);
-        prio_list.at(0) = static_cast<FIELD_POSITION>(prio_choice);
-        prio_list.at(1) = static_cast<FIELD_POSITION>(!prio_choice);
-    }
-    else
-        ERR_MSG("Unhandled Priority list case\n");
-#else
-    FIELD_POSITION temp;
-
-    // initialize the prio list to be in order of the field positions, just to load the values in
-    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-    {
-        prio_list.at(i) = static_cast<FIELD_POSITION>(i);
+        prio_map.at(turn_messages[i].pos) = {i ,move_prio};
     }
 
-    //bubble sort by move priority
-    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    sort(prio_map.begin(), prio_map.end(), sortcol);
+    // Prio map is now sorted by priority and speed, but ties need to be handled randomly
+
+
+    speed_tie_list.push_back(prio_map.front());
+    for(int i = 1; i < prio_map.size(); i++)
     {
-        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        if(prio_map.at(i)[1] == speed_tie_list.back()[1])
         {
-            //if i prio is less than j prio, swap
-            if(prio_map.at(prio_list.at(i)) < prio_map.at(prio_list.at(j)))
+            speed_tie_list.push_back(prio_map.at(i));
+        }
+        else
+        {
+            for(int j = 0; j < speed_tie_list.size(); j++)
             {
-                temp = prio_list.at(i);
-                prio_list.at(i) = prio_list.at(j);
-                prio_list.at(j) = temp;
+                prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
+                swap_in_place(prio_map, map_base, map_base + prio_choice);
+            }
+            speed_tie_list.clear();
 
+            if(i != (prio_map.size() - 1))
+            {
+                speed_tie_list.push_back(prio_map.at(i+1));
+                i++;
             }
         }
     }
-
-    //bubble sort by speed within move priority
-    for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+    if(!speed_tie_list.empty())
     {
-        for(int j = (i + 1); j < FIELD_POSITION::NUM_POSITIONS; j++)
+        for (int j = 0; j < speed_tie_list.size(); j++)
         {
-            //if i prio is equal to j prio, compare speeds, if slower then swap
-            //but skip this check if both pokes are fainted
-            if(prio_map.at(prio_list.at(i)) != FAINT_PRIO
-            && prio_map.at(prio_list.at(i)) == prio_map.at(prio_list.at(j))
-            && BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
-             < BattleStateMachine::battle.active_field.active_pokes[prio_list.at(j)]->get_stat(STAT::SPE))
-            {
-                temp = prio_list.at(i);
-                prio_list.at(i) = prio_list.at(j);
-                prio_list.at(j) = temp;
-
-            }
+            prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+            map_base = prio_map.size() - speed_tie_list.size() + j;
+            swap_in_place(prio_map, map_base, map_base + prio_choice);
         }
     }
 
-    //handle speed ties
-    //TODO: HANDLE 3 OR 4 WAY TIES CORRECTLY
-    for(int i = 0; i < (FIELD_POSITION::NUM_POSITIONS - 1); i++)
+    for(int i = 0; i < turn_messages.size(); i++)
     {
-        if(prio_map.at(prio_list.at(i)) == prio_map.at(prio_list.at(i+1))
-        && prio_map.at(prio_list.at(i)) != FAINT_PRIO
-        && (BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i)]->get_stat(STAT::SPE)
-         == BattleStateMachine::battle.active_field.active_pokes[prio_list.at(i+1)]->get_stat(STAT::SPE)))
-        {
-            prio_choice = BattleStateMachine::make_choice(0, 1);
-            if(prio_choice == 1)
-            {
-                temp = prio_list.at(i);
-                prio_list.at(i) = prio_list.at(i+1);
-                prio_list.at(i+1) = temp;
-            }
-        }
+        temp_messages.at(i) = turn_messages.at(prio_map.at(i)[0]);
     }
-#endif
-    reverse(begin(prio_list), end(prio_list));
-    for(i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
-    {
-        BattleStateMachine::turn_messages.push_back(messages[prio_list[i]]);
-    }
+
+    turn_messages.clear();
+    turn_messages = temp_messages;
+    reverse(begin(turn_messages), end(turn_messages));
 }
 
 void BattleStateMachine::remove_message_from_stack(FIELD_POSITION pos)

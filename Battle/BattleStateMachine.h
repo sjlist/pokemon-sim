@@ -10,6 +10,8 @@
 #include <vector>
 using namespace std;
 
+#define MAX_SPEED 10000
+
 enum class BattleState
 {
     BATTLE_INIT = 0,
