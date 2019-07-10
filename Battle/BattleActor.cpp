@@ -20,9 +20,6 @@ BattleActor::BattleActor(long seed)
     BattleActor::generator = mt19937(seed);
 }
 
-BattleMessage::BattleMessage() = default;
-
-
 BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
 {
     BattleMessage message;

@@ -42,11 +42,11 @@ void BattleStateMachine::update_random_seed()
 {
     random_device rd;
     BattleStateMachine::seed = rd();
-    BattleStateMachine::seed = seed;
     DEBUG_MSG("The random seed is " << BattleStateMachine::seed << "\n");
     BattleStateMachine::choice = mt19937(seed);
 }
-    pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage message)
+
+pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage message)
 {
     validate_battle_message(message);
 
@@ -498,11 +498,7 @@ void BattleStateMachine::sort_message_stack()
             }
             speed_tie_list.clear();
 
-            if(i != (prio_map.size() - 1))
-            {
-                speed_tie_list.push_back(prio_map.at(i+1));
-                i++;
-            }
+            speed_tie_list.push_back(prio_map.at(i));
         }
     }
     if(!speed_tie_list.empty())
@@ -563,12 +559,10 @@ bool BattleStateMachine::battle_over()
 void BattleStateMachine::reset()
 {
     DEBUG_MSG("------RESETTING BATTLE------\n");
-    random_device rd;
-    BattleStateMachine::seed = rd();
-    DEBUG_MSG("New random seed: " << seed << endl);
     BattleStateMachine::turn_count = 0;
     BattleStateMachine::battle.reset();
-    BattleStateMachine::battle.update_generator(seed);
+    BattleStateMachine::update_random_seed();
+    BattleStateMachine::battle.update_generator(BattleStateMachine::get_seed());
     BattleStateMachine::state = BattleState::BATTLE_START;
     BattleStateMachine::turn_messages.clear();
 }
