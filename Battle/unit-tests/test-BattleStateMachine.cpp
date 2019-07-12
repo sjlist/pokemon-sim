@@ -175,7 +175,7 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
     vector<float> tie_pcents = {25, 25, 25, 25};
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 1, 0, 1};
-    int num_sorts = 100000  ;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -214,18 +214,19 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 1_2_3_speed_tie)
 {
+    float probabilty = 33.333333;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {33.333, 33.333, 33.333, 0};
+    vector<float> tie_pcents = {probabilty, probabilty, probabilty, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 1, 0, 4};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -264,18 +265,19 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 2_3_4_speed_tie)
 {
+    float probabilty = 33.333333;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {0, 33.333, 33.333, 33.333};
+    vector<float> tie_pcents = {0, probabilty, probabilty, probabilty};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 2, 2, 3};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -314,18 +316,19 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 1_2_speed_tie)
 {
+    float probabilty = 50;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {50, 50, 0, 0};
+    vector<float> tie_pcents = {probabilty, probabilty, 0, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 2, 0, 4};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -364,18 +367,19 @@ TEST(test_sort_message_stack, 1_2_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 2_3_speed_tie)
 {
+    float probabilty = 50;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {0, 50, 50, 0};
+    vector<float> tie_pcents = {0, probabilty, probabilty, 0};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 2, 2, 4};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -414,18 +418,19 @@ TEST(test_sort_message_stack, 2_3_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 3_4_speed_tie)
 {
+    float probabilty = 50;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {0, 0, 50, 50};
+    vector<float> tie_pcents = {0, 0, probabilty, probabilty};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 2, 4, 5};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -464,18 +469,20 @@ TEST(test_sort_message_stack, 3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
 
 TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
 {
+    float probabilty = 50;
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {50, 50, 0, 0};
-    vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 50, 50}, tie_pcents, {0, 0, 50, 50}};
+    vector<float> tie_pcents1 = {probabilty, probabilty, 0, 0};
+    vector<float> tie_pcents2 = {0, 0, probabilty, probabilty};
+    vector<vector<float>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
     vector<int> send_outs = {0, 4, 0, 4};
-    int num_sorts = 100000;
+    int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -514,7 +521,7 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
+            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }

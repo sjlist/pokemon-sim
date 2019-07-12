@@ -419,7 +419,7 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
             {
                 for(int j = 0; j < speed_tie_list.size(); j++)
                 {
-                    prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - 1);
+                    prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                     map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
                     swap_in_place(speed_map, map_base, map_base + prio_choice);
                 }
@@ -436,7 +436,7 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
         {
             for (int j = 0; j < speed_tie_list.size(); j++)
             {
-                prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - 1);
+                prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                 map_base = speed_map.size() - speed_tie_list.size() + j;
                 swap_in_place(speed_map, map_base, map_base + prio_choice);
             }

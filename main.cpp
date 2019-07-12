@@ -21,7 +21,7 @@ GuessData guess_time_left(chrono::duration<double> time_elasped, float time_sinc
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 100000, round_dec = 2, rounding_val;
+    int wins [3] = {0, 0, 0}, max_runs = 400000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, guess_error;
@@ -92,7 +92,7 @@ int main()
     cout << "Max turn count " << max_turns << "\n";
     cout << "Average turn count " << tot_turns / (float)max_runs << "\n";
     cout << "Average time to execute one battle: " << seconds_per_battle << " s\n";
-    cout << "Execution time: " << time_elasped.count() << endl;
+    cout << "Execution time: " << seconds_to_time_string(time_elasped.count()) << endl;
 
 //    while(!guesses.empty())
 //    {
@@ -125,7 +125,10 @@ BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION
     switch(note)
     {
         case BattleNotification::TEAM_CHOICE:
-            m.team_name = "team1";
+            if(get_player_from_position(pos) == PLAYER_ONE)
+                m.team_name = TEAM_1_CHOICE;
+            else
+                m.team_name = TEAM_2_CHOICE;
             m.pos = pos;
             m.move_command = Commands::COMMAND_TEAM_CHOICE;
             return m;
