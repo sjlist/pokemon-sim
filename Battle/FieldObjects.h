@@ -6,6 +6,7 @@
 #define POKEMON_SIM_FIELDOBJECTS_H
 
 #include <string>
+using namespace std;
 
 enum FieldObjects
 {
@@ -21,6 +22,7 @@ enum FieldObjects
     NUM_FIELD_OBJECTS
 };
 
-FieldObjects string_to_field_obj(std::string string_obj);
+
+FieldObjects string_to_field_obj(string string_obj);
 
 #endif //POKEMON_SIM_FIELDOBJECTS_H

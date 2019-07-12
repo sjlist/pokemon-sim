@@ -8,19 +8,20 @@
 #include <Battle/BattleConfig.h>
 
 #include <string>
+using namespace std;
 
-const std::string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
+const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 
 #define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 300
 
-#define RAND_SEED 2593196269
+#define RAND_SEED 245758879
 
-#define DEBUG_LEVEL 1
+#define DEBUG_LEVEL 4
 
 #if DEBUG_LEVEL >= 4
 #define DEBUGGING
-#define DEBUG_TURN 7
+#define DEBUG_TURN 17
 #endif
 
 #endif /* POKEMON_SIM_CONFIG_H */

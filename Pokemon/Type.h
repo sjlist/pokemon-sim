@@ -6,6 +6,7 @@
 #define POKEMON_SIM_TYPE_H
 
 #include <string>
+using namespace std;
 
 enum PokeTypes
 {
@@ -37,8 +38,8 @@ float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_typ
 
 bool is_stab(PokeTypes* pokemon_type, PokeTypes move_type);
 
-PokeTypes string_to_type(std::string type);
-std::string type_to_string(PokeTypes type);
+PokeTypes string_to_type(string type);
+string type_to_string(PokeTypes type);
 
 
 #endif //POKEMON_SIM_TYPE_H

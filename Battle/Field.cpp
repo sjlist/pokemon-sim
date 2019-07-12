@@ -6,6 +6,7 @@
 #include <Battle/Field.h>
 #include <Utils/Logging.h>
 #include <Battle/FieldPositions.h>
+using namespace std;
 
 Field::Field()
 {
@@ -20,6 +21,7 @@ Field::Field()
     Field::trick_room = false;
     Field::terrain = Terrain::NO_TERRAIN;
     Field::weather_state = Weather::CLEAR_SKIES;
+    Field::weather_turns = 0;
 
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
@@ -63,7 +65,7 @@ void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POS
         case FieldObjects::LEECH_SEED:
             if(Field::active_pokes[def_pos] == nullptr)
             {
-                ERR_MSG("No Pokemon as position " << get_string_from_field_position(def_pos) << std::endl);
+                ERR_MSG("No Pokemon as position " << get_string_from_field_position(def_pos) << endl);
             }
 
             if(Field::active_pokes[def_pos]->get_type()[0] != PokeTypes::GRASS
@@ -105,7 +107,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
         return Field::handle_entrance(pos);
     }
     else
-        ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << std::endl);
+        ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << endl);
 }
 
 void Field::return_poke(FIELD_POSITION pos)
@@ -117,7 +119,7 @@ void Field::return_poke(FIELD_POSITION pos)
         Field::active_pokes[pos] = nullptr;
     }
     else
-        ERR_MSG("No Pokemon to return in " << get_string_from_field_position(pos) << std::endl);
+        ERR_MSG("No Pokemon to return in " << get_string_from_field_position(pos) << endl);
 }
 
 bool Field::handle_entrance(FIELD_POSITION pos)
@@ -210,15 +212,15 @@ void Field::reset_field_obj()
 void Field::print_field(bool detailed)
 {
 #ifdef DEBUGGING
-    DEBUG_MSG("ACTIVE POKEMON: " << std::endl);
+    DEBUG_MSG("ACTIVE POKEMON: " << endl);
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << std::endl);
+        DEBUG_MSG(get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << endl);
         if(Field::active_pokes[i] == nullptr)
             DEBUG_MSG("NO POKEMON\n");
         else if(Field::active_pokes[i]->is_active())
             Field::active_pokes[i]->print_pokemon(detailed);
-        DEBUG_MSG(std::endl);
+        DEBUG_MSG(endl);
     }
 
     if(detailed)
@@ -257,7 +259,7 @@ bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
         DEBUG_MSG("P" << get_player_from_position(Field::leech_seed_positions[pos]) + 1 << "'s "
              << Field::active_pokes[Field::leech_seed_positions[pos]]->get_species()
              << " sapped some life from P" << get_player_from_position(pos) + 1 << "'s "
-             << Field::active_pokes[pos]->get_species() << std::endl);
+             << Field::active_pokes[pos]->get_species() << endl);
         Field::active_pokes[Field::leech_seed_positions[pos]]->heal_damage(damage);
         return Field::active_pokes[pos]->deal_damage(damage);
     }

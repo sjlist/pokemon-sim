@@ -6,6 +6,7 @@
 #define POKEMON_SIM_FIELDPOSITIONS_H
 
 #include <Config.h>
+using namespace std;
 
 enum FIELD_POSITION
 {
@@ -28,6 +29,6 @@ enum FIELD_POSITION
     ALL_TARGETS
 };
 
-std::string get_string_from_field_position(FIELD_POSITION pos);
+string get_string_from_field_position(FIELD_POSITION pos);
 
 #endif //POKEMON_SIM_FIELDPOSITIONS_H

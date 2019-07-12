@@ -6,9 +6,9 @@
 #include <Pokemon/Stats.h>
 
 #include <map>
+using namespace std;
 
-
-static std::map<std::string, Natures>string_natures = {
+static map<string, Natures>string_natures = {
         {"HARDY", Natures::HARDY},
         {"LONELY", Natures::LONELY},
         {"BRAVE", Natures::BRAVE},
@@ -35,7 +35,7 @@ static std::map<std::string, Natures>string_natures = {
         {"QUIRKY", Natures::QUIRKY}
 };
 
-Natures string_to_nature(std::string nature_string)
+Natures string_to_nature(string nature_string)
 {
     return string_natures[nature_string];
 }

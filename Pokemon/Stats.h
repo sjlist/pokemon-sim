@@ -6,6 +6,7 @@
 #define POKEMON_SIM_STATS_H
 
 #include <string>
+using namespace std;
 
 enum STAT
 {
@@ -20,7 +21,7 @@ enum STAT
     NUM_STATS
 };
 
-std::string stat_to_string(STAT stat);
-STAT string_to_stat(std::string stat_string);
+string stat_to_string(STAT stat);
+STAT string_to_stat(string stat_string);
 
 #endif //POKEMON_SIM_STATS_H

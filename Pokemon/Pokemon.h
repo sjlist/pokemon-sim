@@ -11,6 +11,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <string>
+using namespace std;
 
 class Pokemon {
 public:
@@ -27,7 +28,7 @@ public:
 
     bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
-    std::string get_species();
+    string get_species();
     bool is_alive();
     bool is_grounded();
     bool is_protected();
@@ -75,11 +76,11 @@ private:
     PokeTypes type[2];
     PokeTypes current_type[2];
     float current_hp;
-    std::string name;
+    string name;
     float base_stats [STAT::NUM_STATS];
     int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
     STATUS status;
-    std::string species;
+    string species;
     bool protect_active;
     int protect_turns;
 
@@ -90,7 +91,7 @@ private:
     int volatile_status;
     int v_status_turns [NUM_VOLATILE_STATUS];
 
-    void load_species(std::string species_name);
+    void load_species(string species_name);
     void set_stats(int* ivs, int* evs, int level, Natures nature);
     float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
     float calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);

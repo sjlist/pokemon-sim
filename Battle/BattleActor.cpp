@@ -9,24 +9,38 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
+using namespace std;
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-BattleActor::BattleActor() = default;
+BattleActor::BattleActor()
+{
+    BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
+    BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
+    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
+}
 
 BattleActor::BattleActor(long seed)
 {
-    BattleActor::generator = std::mt19937(seed);
+    BattleActor::generator = mt19937(seed);
+    BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
+    BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
+    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
-BattleMessage::BattleMessage() = default;
-
-
-BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field field, Actions action)
+BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
 {
     BattleMessage message;
     Players player = get_player_from_position(pos);
     Move move;
+
+    message.pos = pos;
+
+    if(field->active_pokes[pos] == nullptr)
+    {
+        message.set_no_op();
+        return message;
+    }
 
     if(action == Actions::CHOOSE_ACTION)
     {
@@ -53,10 +67,10 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
 
         case Actions::CHOOSE_MOVE:
             message.move_command = Commands::COMMAND_ATTACK;
-            message.move_num = BattleActor::choose_move(field.active_pokes[pos]);
+            message.move_num = BattleActor::choose_move(field->active_pokes[pos]);
             if(message.move_num != 5)
             {
-                move = field.active_pokes[pos]->moves[message.move_num];
+                move = field->active_pokes[pos]->moves[message.move_num];
                 message.target_pos = BattleActor::choose_target(pos, move.get_num_targets(), move.get_move_targets(), field);
 
             }
@@ -67,18 +81,18 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             break;
     }
 
-    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << "'s " << field.active_pokes[pos]->get_species() << " chose action: ");
+    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " is ");
     if(message.move_command == Commands::COMMAND_SWAP)
     {
-        DEBUG_MSG("SWAP, sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
+        DEBUG_MSG("swapping position: " << get_string_from_field_position(pos) << ", sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
     }
     else if(message.move_command == Commands::COMMAND_ATTACK)
     {
-        DEBUG_MSG("ATTACK, targeting ");
+        DEBUG_MSG("attacking with " << field->active_pokes[pos]->get_species() << ", targeting ");
         if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
         {
             DEBUG_MSG("P" << get_player_from_position(message.target_pos) + 1 << "'s ");
-            DEBUG_MSG(field.active_pokes[message.target_pos]->get_species());
+            DEBUG_MSG(field->active_pokes[message.target_pos]->get_species());
         }
         else
         {
@@ -88,12 +102,12 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
         DEBUG_MSG(" with ");
 
         if(message.move_num < 4)
-            DEBUG_MSG(field.active_pokes[pos]->moves[message.move_num].get_name() << "\n");
+            DEBUG_MSG(field->active_pokes[pos]->moves[message.move_num].get_name() << "\n");
         else
             DEBUG_MSG("struggle\n");
     }
     else
-        ERR_MSG("Unhandled Command Type" << message.move_command << std::endl);
+        ERR_MSG("Unhandled Command Type" << message.move_command << endl);
 
     return message;
 }
@@ -114,7 +128,7 @@ int BattleActor::choose_move(Pokemon* poke)
     if(num_moves == 0)
         return 5;
 
-    selection = BattleActor::make_choice(0, num_moves - 1);
+    selection = BattleActor::choose_position(num_moves);
     return moves[selection];
 }
 
@@ -133,14 +147,16 @@ int BattleActor::choose_pokemon(Party* party)
         }
     }
     if(num_pokes == 0)
+    {
         return -1;
+    }
 
-    selection = BattleActor::make_choice(0, num_pokes - 1);
+    selection = BattleActor::choose_position(num_pokes);
     party->party_pokes[pokes[selection]].to_be_swapped = true;
     return pokes[selection];
 }
 
-FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_targets, TARGETS targets, Field field)
+FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_targets, TARGETS targets, Field* field)
 {
 
     if(num_targets == 1)
@@ -152,7 +168,7 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
         //determine which of the valid move targets are actually alive
         for(int i = 0; i < BattleActor::actor_targeting.get_num_valid_targets(); i++)
         {
-            if(field.active_pokes[BattleActor::actor_targeting.valid_targets[i]] != nullptr)
+            if(field->active_pokes[BattleActor::actor_targeting.valid_targets[i]] != nullptr)
             {
                 alive_targets[num_alive_targets] = BattleActor::actor_targeting.valid_targets[i];
                 num_alive_targets++;
@@ -160,7 +176,7 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
         }
 
         // choose a pokemon who is alive
-        int rand_target = BattleActor::make_choice(0, num_alive_targets - 1);
+        int rand_target = BattleActor::choose_position(num_alive_targets);
         return alive_targets[rand_target];
     }
     else
@@ -171,16 +187,20 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
 
 bool BattleActor::roll_chance(float chance)
 {
-    float c = std::uniform_real_distribution<float>{0, 1}(BattleActor::generator);
+    float c = BattleActor::pcent_chance(BattleActor::generator);
     return c < chance;
 }
 
-int BattleActor::make_choice(int min, int max)
+int BattleActor::choose_position(int num_positions)
 {
-    return std::uniform_int_distribution<int>{min, max}(BattleActor::generator);
+    if(num_positions > 6)
+        ERR_MSG("Choose position can only support up to 6 choices");
+
+    float c = BattleActor::poke_choice(BattleActor::generator);
+    return floor(c/(600/num_positions));
 }
 
 void BattleActor::update_generator(long seed)
 {
-    BattleActor::generator = std::mt19937(seed);
+    BattleActor::generator = mt19937(seed);
 }

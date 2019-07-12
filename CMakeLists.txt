@@ -18,6 +18,8 @@ set(BATTLE_FILES
         Battle/BattleActor.cpp
         Battle/BattleActor.h
         Battle/BattleConfig.h
+        Battle/BattleMessage.cpp
+        Battle/BattleMessage.h
         Battle/BattleStateMachine.cpp
         Battle/BattleStateMachine.h
         Battle/Field.cpp
@@ -110,6 +112,8 @@ set(BATTLE_TEST_FILES
         Battle/unit-tests/test-Field.cpp
         Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-Battle.cpp
+        Battle/unit-tests/test-BattleActor.cpp
+        Battle/unit-tests/test-BattleStateMachine.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(battle-tests

@@ -11,6 +11,7 @@
 #include <Pokemon/Type.h>
 
 #include <string>
+using namespace std;
 
 static const int MAX_PRIO = 5;
 static const int FAINT_PRIO = -10;
@@ -37,7 +38,7 @@ public:
     float get_crit();
     Effect get_move_effect(int effect_num);
     PokeTypes get_type();
-    std::string get_name();
+    string get_name();
     int get_priority();
     TARGETS get_move_targets();
     int get_num_targets();
@@ -48,19 +49,19 @@ public:
 
     void reset();
 
-    void load_move(std::string move_name);
+    void load_move(string move_name);
     void print_move();
     move_damage_type get_damage_type();
 
 private:
-    std::string name;
+    string name;
     TARGETS move_targets;
     int num_targets;
     int max_pp;
     int power;
     float acc;
     int priority;
-    std::array<Effect, MAX_EFFECTS> move_effects;
+    array<Effect, MAX_EFFECTS> move_effects;
     float crit_chance;
     PokeTypes type;
     move_damage_type damage_type;

@@ -5,8 +5,9 @@
 #include <Battle/FieldPositions.h>
 #include <Config.h>
 #include <Utils/Logging.h>
+using namespace std;
 
-std::string get_string_from_field_position(FIELD_POSITION pos)
+string get_string_from_field_position(FIELD_POSITION pos)
 {
     if(pos == FIELD_POSITION::PLAYER_1_0)
         return "Player 1 Position 0";

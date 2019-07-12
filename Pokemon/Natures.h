@@ -8,6 +8,7 @@
 #include <Pokemon/Stats.h>
 
 #include <string>
+using namespace std;
 
 enum Natures
 {
@@ -41,6 +42,6 @@ enum Natures
 
 float get_nature_mod(Natures nature, STAT stat);
 
-Natures string_to_nature(std::string nature_string);
+Natures string_to_nature(string nature_string);
 
 #endif //POKEMON_SIM_NATURES_H

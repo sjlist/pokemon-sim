@@ -17,7 +17,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
-
+using namespace std;
 static int MAX_STAGES = 6;
 
 Pokemon::Pokemon()
@@ -33,6 +33,8 @@ Pokemon::Pokemon()
         Pokemon::stat_modifiers[stat] = 0;
     for(int i = 0; i < NUM_VOLATILE_STATUS; i++)
         Pokemon::v_status_turns[i] = 0;
+    Pokemon::protect_active = false;
+    Pokemon::substitute_hp = 0;
 }
 
 // STATE CHECKING FUNCTIONS
@@ -98,7 +100,7 @@ PokeTypes* Pokemon::get_type()
     return Pokemon::current_type;
 }
 
-std::string Pokemon::get_species()
+string Pokemon::get_species()
 {
     return Pokemon::species;
 }
@@ -157,7 +159,7 @@ bool Pokemon::deal_damage(float damage, bool ignore_sub)
 {
     if(Pokemon::substitute_hp > 0 && !ignore_sub)
     {
-        DEBUG_MSG("Substitue took damage for " << Pokemon::species << std::endl);
+        DEBUG_MSG("Substitue took damage for " << Pokemon::species << endl);
         Pokemon::substitute_hp -= damage;
         if(Pokemon::substitute_hp <= 0)
         {
@@ -205,21 +207,21 @@ bool Pokemon::set_status(STATUS new_status)
         case STATUS::BURNED:
             if(Pokemon::type[0] == PokeTypes::FIRE || Pokemon::type[1] == PokeTypes::FIRE)
             {
-                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << endl);
                 return false;
             }
             break;
         case STATUS::FROZEN:
             if(Pokemon::type[0] == PokeTypes::ICE || Pokemon::type[1] == PokeTypes::ICE)
             {
-                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << endl);
                 return false;
             }
             break;
         case STATUS::PARALYZED:
             if(Pokemon::type[0] == PokeTypes::ELECTRIC || Pokemon::type[1] == PokeTypes::ELECTRIC)
             {
-                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << endl);
                 return false;
             }
             break;
@@ -228,7 +230,7 @@ bool Pokemon::set_status(STATUS new_status)
         case STATUS::POISONED:
             if(Pokemon::type[0] == PokeTypes::STEEL || Pokemon::type[1] == PokeTypes::STEEL || Pokemon::type[0] == PokeTypes::POISON || Pokemon::type[1] == PokeTypes::POISON)
             {
-                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << std::endl);
+                DEBUG_MSG(Pokemon::species << " cannot be " << status_to_string(new_status) << endl);
                 return false;
             }
             break;
@@ -334,10 +336,10 @@ void Pokemon::reset_types()
 void Pokemon::stat_change(STAT stat, int stages)
 {
     if(stages < 0)
-        DEBUG_MSG(Pokemon::species << "'s " << stat_to_string(stat) << " dropped by " << std::to_string(abs(stages)) << " stage(s)\n");
+        DEBUG_MSG(Pokemon::species << "'s " << stat_to_string(stat) << " dropped by " << to_string(abs(stages)) << " stage(s)\n");
 
     if(stages > 0)
-        DEBUG_MSG(Pokemon::species << "'s " << stat_to_string(stat) << " rose by " << std::to_string(stages) << " stage(s)\n");
+        DEBUG_MSG(Pokemon::species << "'s " << stat_to_string(stat) << " rose by " << to_string(stages) << " stage(s)\n");
 
     Pokemon::stat_modifiers[stat] = Pokemon::stat_modifiers[stat] + stages;
 
@@ -393,7 +395,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     auto ev_ptr = evs;
     auto iv_ptr = ivs;
 
-    Pokemon::load_species(poke_ptree.get<std::string>("species"));
+    Pokemon::load_species(poke_ptree.get<string>("species"));
     Pokemon::level = poke_ptree.get<int>("level", 0);
 
     boost::property_tree::ptree evs_ptree = poke_ptree.get_child("evs");
@@ -401,19 +403,19 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 
     for(int i = 0; i < STAT::NUM_STATS; i++)
     {
-        evs[i] = evs_ptree.get(std::to_string(i), 0);
-        ivs[i] = ivs_ptree.get(std::to_string(i), 0);
+        evs[i] = evs_ptree.get(to_string(i), 0);
+        ivs[i] = ivs_ptree.get(to_string(i), 0);
     }
 
-    Pokemon::set_stats(iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<std::string>("nature")));
+    Pokemon::set_stats(iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<string>("nature")));
 
     boost::property_tree::ptree moves_ptree = poke_ptree.get_child("moves");
 
 
-    std::string move_name;
+    string move_name;
     for(int i = 0; i < 4; i++)
     {
-        move_name = moves_ptree.get<std::string>("MOVE" + std::to_string(i));
+        move_name = moves_ptree.get<string>("MOVE" + to_string(i));
         if(!move_name.empty())
         {
             Pokemon::moves[i].load_move(move_name);
@@ -427,7 +429,7 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::to_be_swapped = false;
 }
 
-void Pokemon::load_species(std::string species_name)
+void Pokemon::load_species(string species_name)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree root_child;
@@ -452,8 +454,8 @@ void Pokemon::load_species(std::string species_name)
     Pokemon::species = species_name;
 
     root_child = root.get_child("TYPES");
-    Pokemon::type[0] = string_to_type(root_child.get<std::string>("TYPE0"));
-    Pokemon::type[1] = string_to_type(root_child.get<std::string>("TYPE1"));
+    Pokemon::type[0] = string_to_type(root_child.get<string>("TYPE0"));
+    Pokemon::type[1] = string_to_type(root_child.get<string>("TYPE1"));
 
     Pokemon::current_type[0] = Pokemon::type[0];
     Pokemon::current_type[1] = Pokemon::type[1];
@@ -461,12 +463,12 @@ void Pokemon::load_species(std::string species_name)
 
 float Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
 {
-    return std::floor(((2 * base_hp + iv_hp + std::floor((float)(ev_hp / 4))) * level) / 100) + level + 10;
+    return floor(((2 * base_hp + iv_hp + floor((float)(ev_hp / 4))) * level) / 100) + level + 10;
 }
 
 float Pokemon::calculate_stat_single(int level, int base, int ev, int iv, float nature_mod)
 {
-    return (int)((std::floor(std::floor((float)((float)ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod);
+    return (int)((floor(floor((float)((float)ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod);
 }
 
 void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
@@ -493,7 +495,7 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
                 Pokemon::base_stats[i] = 1;
                 break;
             default:
-                ERR_MSG("Unhandled stat " << i << std::endl);
+                ERR_MSG("Unhandled stat " << i << endl);
         }
     }
 }

@@ -5,8 +5,6 @@
 #ifndef POKEMON_SIM_FIELD_H
 #define POKEMON_SIM_FIELD_H
 
-#include <gtest/gtest_prod.h>
-
 #include <Battle/FieldObjects.h>
 #include <Battle/FieldPositions.h>
 #include <Battle/Players.h>

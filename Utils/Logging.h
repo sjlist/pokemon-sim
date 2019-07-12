@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <iostream>
+using namespace std;
 
 #if DEBUG_LEVEL >= 3
 #define DEBUG_MESSAGES
@@ -23,20 +24,20 @@
 #endif
 
 #ifdef DEBUG_MESSAGES
-#define DEBUG_MSG(str) do { std::cout << str; } while( false )
+#define DEBUG_MSG(str) do { cout << str; } while( false )
 #else
 #define DEBUG_MSG(str) do { } while ( false )
 #endif
 
 
 #ifdef WARNING_MESSAGES
-#define WARN_MSG(str) do { std::cout << str; } while( false )
+#define WARN_MSG(str) do { cout << str; } while( false )
 #else
 #define WARN_MSG(str) do { } while ( false )
 #endif
 
 #ifdef ERROR_MESSAGES
-#define ERR_MSG(str) do { std::cout << str;  assert(0); } while( false )
+#define ERR_MSG(str) do { cout << str;  assert(0); } while( false )
 #else
 #define ERR_MSG(str) do { assert(0); } while ( false )
 #endif

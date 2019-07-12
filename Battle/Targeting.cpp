@@ -7,8 +7,9 @@
 #include <Utils/Logging.h>
 
 #include <map>
+using namespace std;
 
-static std::map<std::string, TARGETS> string_target_map = {
+static map<string, TARGETS> string_target_map = {
         { "ADJACENT_ALL", TARGETS::ADJACENT_ALL},
         { "ADJACENT_ENEMY", TARGETS::ADJACENT_ENEMY },
         { "ADJACENT_FRIENDLY", TARGETS::ADJACENT_FRIENDLY},
@@ -135,7 +136,7 @@ void Targets::set_single_target(FIELD_POSITION pos)
     Targets::single_target = pos;
 }
 
-TARGETS string_to_target(std::string target_string)
+TARGETS string_to_target(string target_string)
 {
     return string_target_map[target_string];
 }

@@ -5,7 +5,7 @@
 #include <Pokemon/Type.h>
 
 #include <map>
-
+using namespace std;
 
 static float type_effectiveness [(int)PokeTypes::NUM_TYPES] [(int)PokeTypes::NUM_TYPES] = {
        //NONE, NORMAL, FIRE, WATER, GRASS, ELECTRIC, ICE, FIGHTING, POISON, GROUND, FLYING, PSYCHIC, BUG, ROCK, GHOST, DRAGON, DARK, STEEL, FAIRY
@@ -30,7 +30,7 @@ static float type_effectiveness [(int)PokeTypes::NUM_TYPES] [(int)PokeTypes::NUM
         {1.0,  1.0,    0.5,  1.0,   1.0,   1.0,      1.0, 2.0,      0.5,    1.0,     1.0,   1.0,     1.0, 1.0,   1.0,  2.0,    2.0,   0.5,  1.0}  // FAIRY
 };
 
-static std::map<std::string, PokeTypes> string_types = {
+static map<string, PokeTypes> string_types = {
         {"NORMAL",   PokeTypes::NORMAL},
         {"FIRE",     PokeTypes::FIRE},
         {"WATER",    PokeTypes::WATER},
@@ -52,7 +52,7 @@ static std::map<std::string, PokeTypes> string_types = {
         {"NONE",     PokeTypes::NO_TYPE}
 };
 
-static std::map<PokeTypes, std::string> type_strings = {
+static map<PokeTypes, string> type_strings = {
         {PokeTypes::NORMAL,   "NORMAL"},
         {PokeTypes::FIRE,     "FIRE"},
         {PokeTypes::WATER,    "WATER"},
@@ -85,12 +85,12 @@ float calculate_type_damage_modifier(PokeTypes* pokemon_type, PokeTypes move_typ
     return calculate_damage_modifier_single(pokemon_type[0], move_type) * calculate_damage_modifier_single(pokemon_type[1], move_type);
 }
 
-PokeTypes string_to_type(std::string type)
+PokeTypes string_to_type(string type)
 {
     return string_types[type];
 }
 
-std::string type_to_string(PokeTypes type)
+string type_to_string(PokeTypes type)
 {
     return type_strings[type];
 }

@@ -9,8 +9,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <map>
 #include <string>
+using namespace std;
 
-std::map<std::string, MOVE_EFFECTS> string_move_effect_map = {
+map<string, MOVE_EFFECTS> string_move_effect_map = {
         {"SWAP", MOVE_EFFECTS::SWAP},
         {"STATUS", MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT},
         {"VOLATILE_STATUS", MOVE_EFFECTS::VOLATILE_STATUS_EFFECT},
@@ -107,10 +108,10 @@ int Effect::get_flat_damage()
 // Load effect
 void Effect::load_effect(boost::property_tree::ptree effect_tree)
 {
-    Effect::effect_type = string_to_move_effect(effect_tree.get<std::string>("effect"));
+    Effect::effect_type = string_to_move_effect(effect_tree.get<string>("effect"));
 
     if(effect_tree.count("target"))
-        Effect::target_self = (effect_tree.get<std::string>("target") == "SELF");
+        Effect::target_self = (effect_tree.get<string>("target") == "SELF");
     else
         Effect::target_self = false;
 
@@ -123,27 +124,27 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
     switch(Effect::effect_type)
     {
         case MOVE_EFFECTS::VOLATILE_STATUS_EFFECT:
-            Effect::v_status_effect = string_to_v_status(effect_tree.get<std::string>("status"));
+            Effect::v_status_effect = string_to_v_status(effect_tree.get<string>("status"));
             break;
         case MOVE_EFFECTS::NON_VOLATILE_STATUS_EFFECT:
-            Effect::status_effect = string_to_status(effect_tree.get<std::string>("status"));
+            Effect::status_effect = string_to_status(effect_tree.get<string>("status"));
             break;
         case MOVE_EFFECTS::STAT_CHANGE:
-            Effect::stat_changed = string_to_stat(effect_tree.get<std::string>("stat"));
+            Effect::stat_changed = string_to_stat(effect_tree.get<string>("stat"));
             Effect::stages_changes = effect_tree.get<int>("stages");
             break;
         case MOVE_EFFECTS::FIELD_CHANGE:
-            Effect::field_obj = string_to_field_obj(effect_tree.get<std::string>("field_object"));
+            Effect::field_obj = string_to_field_obj(effect_tree.get<string>("field_object"));
             break;
         case MOVE_EFFECTS::RECOIL:
-            Effect::use_damage = (effect_tree.get<std::string>("recoil_type") == "DAMAGE");
+            Effect::use_damage = (effect_tree.get<string>("recoil_type") == "DAMAGE");
             Effect::percent_recoil = effect_tree.get<int>("percent") / 100.0;
             break;
         case MOVE_EFFECTS::HEAL:
             Effect::heal_percent = effect_tree.get<int>("heal_percent") / 100.0;
             break;
         case MOVE_EFFECTS::REMOVE_TYPE:
-            Effect::type_removed = string_to_type(effect_tree.get<std::string>("type_removed"));
+            Effect::type_removed = string_to_type(effect_tree.get<string>("type_removed"));
             break;
         case MOVE_EFFECTS::FLAT_DAMAGE:
             if(effect_tree.count("flat_damage"))
@@ -161,7 +162,7 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
         case MOVE_EFFECTS::SUBSTITUTE:
             break;
         default:
-            ERR_MSG("Unhandled Effect Type: " << Effect::effect_type << std::endl);
+            ERR_MSG("Unhandled Effect Type: " << Effect::effect_type << endl);
     }
 
 }
@@ -169,7 +170,7 @@ void Effect::load_effect(boost::property_tree::ptree effect_tree)
 
 
 //NON CLASS METHODS
-MOVE_EFFECTS string_to_move_effect(std::string effect_string)
+MOVE_EFFECTS string_to_move_effect(string effect_string)
 {
     return string_move_effect_map[effect_string];
 }

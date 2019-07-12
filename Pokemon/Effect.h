@@ -13,6 +13,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <string>
+using namespace std;
 
 /*
  * Effects are the general non damaging effects that a move can have, stat bufff, status application ...
@@ -87,6 +88,6 @@ private:
     int flat_damage;
 };
 
-MOVE_EFFECTS string_to_move_effect(std::string move_effect_string);
+MOVE_EFFECTS string_to_move_effect(string move_effect_string);
 
 #endif //POKEMON_SIM_EFFECT_H
