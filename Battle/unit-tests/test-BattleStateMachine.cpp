@@ -214,7 +214,10 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -265,7 +268,10 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -316,7 +322,10 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -367,7 +376,10 @@ TEST(test_sort_message_stack, 1_2_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -418,7 +430,10 @@ TEST(test_sort_message_stack, 2_3_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -469,7 +484,10 @@ TEST(test_sort_message_stack, 3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
@@ -521,7 +539,10 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
     }
 }
