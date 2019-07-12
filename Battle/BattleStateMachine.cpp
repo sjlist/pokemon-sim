@@ -22,6 +22,7 @@ BattleStateMachine::BattleStateMachine()
     BattleStateMachine::seed = rd();
     DEBUG_MSG("The random seed is " << BattleStateMachine::seed << "\n");
     BattleStateMachine::choice = mt19937(seed);
+    BattleStateMachine::position_choice = uniform_int_distribution<int> {0, 599};
     BattleStateMachine::battle = Battle(seed);
     BattleStateMachine::state = BattleState::BATTLE_IDLE;
 }
@@ -418,7 +419,7 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
             {
                 for(int j = 0; j < speed_tie_list.size(); j++)
                 {
-                    prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                    prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - 1);
                     map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
                     swap_in_place(speed_map, map_base, map_base + prio_choice);
                 }
@@ -435,7 +436,7 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
         {
             for (int j = 0; j < speed_tie_list.size(); j++)
             {
-                prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - 1);
                 map_base = speed_map.size() - speed_tie_list.size() + j;
                 swap_in_place(speed_map, map_base, map_base + prio_choice);
             }
@@ -492,7 +493,7 @@ void BattleStateMachine::sort_message_stack()
         {
             for(int j = 0; j < speed_tie_list.size(); j++)
             {
-                prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+                prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                 map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
                 swap_in_place(prio_map, map_base, map_base + prio_choice);
             }
@@ -505,7 +506,7 @@ void BattleStateMachine::sort_message_stack()
     {
         for (int j = 0; j < speed_tie_list.size(); j++)
         {
-            prio_choice = BattleStateMachine::make_choice(0, speed_tie_list.size() - 1 - j);
+            prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
             map_base = prio_map.size() - speed_tie_list.size() + j;
             swap_in_place(prio_map, map_base, map_base + prio_choice);
         }
@@ -567,9 +568,13 @@ void BattleStateMachine::reset()
     BattleStateMachine::turn_messages.clear();
 }
 
-int BattleStateMachine::make_choice(int min, int max)
+int BattleStateMachine::make_choice(int num_positions)
 {
-    return uniform_int_distribution<int>{min, max}(BattleStateMachine::choice);
+    if(num_positions > 6)
+        ERR_MSG("Choose position can only support up to 6 choices");
+
+    float c = BattleStateMachine::position_choice(BattleStateMachine::choice);
+    return floor(c/(600/num_positions));
 }
 
 void BattleStateMachine::validate_battle_message(BattleMessage message)

@@ -89,6 +89,7 @@ private:
     float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
 
     mt19937 generator;
+    uniform_real_distribution<float> chance;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
 };

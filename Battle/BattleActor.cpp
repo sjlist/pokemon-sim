@@ -13,11 +13,19 @@ using namespace std;
 
 //BATTLE ACTOR IS CURRENTLY IMPLEMENTED AS AN ALL RANDOM PROCESS. CHOOSING ANYTHING FROM A LIST OF OPTIONS
 
-BattleActor::BattleActor() = default;
+BattleActor::BattleActor()
+{
+    BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
+    BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
+    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
+}
 
 BattleActor::BattleActor(long seed)
 {
     BattleActor::generator = mt19937(seed);
+    BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
+    BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
+    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
 BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
@@ -120,7 +128,7 @@ int BattleActor::choose_move(Pokemon* poke)
     if(num_moves == 0)
         return 5;
 
-    selection = BattleActor::make_choice(0, num_moves - 1);
+    selection = BattleActor::choose_position(num_moves);
     return moves[selection];
 }
 
@@ -143,7 +151,7 @@ int BattleActor::choose_pokemon(Party* party)
         return -1;
     }
 
-    selection = BattleActor::make_choice(0, num_pokes - 1);
+    selection = BattleActor::choose_position(num_pokes);
     party->party_pokes[pokes[selection]].to_be_swapped = true;
     return pokes[selection];
 }
@@ -168,7 +176,7 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
         }
 
         // choose a pokemon who is alive
-        int rand_target = BattleActor::make_choice(0, num_alive_targets - 1);
+        int rand_target = BattleActor::choose_position(num_alive_targets);
         return alive_targets[rand_target];
     }
     else
@@ -179,13 +187,17 @@ FIELD_POSITION BattleActor::choose_target(FIELD_POSITION atk_pos, int num_target
 
 bool BattleActor::roll_chance(float chance)
 {
-    float c = uniform_real_distribution<float>{0, 1}(BattleActor::generator);
+    float c = BattleActor::pcent_chance(BattleActor::generator);
     return c < chance;
 }
 
-int BattleActor::make_choice(int min, int max)
+int BattleActor::choose_position(int num_positions)
 {
-    return uniform_int_distribution<int>{min, max}(BattleActor::generator);
+    if(num_positions > 6)
+        ERR_MSG("Choose position can only support up to 6 choices");
+
+    float c = BattleActor::poke_choice(BattleActor::generator);
+    return floor(c/(600/num_positions));
 }
 
 void BattleActor::update_generator(long seed)

@@ -22,15 +22,18 @@ public:
     int choose_pokemon(Party* party);
     BattleMessage choose_action(FIELD_POSITION atk_pos, Party* player_party, Field* field, Actions action=Actions::CHOOSE_ACTION);
     void update_generator(long seed);
+protected:
+    int choose_position(int num_positions);
+    bool roll_chance(float chance);
+
 private:
     mt19937 generator;
+    uniform_real_distribution<float> pcent_chance;
+    uniform_int_distribution<int> poke_choice;
+    uniform_int_distribution<int> move_choice;
     Targets actor_targeting;
-
-    int make_choice(int min, int max);
 
     FIELD_POSITION choose_target(FIELD_POSITION atk_pos, int num_moves, TARGETS targets, Field* field);
     int choose_move(Pokemon* poke);
-
-    bool roll_chance(float chance);
 };
 #endif //POKEMON_SIM_BATTLEACTOR_H

@@ -69,7 +69,9 @@ private:
 
     vector<FIELD_POSITION> speed_list;
 
-    int make_choice(int min, int max);
+    int make_choice(int num_positions);
+
+    uniform_int_distribution<int> position_choice;
 
     void remove_message_from_stack(FIELD_POSITION pos);
 };

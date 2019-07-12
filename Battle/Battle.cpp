@@ -17,11 +17,15 @@
 #include <random>
 using namespace std;
 
-Battle::Battle() = default;
+Battle::Battle()
+{
+    chance = uniform_real_distribution<float>{0,1};
+}
 
 Battle::Battle(long seed)
 {
     Battle::generator = mt19937(seed);
+    chance = uniform_real_distribution<float>{0,1};
 }
 
 Party* Battle::get_party(Players player)
@@ -718,10 +722,10 @@ bool Battle::roll_acc(float acc, float atk_acc_mod, float def_eva_mod)
     }
 }
 
-bool Battle::roll_chance(float chance)
+bool Battle::roll_chance(float pcent_chance)
 {
-    float c = uniform_real_distribution<float>{0, 1}(Battle::generator);
-    return c < chance;
+    float c = Battle::chance(Battle::generator);
+    return c < pcent_chance;
 }
 
 float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit)
@@ -770,7 +774,7 @@ float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* 
     return damage_modifier;
 }
 
-// LOADING AND RESETING
+// LOADING AND RESETTING
 void Battle::reset()
 {
     Battle::active_field.reset();

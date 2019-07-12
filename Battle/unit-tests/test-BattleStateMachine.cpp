@@ -7,7 +7,8 @@
 #include <Battle/BattleMessage.h>
 using namespace std;
 
-class BSMTest: public BattleStateMachine {
+class BSMTest: public BattleStateMachine
+{
 public:
     void load_test_teams(string team1, string team2, vector<int>* send_outs);
 
@@ -168,12 +169,13 @@ TEST(test_sort_message_stack, no_speed_ties_diff_prio_attacks_swap)
     BSM.turn_messages.pop_back();
 }
 
-TEST(test_sort_message_stack, 1_2_3_4_speed_tie) {
+TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {25, 25, 25, 25};
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 1, 0, 1};
-    int num_sorts = 300000;
+    int num_sorts = 100000  ;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -209,23 +211,21 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 1_2_3_speed_tie) {
+TEST(test_sort_message_stack, 1_2_3_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {33.333, 33.333, 33.333, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 1, 0, 4};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -261,23 +261,21 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 2_3_4_speed_tie) {
+TEST(test_sort_message_stack, 2_3_4_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {0, 33.333, 33.333, 33.333};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 2, 2, 3};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -313,23 +311,21 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 1_2_speed_tie) {
+TEST(test_sort_message_stack, 1_2_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {50, 50, 0, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 2, 0, 4};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -365,23 +361,21 @@ TEST(test_sort_message_stack, 1_2_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 2_3_speed_tie) {
+TEST(test_sort_message_stack, 2_3_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {0, 50, 50, 0};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
     vector<int> send_outs = {0, 2, 2, 4};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -417,23 +411,21 @@ TEST(test_sort_message_stack, 2_3_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 3_4_speed_tie) {
+TEST(test_sort_message_stack, 3_4_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {0, 0, 50, 50};
     vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
     vector<int> send_outs = {0, 2, 4, 5};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -469,23 +461,21 @@ TEST(test_sort_message_stack, 3_4_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
 
-TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie) {
+TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
+{
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {50, 50, 0, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 50, 50}, tie_pcents, {0, 0, 50, 50}};
     vector<int> send_outs = {0, 4, 0, 4};
-    int num_sorts = 300000;
+    int num_sorts = 100000;
     float error_allowed = 0.5;
     BSMTest BSM;
     BattleMessage m;
@@ -521,13 +511,10 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie) {
 
     for (int i = 0; i < order_locs.size(); i++)
     {
-        cout << get_string_from_field_position(static_cast<FIELD_POSITION>(i)) << ":" << endl;
         for (int j = 0; j < order_locs[i].size(); j++)
         {
             order_locs[i][j] = order_locs[i][j]/num_sorts*100;
-            cout << j + 1 << ": " << order_locs[i][j] << "% ";
             EXPECT_NEAR( order_locs[i][j], expected_pcent[i][j], error_allowed);
         }
-        cout << endl;
     }
 }
