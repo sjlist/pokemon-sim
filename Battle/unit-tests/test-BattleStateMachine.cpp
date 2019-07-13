@@ -172,11 +172,11 @@ TEST(test_sort_message_stack, no_speed_ties_diff_prio_attacks_swap)
 TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
 {
     vector<vector<float>> order_locs (4, vector<float>(4));
-    vector<float> tie_pcents = {25, 25, 25, 25};
+    vector<float> tie_pcents = {25, 25, 25, 25}; 
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
-    vector<int> send_outs = {0, 1, 0, 1};
+    vector<int> send_outs = {0, 1, 0, 1}; // pokemon 0&1 faster than 2&3 faster than 4&5
     int num_sorts = 200000;
-    float error_allowed = 0.5;
+    float error_allowed = 0.5; // so the interval is 1%
     BSMTest BSM;
     BattleMessage m;
     string team1 = "unit-test/test-team-speed-tie";
@@ -187,6 +187,7 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
     m.move_command = Commands::COMMAND_ATTACK;
     m.move_num = 0;
 
+    // all pokemon use same move
     m.pos = PLAYER_1_0;
     m.target_pos = PLAYER_2_0;
     BSM.turn_messages.push_back(m);
@@ -200,6 +201,7 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
     m.target_pos = PLAYER_1_1;
     BSM.turn_messages.push_back(m);
 
+    // define targets, shouldn't affect speed or priorety
     for(int i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack();
@@ -225,7 +227,7 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
     vector<vector<float>> order_locs (4, vector<float>(4));
     vector<float> tie_pcents = {probabilty, probabilty, probabilty, 0};
     vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
-    vector<int> send_outs = {0, 1, 0, 4};
+    vector<int> send_outs = {0, 1, 0, 4}; 
     int num_sorts = 200000;
     float error_allowed = 0.5;
     BSMTest BSM;
