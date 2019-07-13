@@ -9,7 +9,6 @@ import Teams from './Teams';
 import NotFound from './NotFound';
 
 
-
 function App() {
   return (
     <BrowserRouter>
