@@ -7,16 +7,19 @@ var PokemonModel = require('../models/PokemonModel');
 
 // Define pokemon api
 router.get('/', (req, res) => {
-  console.log('pokemon test GET recieved');
-  res.send({ pokemon: true }); 
+	PokemonModel.find({}, function(err, pokemon) {
+		if (err) throw err;
+		console.log(pokemon);
+		res.send(pokemon);
+	});
+
+	// res.send({ pokemon: 'test get message' }); 
 });
 
 router.post('/', (req, res) => {
-	console.log('pokemon test POST recieved: ' + req.body.Species);
-
 	let newPokemon = new PokemonModel({
 		Species: req.body.Species,
-		Type: {type0: req.body.Type0, type1: req.body.Type1}, 
+		Type: {type0: req.body.Type0, Type1: req.body.Type1}, 
 		HP:  req.body.HP,
 		ATK: req.body.ATK,
 		DEF: req.body.DEF,

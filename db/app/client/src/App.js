@@ -13,18 +13,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {pkmn: ''};
-
-    this.changePokemon = this.changePokemon.bind(this);
-  }
-
-  changePokemon(species) {
-    this.setState({ pkmn: species });
-  }
-
-  componentDidUpdate (prevProps, prevState) {
-    if (prevState.pkmn !== this.state.pkmn) {
-      console.log('SUCCESSFULY UPDATED APP POKEMON');
-    }
   }
 
   testAPI() {

@@ -18,6 +18,10 @@ I will assume docker is already installed.
 2. run docker run -it -p 27017:27017 --name pokemon-mongo -v /Users/altonbarbehenn/Documents/Projects/pokemon-sim/db/app/db:/data/db -d mongo
 3. go to localhost:3000
 
+## Save
+
+To save the database in a nice way run: `mongodump --out db/ --db pokemon`
+
 ## To-do
 
 - make full pokemon api

@@ -1,12 +1,70 @@
 import React from 'react';
-import { Container, Col, Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle } from 'reactstrap';
+import { Container, Col, Row, Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle } from 'reactstrap';
 
 
-// When I show multiple pokemon at once, I may want 
-// to just rename this class CurrentPokemon
+// TODO:
 
+// function passed into form to add current pokemon to all pokemon after submit
+// another class for editing or deleting -> and corresponding CRUD functions
+// function to select current pokemon from list to edit
+
+// 		this.state = { allpokemon: [ { Species: '1', Type0: 'FIRE', Type1: 'NONE', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0},  { Species: '2', Type0: 'PHYCHIC', Type1: 'FLYING', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0}], CurrentPokemon: { Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0} };
 
 class Pokemon extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { allpokemon: [], CurrentPokemon: { Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0} };
+	}
+
+	componentDidMount() {
+		console.log('Pokemon componentDidMount');
+
+		fetch('/api/pokemon', {
+			method: 'GET'
+		})
+		.then(res => res.json())
+		.then(res => this.setState({allpokemon: res}));
+	}
+
+	render() {
+		return (
+			<Row>
+			<Col>
+				{
+					this.state.allpokemon.map((pkm, i) => <PokemonCard pokemon={pkm} key={i} />)
+				}
+			</Col>
+			<Col>
+				<PokemonForm CurrentPokemon={this.state.CurrentPokemon}/>
+			</Col>
+			</Row>
+		);
+	}
+}
+
+
+class PokemonCard extends React.Component {
+	render() {
+		return(
+			<Container>
+				<Card>
+					<CardTitle>
+						<h3> { this.props.pokemon.Species } </h3>
+					</CardTitle>
+						<Button outline color="info" disabled> { this.props.pokemon.Type.type0 } </Button> 
+						{' '}
+						<Button outline color="info" disabled> { this.props.pokemon.Type.type1 } </Button> 
+						<p>
+						HP: {this.props.pokemon.HP}, ATK: {this.props.pokemon.ATK}, DEF: {this.props.pokemon.DEF}, SPA: {this.props.pokemon.SPA}, SPD: {this.props.pokemon.SPD}, SPE: {this.props.pokemon.SPE}
+						</p>
+				</Card>
+			</Container>
+		);
+	}
+}
+
+
+class PokemonForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
