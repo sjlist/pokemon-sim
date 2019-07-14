@@ -14,6 +14,8 @@ class Pokemon extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = { allpokemon: [], CurrentPokemon: { Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0} };
+
+		this.addToPokemonList = this.addToPokemonList.bind(this);
 	}
 
 	componentDidMount() {
@@ -26,6 +28,10 @@ class Pokemon extends React.Component {
 		.then(res => this.setState({allpokemon: res}));
 	}
 
+	addToPokemonList(newPokemon) {
+		this.setState({ allpokemon: [ ...this.state.allpokemon, newPokemon] });
+	}
+
 	render() {
 		return (
 			<Row>
@@ -35,7 +41,7 @@ class Pokemon extends React.Component {
 				}
 			</Col>
 			<Col>
-				<PokemonForm CurrentPokemon={this.state.CurrentPokemon}/>
+				<PokemonForm {...this.state} addToPokemonList={this.addToPokemonList} />
 			</Col>
 			</Row>
 		);
@@ -69,8 +75,8 @@ class PokemonForm extends React.Component {
 		super(props);
 		this.state = {
 			Species: '',
-			Type0: '',
-			Type1: '',
+			Type0: 'NONE',
+			Type1: 'NONE',
 			HP: 0,
 			ATK: 0,
 			DEF: 0,
@@ -91,9 +97,6 @@ class PokemonForm extends React.Component {
 	handleSubmit(event) {
 		event.preventDefault();
 
-		const apimessageout = {species: this.state.Species, hardcoded: true};
-		console.log('fetch outbound message:', apimessageout);
-
 		fetch('/api/pokemon', {
 			method: 'POST',
 			headers: {
@@ -103,9 +106,11 @@ class PokemonForm extends React.Component {
 			body: JSON.stringify(this.state)
 		})
 		.then(res => res.json())
-		.then(res => console.log("fetch inbound message:", res));
+		.then(res => console.log("posted pokemon:", res));
 
 		alert('Added pokemon ' + this.state.Species + ' to database');
+
+		this.props.addToPokemonList({Species: this.state.Species, Type: {type0: this.state.Type0, type1: this.state.Type1}, HP: this.state.HP, ATK: this.state.ATK, DEF: this.state.DEF, SPA: this.state.SPA, SPD: this.state.SPD, SPE: this.state.SPE });
 		this.setState({ Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0 });
 	}
 

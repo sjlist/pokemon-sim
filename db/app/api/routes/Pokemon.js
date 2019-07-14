@@ -12,14 +12,12 @@ router.get('/', (req, res) => {
 		console.log(pokemon);
 		res.send(pokemon);
 	});
-
-	// res.send({ pokemon: 'test get message' }); 
 });
 
 router.post('/', (req, res) => {
 	let newPokemon = new PokemonModel({
 		Species: req.body.Species,
-		Type: {type0: req.body.Type0, Type1: req.body.Type1}, 
+		Type: {type0: req.body.Type0, type1: req.body.Type1}, 
 		HP:  req.body.HP,
 		ATK: req.body.ATK,
 		DEF: req.body.DEF,
@@ -27,6 +25,7 @@ router.post('/', (req, res) => {
 		SPD: req.body.SPD,
 		SPE: req.body.SPE 
 	});
+	console.log(newPokemon);
 	newPokemon.save();
 	res.send(newPokemon);
 });
