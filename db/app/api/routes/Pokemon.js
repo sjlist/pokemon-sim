@@ -1,30 +1,18 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-// Load pokemon model (template)
-// var Pokemon = require('../models/PokemonModel');
+// Load pokemon model
+// var PokemonModel = require('../models/PokemonModel');
+// var Pokemon = mongoose.model('pokemon', PokemonModel);
 
-router.route('/')
-	.get((req, res) => { 
-		console.log('get recieved @ pokemon');
-		res.send({ pokemonapi: true });
-	})
-	.post((req, res) => {  
-		// let poke = new Pokemon({  
-		// 	species: 'Pikachu',
-		// 	type: { type0: 'WATER', type1: 'DRAGON' }, 
-		// 	HP:  12,
-		// 	ATK: 20,
-		// 	DEF: 13,
-		// 	SPA: 30,
-		// 	SPD: 12,
-		// 	SPE: 40
-		// });
-		// poke.save();
-		// res.status(201).send(poke)
-		console.log('post recieced @ pokemon');
-		res.send({ pokemonapi: true });
-	});
+router.get('/', (req, res) => {
+  console.log('pokemon test GET recieved');
+  res.send({ pokemon: true }); 
+});
 
+router.post('/', (req, res) => {
+	console.log('pokemon test POST recieved');
+	res.send({ pokemon: req.body });
+});
 
 module.exports = router;

@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-const PokemonModel = new Schema({
+const PokemonModel = new mongoose.Schema({
 	species: { type: String },
 	type: { type0: String, type1: String }, 
 	HP:  { type: Number },

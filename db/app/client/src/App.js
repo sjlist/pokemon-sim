@@ -26,17 +26,28 @@ class App extends React.Component {
       console.log('SUCCESSFULY UPDATED APP POKEMON');
     }
   }
-  // componentDidMount () {
-  //   console.log('START: App componentDidMount');
-  //   fetch('./express_backend', {
-  //     method: 'GET',
-  //   })
-  //   .then(res => res.json())
-  //   .then(res => {
-  //     console.log("Connected to express:", res)
-  //   });
-  //   console.log('END: App componentDidMount')
-  // }
+
+  testAPI() {
+    fetch('/api/testAPI', {
+      method: 'GET'
+    })
+    .then(res => res.json())
+    .then(res => console.log("api test:", res));
+  }
+
+  testDB() {
+    fetch('/api/testDB', {
+      method: 'GET'
+    })
+    .then(res => res.json())
+    .then(res => console.log("DB connect test:", res));
+  }
+  
+  componentDidMount () {
+    console.log('In: App componentDidMount');
+    this.testAPI();
+    this.testDB();
+  }
 
   render() {
     return (

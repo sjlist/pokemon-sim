@@ -6,12 +6,13 @@ const mongoose = require('mongoose');
 // Variable to be sent to Frontend with Database status
 let databaseConnection = 'Waiting for Database response...';
 
-router.get('/', function(req, res, next) {
-    res.send(databaseConnection);
+router.get('/', function(req, res) {
+	console.log('db test get recieved');
+    res.send({ connection: databaseConnection });
 });
 
 // Connecting to MongoDB
-mongoose.connect('mongodb://mongodb:27017/test');
+mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
 
 // If there is a connection error send an error message
 mongoose.connection.on('error', error => {

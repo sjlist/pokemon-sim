@@ -23,33 +23,24 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 
-// app.all("*", function (req, resp, next) {
-//    console.log(req); // do anything you want here
-//    next();
-// });
+// ******** Define API routes ********
 
-// Confirm server connection
-app.get('/express_backend', (req, res, next) => {
-  console.log('express backend recieved GET');
-  res.send({ express: true }); 
-});
+// Test API connection
+var testAPIRouter = require('./routes/testAPIConnect');
+app.use('/api/testAPI', testAPIRouter); 
 
-// Define paths
-// test DB connection
-// var testDBRouter = require('./routes/testDBConnect');
-// app.use('/api/testDB', testDBRouter);
+// Test DB connection
+var testDBRouter = require('./routes/TestDBConnect');
+app.use('/api/testDB', testDBRouter);
 
 // Pokemon api
 var pokemonrouter = require('./routes/Pokemon');
-app.use('/pokemonapi', pokemonrouter);
-
-
+app.use('/api/pokemon', pokemonrouter);
 
 // other routes here
 app.get('*', function(req, res){
    res.send('Sorry, this is an invalid URL.');
 });
-
 
 
 // run app on specified port
