@@ -1,8 +1,7 @@
-var express = require('Express');
-var bodyParser = require('body-parser');
-var cors = require('cors')
-var morgan = require('morgan');
-
+const express = require('Express');
+const bodyParser = require('body-parser');
+const cors = require('cors')
+const morgan = require('morgan');
 
 //Define app
 var app = express();

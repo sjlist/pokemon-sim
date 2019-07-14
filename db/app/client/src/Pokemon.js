@@ -47,6 +47,8 @@ class Pokemon extends React.Component {
 		.then(res => res.json())
 		.then(res => console.log("fetch inbound message:", res));
 
+		alert('Added pokemon ' + this.state.Species + ' to database');
+		this.setState({ Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0 });
 	}
 
 	render() {
