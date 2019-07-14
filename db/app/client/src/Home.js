@@ -1,5 +1,5 @@
 import React from 'react';
-import { Jumbotron, Input } from 'reactstrap';
+import { Jumbotron } from 'reactstrap';
 
 class Home extends React.Component {
   render() {
@@ -15,17 +15,17 @@ class Home extends React.Component {
           <h3>
             To-do:
           </h3>
-          <div>
-            <div>
-              <Input type="checkbox" id="todo1" checked={false} /> Make add forms
-            </div>
-            <div>
-              <Input type="checkbox" id="todo1" checked={false} /> Allow for viewing existing entries
-            </div>
-            <div>
-              <Input type="checkbox" id="todo1" checked={false} /> Add editing and deleting existing entries
-            </div>
-          </div>
+          <ul>
+            <li>
+              Make add forms
+            </li>
+            <li>
+              Allow for viewing existing entries
+            </li>
+            <li>
+              Add editing and deleting existing entries
+            </li>
+          </ul>
         </Jumbotron>
       </div>
     );

@@ -2,6 +2,10 @@ import React from 'react';
 import { Container, Col, Button, Form, FormGroup, Label, Input, Card, CardBody, CardTitle } from 'reactstrap';
 
 
+// When I show multiple pokemon at once, I may want 
+// to just rename this class CurrentPokemon
+
+
 class Pokemon extends React.Component {
 	constructor(props) {
 		super(props);
@@ -23,13 +27,33 @@ class Pokemon extends React.Component {
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value });
-    console.log(this.state);
+    // console.log(this.state);
   }
 
-  handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.Species);
-    event.preventDefault();
-  }
+	handleSubmit(event) {
+		event.preventDefault();
+
+		fetch('./pokemonapi', {
+			method: 'POST', 
+			headers: {"Content-Type": "application/json"},
+			body: JSON.stringify({ Species: this.state.Species, hardcoded: true })
+		})
+		.then(res => res.json())
+		.then(res => console.log(res));
+
+
+		// fetch('./api/pokemon', {
+		// 	method: 'GET',
+		// 	headers: {
+		// 		'Content-Type': 'application/json'
+		// 	},
+		// 	body: this.state
+		// })
+		// .then(res => res.json())
+  //   	.then(res => {
+  //     		console.log("Connected to express:", res)
+  //     	});
+	}
 
   render() {
   	const types = ["NONE", "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"];
@@ -114,7 +138,7 @@ class Pokemon extends React.Component {
 								</Col>
 							</FormGroup>
 
-							<Button>Add</Button>
+							<Button>Submit</Button>
 		        </Form>
 	        </CardBody>
         </Card>

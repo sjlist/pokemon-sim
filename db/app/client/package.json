@@ -32,5 +32,6 @@
     ]
   },
   "author": "Alton Barbehenn",
-  "license": "MIT"
+  "license": "MIT", 
+  "proxy": "http://localhost:3001"
 }

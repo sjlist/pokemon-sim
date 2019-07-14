@@ -23,14 +23,27 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 
+// app.all("*", function (req, resp, next) {
+//    console.log(req); // do anything you want here
+//    next();
+// });
+
+// Confirm server connection
+app.get('/express_backend', (req, res, next) => {
+  console.log('express backend recieved GET');
+  res.send({ express: true }); 
+});
+
 // Define paths
 // test DB connection
-var testDBRouter = require('./routes/testDBConnect');
-app.use('/testDB', testDBRouter);
+// var testDBRouter = require('./routes/testDBConnect');
+// app.use('/api/testDB', testDBRouter);
 
 // Pokemon api
-var pokemon = require('./routes/Pokemon');
-app.use('/pokemonapi', pokemon);
+var pokemonrouter = require('./routes/Pokemon');
+app.use('/pokemonapi', pokemonrouter);
+
+
 
 // other routes here
 app.get('*', function(req, res){
