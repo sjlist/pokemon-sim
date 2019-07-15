@@ -30,4 +30,13 @@ router.post('/', (req, res) => {
 	res.send(newPokemon);
 });
 
+router.delete('/', (req, res) => {
+	console.log('delete recieved:', req.body);
+	PokemonModel.deleteOne({_id: req.body._id}, function (err) {
+		if (err) return handleError(err);
+		// deleted at most one pokemon document
+	});
+	res.send({_id: req.body._id});
+});
+
 module.exports = router;

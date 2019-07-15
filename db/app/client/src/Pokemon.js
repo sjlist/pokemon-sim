@@ -4,18 +4,19 @@ import { Container, Col, Row, Form, FormGroup, Label, Input, Button, Card, CardB
 
 // TODO:
 
-// function passed into form to add current pokemon to all pokemon after submit
-// another class for editing or deleting -> and corresponding CRUD functions
+// another class for editing -> and corresponding CRUD function
 // function to select current pokemon from list to edit
 
-// 		this.state = { allpokemon: [ { Species: '1', Type0: 'FIRE', Type1: 'NONE', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0},  { Species: '2', Type0: 'PHYCHIC', Type1: 'FLYING', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0}], CurrentPokemon: { Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0} };
 
 class Pokemon extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { allpokemon: [], CurrentPokemon: { Species: '', Type0: '', Type1: '', HP: 0, ATK: 0, DEF: 0, SPA: 0, SPD: 0, SPE: 0} };
+		this.state = { add: true, allpokemon: [], CurrentPokemon: {} };
 
+		this.setEditStatus = this.setEditStatus.bind(this);
 		this.addToPokemonList = this.addToPokemonList.bind(this);
+		this.setCurrPokemon = this.setCurrPokemon.bind(this);
+		this.deletePokemon = this.deletePokemon.bind(this);
 	}
 
 	componentDidMount() {
@@ -28,21 +29,57 @@ class Pokemon extends React.Component {
 		.then(res => this.setState({allpokemon: res}));
 	}
 
+	componentDidUpdate(prevProps, prevState) {
+		console.log("Pokemon Updated");
+		console.log("CurrentPokemon:", this.state.CurrentPokemon);
+	}
+
+	setEditStatus(status) {
+		console.log("old status:", this.state.add, "new status:", status);
+		this.setState({ add: status });
+	}
+
 	addToPokemonList(newPokemon) {
 		this.setState({ allpokemon: [ ...this.state.allpokemon, newPokemon] });
+	}
+
+	setCurrPokemon(pokemon) {
+		this.setState({ CurrentPokemon: pokemon });
+	}
+
+	deletePokemon(pokemon) {
+		// console.log('deleting pokemon:', pokemon);
+		fetch('/api/pokemon', {
+			method: 'DELETE',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(pokemon)
+		})
+		.then(res => res.json())
+		.then(res => {
+			console.log("deleted pokemon from db:", res);
+			const newallpokemon = this.state.allpokemon.filter(function(value, index, arr) {
+				return value._id !== res._id;
+			});
+			this.setState({ allpokemon: newallpokemon });
+		});
 	}
 
 	render() {
 		return (
 			<Row>
-			<Col>
-				{
-					this.state.allpokemon.map((pkm, i) => <PokemonCard pokemon={pkm} key={i} />)
-				}
-			</Col>
-			<Col>
-				<PokemonForm {...this.state} addToPokemonList={this.addToPokemonList} />
-			</Col>
+				<Col>
+					{
+						this.state.allpokemon.map((pkm, i) => <PokemonCard pokemon={pkm} key={i} setEditStatus={this.setEditStatus} setCurrPokemon={this.setCurrPokemon} deletePokemon={this.deletePokemon} />)
+					}
+				</Col>
+				<Col>
+					{
+						this.state.add ? <PokemonAddForm {...this.state} addToPokemonList={this.addToPokemonList} /> : <PokemonEditForm {...this.state} setEditStatus={this.setEditStatus} setCurrPokemon={this.setCurrPokemon} /> 
+					}
+				</Col>
 			</Row>
 		);
 	}
@@ -50,6 +87,17 @@ class Pokemon extends React.Component {
 
 
 class PokemonCard extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.selectPokemonEdit = this.selectPokemonEdit.bind(this);
+	}
+
+	selectPokemonEdit() {
+		this.props.setEditStatus(false);
+		this.props.setCurrPokemon(this.props.pokemon);
+	}
+
 	render() {
 		return(
 			<Container>
@@ -57,12 +105,16 @@ class PokemonCard extends React.Component {
 					<CardTitle>
 						<h3> { this.props.pokemon.Species } </h3>
 					</CardTitle>
+					<Button onClick={this.selectPokemonEdit}> Edit </Button>
+					<Button onClick={() => this.props.deletePokemon(this.props.pokemon)}> Delete </Button>
+					{ /*
 						<Button outline color="info" disabled> { this.props.pokemon.Type.type0 } </Button> 
 						{' '}
 						<Button outline color="info" disabled> { this.props.pokemon.Type.type1 } </Button> 
 						<p>
 						HP: {this.props.pokemon.HP}, ATK: {this.props.pokemon.ATK}, DEF: {this.props.pokemon.DEF}, SPA: {this.props.pokemon.SPA}, SPD: {this.props.pokemon.SPD}, SPE: {this.props.pokemon.SPE}
 						</p>
+					*/ }
 				</Card>
 			</Container>
 		);
@@ -70,7 +122,33 @@ class PokemonCard extends React.Component {
 }
 
 
-class PokemonForm extends React.Component {
+
+class PokemonEditForm extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.updatePokemon = this.updatePokemon.bind(this);
+	}
+
+	updatePokemon() {
+		this.props.setEditStatus(true);
+		this.props.setCurrPokemon({});
+	}
+
+	render() {
+		return (
+			<div className="PokemonEditForm">
+				<p>
+					Edit Form
+				</p>
+				<Button onClick={this.updatePokemon}> Update </Button>
+			</div>
+		);
+	}
+}
+
+
+class PokemonAddForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -119,7 +197,7 @@ class PokemonForm extends React.Component {
 		const typesList = types.map((t, i) => <option key={i}>{t}</option>);
 
 		return (
-			<div className="Pokemon">
+			<div className="PokemonAddForm">
 				<Container>
 
 				<h1> Pokemon </h1>
@@ -207,5 +285,6 @@ class PokemonForm extends React.Component {
 		);
  	}
 }
+
 
 export default Pokemon;
