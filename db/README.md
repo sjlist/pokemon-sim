@@ -15,8 +15,9 @@ I will assume docker is already installed.
 ## Run
 
 1. run npm start in both api and client directories
-2. run docker run -it -p 27017:27017 --name pokemon-mongo -v /Users/altonbarbehenn/Documents/Projects/pokemon-sim/db/app/db:/data/db -d mongo
-3. go to localhost:3000
+2. run `docker run -it -p 27017:27017 --name pokemon-mongo -v /Users/altonbarbehenn/tmp:/data/db -d mongo`
+3. Load the database `mongorestore db`
+4. go to localhost:3000
 
 ## Save
 
