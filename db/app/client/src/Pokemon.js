@@ -13,7 +13,7 @@ class Pokemon extends React.Component {
 		super(props);
 		this.state = { add: true, allpokemon: [], CurrentPokemon: {} };
 
-		this.setEditStatus = this.setEditStatus.bind(this);
+		this.setAddStatus = this.setAddStatus.bind(this);
 		this.addToPokemonList = this.addToPokemonList.bind(this);
 		this.setCurrPokemon = this.setCurrPokemon.bind(this);
 		this.deletePokemon = this.deletePokemon.bind(this);
@@ -29,12 +29,7 @@ class Pokemon extends React.Component {
 		.then(res => this.setState({allpokemon: res}));
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		console.log("Pokemon Updated");
-		console.log("CurrentPokemon:", this.state.CurrentPokemon);
-	}
-
-	setEditStatus(status) {
+	setAddStatus(status) {
 		console.log("old status:", this.state.add, "new status:", status);
 		this.setState({ add: status });
 	}
@@ -72,12 +67,12 @@ class Pokemon extends React.Component {
 			<Row>
 				<Col>
 					{
-						this.state.allpokemon.map((pkm, i) => <PokemonCard pokemon={pkm} key={i} setEditStatus={this.setEditStatus} setCurrPokemon={this.setCurrPokemon} deletePokemon={this.deletePokemon} />)
+						this.state.allpokemon.map((pkm, i) => <PokemonCard pokemon={pkm} key={i} setAddStatus={this.setAddStatus} setCurrPokemon={this.setCurrPokemon} deletePokemon={this.deletePokemon} />)
 					}
 				</Col>
 				<Col>
 					{
-						this.state.add ? <PokemonAddForm {...this.state} addToPokemonList={this.addToPokemonList} /> : <PokemonEditForm {...this.state} setEditStatus={this.setEditStatus} setCurrPokemon={this.setCurrPokemon} /> 
+						this.state.add ? <PokemonAddForm {...this.state} addToPokemonList={this.addToPokemonList} /> : <PokemonEditForm {...this.state} setAddStatus={this.setAddStatus} setCurrPokemon={this.setCurrPokemon} handleChange={this.handleChange} /> 
 					}
 				</Col>
 			</Row>
@@ -94,7 +89,7 @@ class PokemonCard extends React.Component {
 	}
 
 	selectPokemonEdit() {
-		this.props.setEditStatus(false);
+		this.props.setAddStatus(false);
 		this.props.setCurrPokemon(this.props.pokemon);
 	}
 
@@ -126,22 +121,126 @@ class PokemonCard extends React.Component {
 class PokemonEditForm extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = this.props.CurrentPokemon;
 
 		this.updatePokemon = this.updatePokemon.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 	}
 
 	updatePokemon() {
-		this.props.setEditStatus(true);
+		console.log('updating:', this.state);
+		fetch('/api/pokemon', {
+			method: 'PUT',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(this.state)
+		})
+		.then(res => res.json())
+		.then(res => {
+			console.log('put returned:', res);
+			const pokemonIndex = this.props.allpokemon.findIndex(pkm => pkm._id === res._id);
+			console.log('update at index:', pokemonIndex);
+		});
+
+		this.props.setAddStatus(true);
 		this.props.setCurrPokemon({});
 	}
 
+	handleChange(event) {
+		this.setState({ [event.target.name]: event.target.value });
+	}
+
 	render() {
+		const types = ["NONE", "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"];
+		const typesList = types.map((t, i) => <option key={i}>{t}</option>);
+
 		return (
 			<div className="PokemonEditForm">
-				<p>
-					Edit Form
-				</p>
-				<Button onClick={this.updatePokemon}> Update </Button>
+				<Container>
+
+				<h1> Pokemon </h1>
+					<Card>
+						<CardBody>
+							<CardTitle>
+								<h3> Edit </h3>
+							</CardTitle>
+
+							<Form onSubmit={this.updatePokemon}>
+								<FormGroup row>
+									<Label for="species" sm={2}> Species </Label>
+									<Col sm={10}>
+										<Input type="text" name="Species" id="species" value={this.state.Species} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="Type0" sm={2}> Type 0 </Label>
+									<Col sm={10}>
+									<Input type="select" name="Type.type0" id="Type.type0" placeholder="NONE" value={this.state.Type.type0} onChange={this.handleChange}>
+										{ typesList }
+									</Input>
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="Type1" sm={2}> Type 1 </Label>
+									<Col sm={10}>
+									<Input type="select" name="Type.type1" id="Type.type1" placeholder="NONE" value={this.state.Type.type1} onChange={this.handleChange}>
+										{ typesList }
+									</Input>
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="HP" sm={2}> HP </Label>
+									<Col sm={10}>
+										<Input type="number" name="HP" id="HP" placeholder="0" value={this.state.HP} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="ATK" sm={2}> ATK </Label>
+									<Col sm={10}>
+										<Input type="number" name="ATK" id="ATK" placeholder="0" value={this.state.ATK} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="DEF" sm={2}> DEF </Label>
+									<Col sm={10}>
+										<Input type="number" name="DEF" id="DEF" placeholder="0" value={this.state.DEF} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="SPA" sm={2}> SPA </Label>
+									<Col sm={10}>
+										<Input type="number" name="SPA" id="SPA" placeholder="0" value={this.state.SPA} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="SPD" sm={2}> SPD </Label>
+									<Col sm={10}>
+										<Input type="number" name="SPD" id="SPD" placeholder="0" value={this.state.SPD} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+
+								<FormGroup row>
+									<Label for="SPE" sm={2}> SPE </Label>
+									<Col sm={10}>
+										<Input type="number" name="SPE" id="SPE" placeholder="0" value={this.state.SPE} onChange={this.handleChange} />
+									</Col>
+								</FormGroup>
+								<Button>Submit</Button>
+
+							</Form>
+						</CardBody>
+					</Card>
+
+				</Container>
 			</div>
 		);
 	}

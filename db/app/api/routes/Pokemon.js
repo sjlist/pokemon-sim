@@ -34,9 +34,16 @@ router.delete('/', (req, res) => {
 	console.log('delete recieved:', req.body);
 	PokemonModel.deleteOne({_id: req.body._id}, function (err) {
 		if (err) return handleError(err);
-		// deleted at most one pokemon document
 	});
 	res.send({_id: req.body._id});
+});
+
+router.put('/', (req, res) => {
+	PokemonModel.updateOne({_id: req.body._id}, req.body, function (err) {
+		if (err) return handleError(err);
+	});
+	res.send(req.body);
+	console.log('recieved update:', req.body);
 });
 
 module.exports = router;
