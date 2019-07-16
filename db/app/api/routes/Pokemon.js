@@ -15,16 +15,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-	let newPokemon = new PokemonModel({
-		Species: req.body.Species,
-		Type: {type0: req.body.Type0, type1: req.body.Type1}, 
-		HP:  req.body.HP,
-		ATK: req.body.ATK,
-		DEF: req.body.DEF,
-		SPA: req.body.SPA,
-		SPD: req.body.SPD,
-		SPE: req.body.SPE 
-	});
+	let newPokemon = new PokemonModel(req.body);
 	console.log(newPokemon);
 	newPokemon.save();
 	res.send(newPokemon);
@@ -35,7 +26,7 @@ router.delete('/', (req, res) => {
 	PokemonModel.deleteOne({_id: req.body._id}, function (err) {
 		if (err) return handleError(err);
 	});
-	res.send({_id: req.body._id});
+	res.send(req.body);
 });
 
 router.put('/', (req, res) => {
