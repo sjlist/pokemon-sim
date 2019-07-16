@@ -12,7 +12,8 @@ class PokemonCard extends React.Component {
 
 	onUpdate() {
 		console.log('update');
-		return undefined;
+		this.props.setCurrpokemon(this.props.pokemon);
+		this.props.toggleAddStatus();
 	}
 
 	onDelete() {
@@ -28,10 +29,18 @@ class PokemonCard extends React.Component {
 							<p> {this.props.pokemon.Species} </p>
 						</Col>
 						<Col sm={{ size: 2, offset: 1 }}>
-							<Button size="sm" color="primary" outline onClick={this.onUpdate}> Update </Button>
+							{
+								Object.keys(this.props.currpokemon).length === 0 ?
+									<Button size="sm" color="primary" outline onClick={this.onUpdate}> Update </Button> :
+									<Button size="sm" color="secondary" outline> Update </Button>
+							}
 						</Col>
 						<Col sm={{ size: 2, offset: 1 }}>
-							<Button size="sm" color="danger" outline onClick={this.onDelete}>  Delete </Button>
+							{
+								Object.keys(this.props.currpokemon).length === 0 ?
+									<Button size="sm" color="danger" outline onClick={this.onDelete}>  Delete </Button> :
+									<Button size="sm" color="secondary" outline> Delete </Button>
+							}
 						</Col>
 					</Row>
 				</Card>
@@ -70,6 +79,7 @@ class Pokemon extends React.Component {
 		// Helper functions
 		this.handleCurrpokemonChange = this.handleCurrpokemonChange.bind(this);
 		this.toggleAddStatus = this.toggleAddStatus.bind(this);
+		this.setCurrpokemon = this.setCurrpokemon.bind(this);
 	}
 
 	componentDidMount() {
@@ -88,6 +98,13 @@ class Pokemon extends React.Component {
 
 	toggleAddStatus() {
 		this.setState({ addStatus: !this.state.addStatus });
+	}
+
+	// Similar to handleCurrpokemonChange but this function takes a pokemon not a 
+	// change in text field. I could use this function and a local current pokemon 
+	// in the form rather than a global current pokemon and an event changer.
+	setCurrpokemon(pokemon) {
+		this.setState({ currpokemon: pokemon });
 	}
 
 	createPokemon(pokemon) {
@@ -141,6 +158,7 @@ class Pokemon extends React.Component {
 																pokemon={pkm} 
 																key={pkm._id} 
 																toggleAddStatus={this.toggleAddStatus} 
+																setCurrpokemon={this.setCurrpokemon} 
 																deletePokemon={this.deletePokemon} 
 															/>)
 						}
