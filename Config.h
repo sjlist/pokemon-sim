@@ -10,7 +10,7 @@
 #include <string>
 using namespace std;
 
-const string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
+const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 
 #define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 300
@@ -24,7 +24,11 @@ const string PROJECT_DIRECTORY = "/home/slist/pokemon-sim/";
 
 #if DEBUG_LEVEL >= 4
 #define DEBUGGING
+<<<<<<< Updated upstream
 #define DEBUG_TURN 15
+=======
+#define DEBUG_TURN 11
+>>>>>>> Stashed changes
 #endif
 
 #endif /* POKEMON_SIM_CONFIG_H */

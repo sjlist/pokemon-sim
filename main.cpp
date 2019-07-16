@@ -7,6 +7,7 @@
 #include <Utils/Logging.h>
 #include <iostream>
 #include <chrono>
+
 using namespace std;
 
 struct GuessData
@@ -21,7 +22,7 @@ GuessData guess_time_left(chrono::duration<double> time_elasped, float time_sinc
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 400000, round_dec = 2, rounding_val;
+    int wins [3] = {0, 0, 0}, max_runs = 100000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, guess_error;
