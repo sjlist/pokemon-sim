@@ -24,11 +24,8 @@ const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 
 #if DEBUG_LEVEL >= 4
 #define DEBUGGING
-<<<<<<< Updated upstream
-#define DEBUG_TURN 15
-=======
 #define DEBUG_TURN 11
->>>>>>> Stashed changes
+
 #endif
 
 #endif /* POKEMON_SIM_CONFIG_H */

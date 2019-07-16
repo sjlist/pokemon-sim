@@ -22,7 +22,7 @@ GuessData guess_time_left(chrono::duration<double> time_elasped, float time_sinc
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 100000, round_dec = 2, rounding_val;
+    int wins [3] = {0, 0, 0}, max_runs = 200000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, guess_error;
@@ -187,7 +187,7 @@ string seconds_to_time_string(float total_time)
 
 GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs, int rounding_val)
 {
-    float current_guess, guess_diff, guess_confidence, guess_time_variance = 0, guess_run_variance;
+    float current_guess = 0, guess_diff = 0, guess_confidence = 0, guess_time_variance = 0, guess_run_variance = 0;
     GuessData data;
 
     current_guess = time_elasped.count() * (max_runs - num_runs) / num_runs;
@@ -197,7 +197,7 @@ GuessData guess_time_left(chrono::duration<double> time_elasped, float time_sinc
     //guess_time_variance = abs(2 - (time_since_last_guess / abs(guess_diff)));
     guess_time_variance = abs(1 - (time_since_last_guess + guess_diff) / (time_elasped.count() + current_guess));
     guess_run_variance = 1;//abs(1 - ((float)max_runs / (rounding_val * num_runs)));
-    guess_confidence = pow(guess_time_variance * guess_run_variance, 1);
+    guess_confidence = guess_time_variance * guess_run_variance;
 
     data.guess_confidence = guess_confidence;
     data.guess = current_guess;

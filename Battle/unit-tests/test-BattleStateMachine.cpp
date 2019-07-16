@@ -23,6 +23,15 @@ private:
     FRIEND_TEST(test_sort_message_stack, 2_3_speed_tie);
     FRIEND_TEST(test_sort_message_stack, 3_4_speed_tie);
     FRIEND_TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie);
+
+    FRIEND_TEST(test_create_speed_list, no_ties);
+    FRIEND_TEST(test_create_speed_list, 1_2_3_4_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 1_2_3_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 2_3_4_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 1_2_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 2_3_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 3_4_speed_tie);
+    FRIEND_TEST(test_create_speed_list, 1_2_and_3_4_speed_tie);
 };
 
 void BSMTest::load_test_teams(string team1, string team2, vector<int>* send_outs)
@@ -532,6 +541,271 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
         order_locs[BSM.turn_messages[2].pos][1]++;
         order_locs[BSM.turn_messages[1].pos][2]++;
         order_locs[BSM.turn_messages[0].pos][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 1_2_3_4_speed_tie)
+{
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {25, 25, 25, 25};
+    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
+    vector<int> send_outs = {0, 1, 0, 1};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 1_2_3_speed_tie)
+{
+    float probabilty = 33.333333;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {probabilty, probabilty, probabilty, 0};
+    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    vector<int> send_outs = {0, 1, 0, 4};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 2_3_4_speed_tie)
+{
+    float probabilty = 33.333333;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {0, probabilty, probabilty, probabilty};
+    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
+    vector<int> send_outs = {0, 2, 2, 3};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 1_2_speed_tie)
+{
+    float probabilty = 50;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {probabilty, probabilty, 0, 0};
+    vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
+    vector<int> send_outs = {0, 2, 0, 4};
+    int num_sorts = 200000;
+    float error_allowed = 0.7;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 2_3_speed_tie)
+{
+    float probabilty = 50;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {0, probabilty, probabilty, 0};
+    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    vector<int> send_outs = {0, 2, 2, 4};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 3_4_speed_tie)
+{
+    float probabilty = 50;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents = {0, 0, probabilty, probabilty};
+    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
+    vector<int> send_outs = {0, 2, 4, 5};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
+    }
+
+    for (int i = 0; i < order_locs.size(); i++)
+    {
+        for (int j = 0; j < order_locs[i].size(); j++)
+        {
+            order_locs[i][j] = order_locs[i][j]/num_sorts*100;
+            if(expected_pcent[i][j] == 0)
+                EXPECT_EQ(expected_pcent[i][j], order_locs[i][j]);
+            else
+                EXPECT_NEAR(order_locs[i][j], expected_pcent[i][j], error_allowed);
+        }
+    }
+}
+
+TEST(test_create_speed_list, 1_2_and_3_4_speed_tie)
+{
+    float probabilty = 50;
+    vector<vector<float>> order_locs (4, vector<float>(4));
+    vector<float> tie_pcents1 = {probabilty, probabilty, 0, 0};
+    vector<float> tie_pcents2 = {0, 0, probabilty, probabilty};
+    vector<vector<float>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
+    vector<int> send_outs = {0, 4, 0, 4};
+    int num_sorts = 200000;
+    float error_allowed = 0.5;
+    BSMTest BSM;
+    BattleMessage m;
+    string team1 = "unit-test/test-team-speed-tie";
+    string team2 = "unit-test/test-team-speed-tie";
+
+    BSM.load_test_teams(team1, team2, &send_outs);
+
+    for(int i = 0; i < num_sorts; i++)
+    {
+        BSM.create_speed_list();
+        order_locs[BSM.speed_list[0]][0]++;
+        order_locs[BSM.speed_list[1]][1]++;
+        order_locs[BSM.speed_list[2]][2]++;
+        order_locs[BSM.speed_list[3]][3]++;
     }
 
     for (int i = 0; i < order_locs.size(); i++)

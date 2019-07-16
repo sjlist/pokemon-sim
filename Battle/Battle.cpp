@@ -20,12 +20,14 @@ using namespace std;
 Battle::Battle()
 {
     chance = uniform_real_distribution<float>{0,1};
+    damage_calc = uniform_int_distribution<int>{85, 100};
 }
 
 Battle::Battle(long seed)
 {
     Battle::generator = mt19937(seed);
     chance = uniform_real_distribution<float>{0,1};
+    damage_calc = uniform_int_distribution<int>{85, 100};
 }
 
 Party* Battle::get_party(Players player)
@@ -478,7 +480,7 @@ void Battle::reset_temp_field_status()
 float Battle::calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier)
 {
     float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
-    float damage_adjustment = uniform_int_distribution<int>{85, 100}(Battle::generator) / 100.0;
+    float damage_adjustment = damage_calc(Battle::generator) / 100.0;
 
     return base_damage * damage_adjustment;
 }

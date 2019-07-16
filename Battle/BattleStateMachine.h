@@ -50,10 +50,11 @@ public:
 
 protected:
     void sort_message_stack();
-    vector<FIELD_POSITION> create_speed_list();
+    void create_speed_list();
     BattleState state;
 
     vector<BattleMessage> turn_messages;
+    vector<FIELD_POSITION> speed_list;
 private:
     void init(Players player, string team_name);
 
@@ -67,7 +68,6 @@ private:
 
     void validate_battle_message(BattleMessage message);
 
-    vector<FIELD_POSITION> speed_list;
 
     int make_choice(int num_positions);
 

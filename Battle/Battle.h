@@ -90,6 +90,7 @@ private:
 
     mt19937 generator;
     uniform_real_distribution<float> chance;
+    uniform_int_distribution<int>damage_calc;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
 };

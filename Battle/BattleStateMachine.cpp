@@ -140,6 +140,10 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 DEBUG_MSG("\n-------Turn " << BattleStateMachine::turn_count << " start-------\n");
                 BattleStateMachine::battle.print_battle();
                 state = BattleState::ACTION_REQUEST;
+
+                if(BattleStateMachine::turn_messages.size() != 0)
+                    ERR_MSG("Turn Messages was not empty at the start of the turn");
+
                 return make_pair(BattleNotification::POKEMON_ACTION, PLAYER_1_0);
 
             case BattleState::ACTION_REQUEST:
@@ -295,7 +299,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
 
                 break;
             case BattleState::TURN_END_STATUS_CHECK:
-                speed_list = BattleStateMachine::create_speed_list();
+                BattleStateMachine::create_speed_list();
                 for(int i =0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
                     if(!BattleStateMachine::battle.handle_end_turn_statuses(speed_list.at(i)))
@@ -366,7 +370,7 @@ int BattleStateMachine::get_battle_result()
     }
     else if(loser == 0)
     {
-        ERR_MSG("TIED\n");
+        ERR_MSG("TIED on seed" << BattleStateMachine::seed << endl);
     }
     else
         ERR_MSG("How did you get this battle result?\n");
@@ -388,7 +392,7 @@ void swap_in_place(vector<vector<int>>& v, int src, int dest)
     v[dest] = temp;
 }
 
-vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
+void BattleStateMachine::create_speed_list()
 {
         vector<vector<int>> speed_map (FIELD_POSITION::NUM_POSITIONS), speed_tie_list;
         vector<FIELD_POSITION> speed_list (FIELD_POSITION::NUM_POSITIONS);
@@ -405,8 +409,6 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
         }
 
         sort(speed_map.begin(), speed_map.end(), sortcol);
-        // Prio map is now sorted by priority and speed, but ties need to be handled randomly
-
 
         speed_tie_list.push_back(speed_map.front());
         for(int i = 1; i < speed_map.size(); i++)
@@ -425,11 +427,8 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
                 }
                 speed_tie_list.clear();
 
-                if(i != (speed_map.size() - 1))
-                {
-                    speed_tie_list.push_back(speed_map.at(i+1));
-                    i++;
-                }
+                speed_tie_list.push_back(speed_map.at(i));
+
             }
         }
         if(!speed_tie_list.empty())
@@ -447,7 +446,7 @@ vector<FIELD_POSITION> BattleStateMachine::create_speed_list()
         speed_list.at(i) = static_cast<FIELD_POSITION>(speed_map.at(i)[0]);
     }
 
-    return speed_list;
+    BattleStateMachine::speed_list = speed_list;
 }
 
 void BattleStateMachine::sort_message_stack()
