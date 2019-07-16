@@ -11,11 +11,12 @@ class PokemonCard extends React.Component {
 	}
 
 	onUpdate() {
+		console.log('update');
 		return undefined;
 	}
 
 	onDelete() {
-		return undefined;
+		this.props.deletePokemon(this.props.pokemon);
 	}
 
 	render() {
@@ -27,10 +28,10 @@ class PokemonCard extends React.Component {
 							<p> {this.props.pokemon.Species} </p>
 						</Col>
 						<Col sm={{ size: 2, offset: 1 }}>
-							<Button size="sm" color="primary" outline> Update </Button>
+							<Button size="sm" color="primary" outline onClick={this.onUpdate}> Update </Button>
 						</Col>
 						<Col sm={{ size: 2, offset: 1 }}>
-							<Button size="sm" color="danger" outline> Delete </Button>
+							<Button size="sm" color="danger" outline onClick={this.onDelete}>  Delete </Button>
 						</Col>
 					</Row>
 				</Card>
@@ -110,8 +111,22 @@ class Pokemon extends React.Component {
 	}
 
 	deletePokemon(pokemon) {
-		console.log('deleted pokemon');
-		return undefined;
+		fetch('/api/pokemon', {
+			method: 'DELETE',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(pokemon)
+		})
+		.then(res => res.json())
+		.then(res => {
+			console.log("deleted pokemon from db:", res);
+			const newallpokemon = this.state.allpokemon.filter(function(value, index, arr) {
+				return value._id !== res._id;
+			});
+			this.setState({ allpokemon: newallpokemon });
+		});
 	}
 
 	render() {
@@ -121,7 +136,13 @@ class Pokemon extends React.Component {
 					<Col>
 						<h3> Pokemon in DB </h3>
 						{
-							this.state.allpokemon.map(pkm => <PokemonCard {...this.state} pokemon={pkm} key={pkm._id} />)
+							this.state.allpokemon.map(pkm => <PokemonCard 
+																{...this.state} 
+																pokemon={pkm} 
+																key={pkm._id} 
+																toggleAddStatus={this.toggleAddStatus} 
+																deletePokemon={this.deletePokemon} 
+															/>)
 						}
 					</Col>
 					<Col>
