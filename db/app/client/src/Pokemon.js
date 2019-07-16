@@ -2,6 +2,32 @@ import React from 'react';
 import { Container, Col, Row, Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle } from 'reactstrap';
 
 
+class PokemonCard extends React.Component {
+	render() {
+		return(
+			<Container>
+				<Card>
+					PokemonCard: {this.props.pokemon.Species}
+				</Card>
+			</Container>
+		);
+	}
+}
+
+
+class PokemonForm extends React.Component {
+	render() {
+		return(
+			<Container>
+				<Card>
+					PokemonForm
+				</Card>
+			</Container>
+		);
+	}
+}
+
+
 class Pokemon extends React.Component {
 	constructor(props) {
 		super(props);
@@ -17,6 +43,7 @@ class Pokemon extends React.Component {
 
 		// Helper functions
 		this.handleCurrpokemonChange = this.handleCurrpokemonChange.bind(this);
+		this.toggleAddStatus = this.toggleAddStatus.bind(this);
 	}
 
 	componentDidMount() {
@@ -33,6 +60,10 @@ class Pokemon extends React.Component {
 		});
 	}
 
+	toggleAddStatus() {
+		this.setState({ addStatus: !this.state.addStatus });
+	}
+
 	createPokemon(pokemon) {
 		console.log('created pokemon');
 		return undefined;
@@ -44,8 +75,13 @@ class Pokemon extends React.Component {
 	}
 
 	getAllPokemon() {
+		fetch('/api/pokemon', {
+			method: 'GET'
+		})
+		.then(res => res.json())
+		.then(res => this.setState({allpokemon: res}));
 		console.log('got all pokemon');
-		return undefined;
+
 	}
 
 	deletePokemon(pokemon) {
@@ -56,9 +92,17 @@ class Pokemon extends React.Component {
 	render() {
 		return (
 			<Container>
-				<p>
-					PokemonAPI
-				</p>
+				<Row>
+					<Col>
+						<h3> Pokemon in DB </h3>
+						{
+							this.state.allpokemon.map(pkm => <PokemonCard {...this.state} pokemon={pkm} key={pkm._id} />)
+						}
+					</Col>
+					<Col>
+						<PokemonForm />
+					</Col>
+				</Row>
 			</Container>
 		);
 	}
