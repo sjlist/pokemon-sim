@@ -3,11 +3,36 @@ import { Container, Col, Row, Form, FormGroup, Label, Input, Button, Card, CardB
 
 
 class PokemonCard extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.onUpdate = this.onUpdate.bind(this);
+		this.onDelete = this.onDelete.bind(this);
+	}
+
+	onUpdate() {
+		return undefined;
+	}
+
+	onDelete() {
+		return undefined;
+	}
+
 	render() {
 		return(
 			<Container>
 				<Card>
-					PokemonCard: {this.props.pokemon.Species}
+					<Row>
+						<Col sm={{ size: 3, offset: 1 }}>
+							<p> {this.props.pokemon.Species} </p>
+						</Col>
+						<Col sm={{ size: 2, offset: 1 }}>
+							<Button size="sm" color="primary" outline> Update </Button>
+						</Col>
+						<Col sm={{ size: 2, offset: 1 }}>
+							<Button size="sm" color="danger" outline> Delete </Button>
+						</Col>
+					</Row>
 				</Card>
 			</Container>
 		);
