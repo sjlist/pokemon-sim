@@ -6,27 +6,32 @@ class PokemonCard extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// this.state = { addStatus: this.props.addStatus };
+		this.state = { addStatus: this.props.addStatus, pokemon: this.props.pokemon };
 
 		this.onUpdate = this.onUpdate.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 	}
 
-	// componentDidUpdate(prevProps, prevState) {
-	// 	if (prevProps.addStatus !== this.props.addStatus) { 
-	// 		this.setState({ addStatus: this.props.addStatus });
-	// 		console.log('change addStatus -> updated PokemonCard state');
-	// 	}
-	// }
+	componentDidUpdate(prevProps, prevState) {
+		// Doesn't seem like it's needed, but I may have missed a test somewhere along the way where it helps
+		if (prevProps.addStatus !== this.props.addStatus) { 
+			this.setState({ addStatus: this.props.addStatus });
+		}
+
+		// Definately needed. Makes sure cards update with the pokemon
+		if (JSON.stringify(prevProps.pokemon) !== JSON.stringify(this.props.pokemon)) {
+			this.setState({ pokemon: this.props.pokemon });
+		}
+	}
 
 	onUpdate() {
 		console.log('update started');
-		this.props.setCurrpokemon(this.props.pokemon);
+		this.props.setCurrpokemon(this.state.pokemon);
 		this.props.toggleAddStatus();
 	}
 
 	onDelete() {
-		this.props.deletePokemon(this.props.pokemon);
+		this.props.deletePokemon(this.state.pokemon);
 	}
 
 	render() {
@@ -35,11 +40,11 @@ class PokemonCard extends React.Component {
 				<Card>
 					<Row>
 						<Col sm={{ size: 3, offset: 1 }}>
-							<p> {this.props.pokemon.Species} </p>
+							<p> {this.state.pokemon.Species} </p>
 						</Col>
 						<Col sm={{ size: 2, offset: 1 }}>
 							{
-								this.props.addStatus ?
+								this.state.addStatus ?
 									<Button size="sm" color="primary" outline onClick={this.onUpdate}> Update </Button> :
 									<Button size="sm" color="secondary" outline> Update </Button>
 							}
@@ -70,10 +75,8 @@ class PokemonForm extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// console.log('PokemonForm updated', this.state);
 		if (prevProps.currpokemon._id !== this.props.currpokemon._id) { 
 			this.setState(this.props.currpokemon);
-			console.log('change in current pokemon -> updated PokemonForm state');
 		}
 	}
 
@@ -214,9 +217,6 @@ class Pokemon extends React.Component {
 		this.setState({ addStatus: !this.state.addStatus });
 	}
 
-	// Similar to handleCurrpokemonChange but this function takes a pokemon not a 
-	// change in text field. I could use this function and a local current pokemon 
-	// in the form rather than a global current pokemon and an event changer.
 	setCurrpokemon(pokemon) {
 		this.setState({ currpokemon: pokemon });
 		console.log('set current pokemon to ', pokemon);
@@ -255,7 +255,7 @@ class Pokemon extends React.Component {
 			const pokemonIndex = this.state.allpokemon.findIndex(pkm => pkm._id === res._id);
 			let newallpokemon = this.state.allpokemon;
 			newallpokemon[pokemonIndex] = res;
-			this.setState({ allpokemon: newallpokemon });
+			this.setState({ allpokemon: newallpokemon, currpokemon: {} });
 		});
 	}
 
@@ -325,5 +325,6 @@ class Pokemon extends React.Component {
 		);
 	}
 }
+
 
 export default Pokemon;
