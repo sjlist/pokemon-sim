@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const MoveModel = new mongoose.Schema({
+	name: String,
 	damage_type: String,
 	type: String, 
 	priority: Number,
