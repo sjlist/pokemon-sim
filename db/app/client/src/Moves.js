@@ -75,11 +75,11 @@ class EffectForm extends React.Component {
 		this.effectFields = this.effectFields.bind(this);
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		if (JSON.stringify(prevProps.effect) !== JSON.stringify(this.props.effect)) { 
-			this.setState(this.props.effect);
-		}
-	}
+	// componentDidUpdate(prevProps, prevState) {
+	// 	if (JSON.stringify(prevProps.effect) !== JSON.stringify(this.props.effect)) { 
+	// 		this.setState(this.props.effect);
+	// 	}
+	// }
 
 	onChange(event) {
 		this.props.changeThisEffect(event, this.props.index);
@@ -361,7 +361,7 @@ class MoveForm extends React.Component {
 		event.preventDefault();
 		this.props.onSubmit(this.state);
 
-		this.setState({name: '', damage_type: '', type: '', priority: 0, pp: 0, acc: 100, targeting: '', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: false});
+		this.setState({name: '', damage_type: '', type: '', priority: 0, pp: 0, acc: 100, targeting: '', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: false, protectable: true});
 
 		if (!this.props.addStatus) {
 			this.props.toggleAddStatus();
@@ -479,6 +479,16 @@ class MoveForm extends React.Component {
 							<Label for="contact" sm={{ size: 3, offset: 1 }}> Contact </Label>
 							<Col sm={8}>
 								<Input type="select" name="contact" id="contact" value={this.state.contact} onChange={this.handleFormChange}>
+									<option> true  </option>
+									<option> false </option>
+								</Input>
+							</Col>
+						</FormGroup>
+
+						<FormGroup row>
+							<Label for="protectable" sm={{ size: 4, offset: 0 }}> Protectable </Label>
+							<Col sm={8}>
+								<Input type="select" name="protectable" id="protectable" value={this.state.protectable} onChange={this.handleFormChange}>
 									<option> true  </option>
 									<option> false </option>
 								</Input>
