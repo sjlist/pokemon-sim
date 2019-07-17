@@ -116,6 +116,19 @@ class MoveForm extends React.Component {
 		}
 	}
 
+	addEffect() {
+		let newEffects = this.state.effects;
+		newEffects.push({});
+		this.setState({ effects: newEffects });
+	}
+
+	deleteEffect(effect) {
+		const newEffects = this.state.effects.filter(function(value, index, arr) {
+			return JSON.stringify(value) !== JSON.stringify(effect);
+		})
+		this.setState({ effects: newEffects });
+	}
+
 	render() {
 		const types = ["NONE", "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"];
 		const typesList = types.map((t, i) => <option key={i}>{t}</option>);
@@ -203,6 +216,11 @@ class MoveForm extends React.Component {
 								<Input type="number" name="crit_change" id="crit_change" value={this.state.damage_info.crit_change} onChange={this.handleFormChange} />
 							</Col>
 						</FormGroup>
+
+						{
+							this.state.effects.map((eff, i) => <Card key={i} deleteThisEffect={this.deleteEffect} />)
+						}
+						<Button color="secondary" size="sm" onClick={this.addEffect}> Add Effect </Button>
 
 						<FormGroup row>
 							<Label check>
