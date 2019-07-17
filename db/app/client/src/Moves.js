@@ -64,19 +64,60 @@ class MoveCard extends React.Component {
 }
 
 
-// const MoveModel = new mongoose.Schema({
-// 	name: String,
-// 	damage_type: String,
-// 	type: String, 
-// 	priority: Number,
-// 	pp: Number,
-// 	acc: Number,
-// 	targeting: String,
-// 	num_targets: Number,
-// 	damage_info: { power: Number, crit_change: Number },
-// 	effects: [{effect: String, status: String, change: Number}], 
-// 	contact: { type: Boolean }
-// })
+class EffectForm extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = this.props.effect;
+
+		this.onChange = this.onChange.bind(this);
+		this.onDelete = this.onDelete.bind(this);
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (JSON.stringify(prevProps.effect) !== JSON.stringify(this.props.effect)) { 
+			this.setState(this.props.effect);
+		}
+	}
+
+	onChange(event) {
+		this.props.changeThisEffect(event, this.props.index);
+		console.log('updated effect', this.props.index, 'to:', this.state);
+	}
+
+	onDelete() {
+		console.log('deleting effect:', this.props.index, this.state);
+		this.props.deleteThisEffect(this.props.index);
+	}
+
+	render() {
+		const effects = ["SWAP", "STATUS", "VOLATILE_STATUS", "STAT_CHANGE", "FIELD_CHANGE", "RECOIL", "HEAL", "REMOVE_TYPE", "FLAT_DAMAGE", "PROTECT", "SUBSTITUTE"];
+		const effectsOptions = effects.map((eff, i) => <option key={i}>{eff}</option>);
+
+		return(
+			<Container>
+				<Card>
+					<Row> 
+						<Col sm={9}>
+							Effect { this.props.index }
+						</Col>
+						<Col sm={3}>
+							<Button size="sm" color="danger" outline style={{float:'right'}} onClick={this.onDelete}> Delete </Button>
+						</Col>
+					</Row>
+					<FormGroup row>
+						<Label for="effect" sm={{ size: 3, offset: 1 }}> Effect: </Label>
+						<Col sm={8}>
+						<Input type="select" name="effect" id="effect" value={this.state.effect} onChange={this.onChange}>
+							{ effectsOptions }
+						</Input>
+						</Col>
+					</FormGroup>
+				</Card>
+			</Container>
+		);
+	}
+}
 
 
 class MoveForm extends React.Component {
@@ -86,7 +127,10 @@ class MoveForm extends React.Component {
 		this.state = {name: '', damage_type: '', type: '', priority: 0, pp: 0, acc: 100, targeting: '', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: true};
 
 		this.handleFormChange = this.handleFormChange.bind(this);
+		this.handleEffectFormChange = this.handleEffectFormChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.addEffect = this.addEffect.bind(this);
+		this.deleteEffect = this.deleteEffect.bind(this);
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -105,6 +149,14 @@ class MoveForm extends React.Component {
 		}
 	}
 
+	handleEffectFormChange(event, index) {
+		// console.log('moves form change: index ', index);
+		// console.log(event.target);
+		let newEffects = this.state.effects;
+		newEffects[index][event.target.name] = event.target.value;
+		this.setState({ effects: newEffects });
+	}
+
 	handleSubmit(event) {
 		event.preventDefault();
 		this.props.onSubmit(this.state);
@@ -118,13 +170,13 @@ class MoveForm extends React.Component {
 
 	addEffect() {
 		let newEffects = this.state.effects;
-		newEffects.push({});
+		newEffects.push({effect: ''});
 		this.setState({ effects: newEffects });
 	}
 
-	deleteEffect(effect) {
+	deleteEffect(delete_index) {
 		const newEffects = this.state.effects.filter(function(value, index, arr) {
-			return JSON.stringify(value) !== JSON.stringify(effect);
+			return index !== delete_index;
 		})
 		this.setState({ effects: newEffects });
 	}
@@ -132,9 +184,6 @@ class MoveForm extends React.Component {
 	render() {
 		const types = ["NONE", "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"];
 		const typesList = types.map((t, i) => <option key={i}>{t}</option>);
-
-		const effects = ["STAT_CHANGE", "VOLATILE_STATUS"];
-		const effectsOptions = effects.map((eff, i) => <option key={i}>{eff}</option>);
 
 		return(
 			<Container>
@@ -218,14 +267,22 @@ class MoveForm extends React.Component {
 						</FormGroup>
 
 						{
-							this.state.effects.map((eff, i) => <Card key={i} deleteThisEffect={this.deleteEffect} />)
+							this.state.effects.map((effect, i) => <EffectForm key={i} index={i} effect={effect} deleteThisEffect={this.deleteEffect} changeThisEffect={this.handleEffectFormChange} />)
 						}
-						<Button color="secondary" size="sm" onClick={this.addEffect}> Add Effect </Button>
+						<Row>
+							<Col>
+							<Button color="secondary" size="sm" outline onClick={this.addEffect}> Add Effect </Button>
+							</Col>
+						</Row>
 
 						<FormGroup row>
-							<Label check>
-								<Input type="checkbox" name="contact" id="contact" value={this.state.contact} onChange={this.handleFormChange} /> Contact
-							</Label>
+							<Label for="contact" sm={{ size: 3, offset: 1 }}> Contact </Label>
+							<Col sm={8}>
+								<Input type="select" name="contact" id="contact" value={this.state.contact} onChange={this.handleFormChange}>
+									<option> true  </option>
+									<option> false </option>
+								</Input>
+							</Col>
 						</FormGroup>
 
 						{
