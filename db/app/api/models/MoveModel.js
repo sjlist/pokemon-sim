@@ -10,8 +10,21 @@ const MoveModel = new mongoose.Schema({
 	targeting: String,
 	num_targets: Number,
 	damage_info: { power: Number, crit_change: Number },
-	effects: [{effect: String, status: String, change: Number}], 
-	contact: { type: Boolean }
+	effects: [{
+		effect: String, 
+		status: String, 
+		chance: Number,
+		target: String, 
+		stat: String,
+		stages: Number,
+		field_object: String,
+		recoil_type: String,
+		heal_percent: Number,
+		type_removed: String,
+		use_level: Boolean
+	}], 
+	contact: Boolean,
+	protectable: Boolean
 })
 
 // export User model for use in other files.
