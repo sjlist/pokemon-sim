@@ -64,6 +64,10 @@ class MoveCard extends React.Component {
 }
 
 
+// https://gist.github.com/nicbell/6081098
+Object.compare = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort())
+
+
 class EffectForm extends React.Component {
 	constructor(props) {
 		super(props);
@@ -75,15 +79,31 @@ class EffectForm extends React.Component {
 		this.effectFields = this.effectFields.bind(this);
 	}
 
-	// componentDidUpdate(prevProps, prevState) {
-	// 	if (JSON.stringify(prevProps.effect) !== JSON.stringify(this.props.effect)) { 
-	// 		this.setState(this.props.effect);
-	// 	}
-	// }
+	// defaults to true. 
+	shouldComponentUpdate(nextProps, nextState) {
+		// console.log('effect form shouldComponentUpdate:');
+		console.log(this.props.effect, this.state, nextProps.effect, nextState);
+		// console.log('update by Object.compare: nextProps vs current state', !Object.compare(this.state, nextProps));
+
+		//return(JSON.stringify(this.props.effect))
+		return(!Object.compare(this.state, nextProps));
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		// console.log('effect form componentDidUpdate', this.state.effect, this.props.effect.effect);
+		// console.log(Object.compare(this.state, this.props.effect));
+		// if (this.state.effect !== this.props.effect.effect) { 
+		// 	console.log(this.state.effect, this.props.effect.effect);
+		// 	this.setState(this.props.effect);
+		// }
+		// if(!Object.compare(this.state, this.props.effect)) {
+		// 	console.log(this.state, this.props.effect, Object.compare(this.state, this.props.effect));
+		// 	this.setState(this.props.effect);
+		// }
+	}
 
 	onChange(event) {
 		this.props.changeThisEffect(event, this.props.index);
-		console.log('updated effect', this.props.index, 'to:', this.state);
 	}
 
 	onDelete() {
@@ -92,16 +112,19 @@ class EffectForm extends React.Component {
 	}
 
 	effectFields() {
-		const status_list = ['BURNED', 'FROZEN', 'PARALYZED', 'POISONED', 'ASLEEP'];
+		const status_list = ['', 'BURNED', 'FROZEN', 'PARALYZED', 'POISONED', 'ASLEEP'];
 		const status_options = status_list.map((status, i) => <option key={i}>{status}</option>);
 
-		const stats_list = ['HP', 'ATK', 'DEF', 'SPA', 'SPD', 'SPE'];
+		const stats_list = ['', 'HP', 'ATK', 'DEF', 'SPA', 'SPD', 'SPE'];
 		const stats_options = stats_list.map((stat, i) => <option key={i}>{stat}</option>);
 
-		const field_object_list = ['LEECH_SEED', 'SPIKES', 'STEALTH_ROCKS', 'STICKY_WEB', 'TOXIC_SPIKES'];
+		const volatile_stats_list = ['', 'FLINCHED', 'CONFUSION', 'TAUNT'];
+		const volatile_stats_options = volatile_stats_list.map((vstat, i) => <option key={i}>{vstat}</option>);
+
+		const field_object_list = ['', 'LEECH_SEED', 'SPIKES', 'STEALTH_ROCKS', 'STICKY_WEB', 'TOXIC_SPIKES'];
 		const field_object_options = field_object_list.map((fieldobj, i) => <option key={i}>{fieldobj}</option>);
 
-		const types = ['NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON', 'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY'];
+		const types = ['','NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON', 'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY'];
 		const types_options = types.map((t, i) => <option key={i}>{t}</option>);
 
 		switch(this.state.effect) {
@@ -111,7 +134,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
 							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.state.target} onChange={this.onChange}>
+								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
 									<option> </option>
 									<option> SELF </option>
 								</Input>
@@ -125,7 +148,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
 							<Col sm={8}>
-								<Input type="select" name="status" id="status" value={this.state.status} onChange={this.onChange}>
+								<Input type="select" name="status" id="status" value={this.props.status} onChange={this.onChange}>
 									{ status_options }
 								</Input>
 							</Col>
@@ -133,13 +156,13 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.chance} onChange={this.onChange} />
+								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
 							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.state.target} onChange={this.onChange}>
+								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
 									<option> </option>
 									<option> SELF </option>
 								</Input>
@@ -153,15 +176,15 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
 							<Col sm={8}>
-								<Input type="select" name="status" id="status" value={this.state.status} onChange={this.onChange}>
-									{ status_options }
+								<Input type="select" name="status" id="status" value={this.props.status} onChange={this.onChange}>
+									{ volatile_stats_options }
 								</Input>
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.chance} onChange={this.onChange} />
+								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 					</div>
@@ -170,9 +193,9 @@ class EffectForm extends React.Component {
 				return(
 					<div>
 						<FormGroup row>
-							<Label for="stat" sm={{ size: 3, offset: 1 }}> Status: </Label>
+							<Label for="stat" sm={{ size: 3, offset: 1 }}> Stat: </Label>
 							<Col sm={8}>
-								<Input type="select" name="stat" id="stat" value={this.state.stat} onChange={this.onChange}>
+								<Input type="select" name="stat" id="stat" value={this.props.stat} onChange={this.onChange}>
 									{ stats_options }
 								</Input>
 							</Col>
@@ -180,19 +203,19 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="stages" sm={{ size: 3, offset: 1 }}> Stages: </Label>
 							<Col sm={8}>
-								<Input type="number" name="stages" id="stages" value={this.state.stages} onChange={this.onChange} />
+								<Input type="number" name="stages" id="stages" value={this.props.stages} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.chance} onChange={this.onChange} />
+								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
 							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.state.target} onChange={this.onChange}>
+								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
 									<option> </option>
 									<option> SELF </option>
 								</Input>
@@ -206,7 +229,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="field_object" sm={{ size: 3, offset: 1 }}> Field Object: </Label>
 							<Col sm={8}>
-								<Input type="select" name="field_object" id="field_object" value={this.state.field_object} onChange={this.onChange}>
+								<Input type="select" name="field_object" id="field_object" value={this.props.field_object} onChange={this.onChange}>
 									{ field_object_options }
 								</Input>
 							</Col>
@@ -219,7 +242,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="recoil_type" sm={{ size: 3, offset: 1 }}> Recoil Type: </Label>
 							<Col sm={8}>
-								<Input type="select" name="recoil_type" id="recoil_type" value={this.state.recoil_type} onChange={this.onChange}>
+								<Input type="select" name="recoil_type" id="recoil_type" value={this.props.recoil_type} onChange={this.onChange}>
 									{ stats_options }
 								</Input>
 							</Col>
@@ -227,7 +250,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="percent" sm={{ size: 3, offset: 1 }}> Percent: </Label>
 							<Col sm={8}>
-								<Input type="number" name="percent" id="percent" value={this.state.percent} onChange={this.onChange} />
+								<Input type="number" name="percent" id="percent" value={this.props.percent} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 					</div>
@@ -238,13 +261,13 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="heal_percent" sm={{ size: 3, offset: 1 }}> Heal Percent: </Label>
 							<Col sm={8}>
-								<Input type="number" name="heal_percent" id="heal_percent" value={this.state.heal_percent} onChange={this.onChange} />
+								<Input type="number" name="heal_percent" id="heal_percent" value={this.props.heal_percent} onChange={this.onChange} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
 							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.state.target} onChange={this.onChange}>
+								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
 									<option> </option>
 									<option> SELF </option>
 								</Input>
@@ -258,7 +281,7 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="type_removed" sm={{ size: 3, offset: 1 }}> Type Removed: </Label>
 							<Col sm={8}>
-								<Input type="select" name="type_removed" id="type_removed" value={this.state.type_removed} onChange={this.onChange}>
+								<Input type="select" name="type_removed" id="type_removed" value={this.props.type_removed} onChange={this.onChange}>
 									{ types_options }
 								</Input>
 							</Col>
@@ -271,7 +294,8 @@ class EffectForm extends React.Component {
 						<FormGroup row>
 							<Label for="use_level" sm={{ size: 3, offset: 1 }}> Use_Level: </Label>
 							<Col sm={8}>
-								<Input type="select" name="use_level" id="use_level" value={this.state.use_level} onChange={this.onChange}>
+								<Input type="select" name="use_level" id="use_level" value={this.props.use_level} onChange={this.onChange}>
+									<option> </option>
 									<option> true  </option>
 									<option> false </option>
 								</Input>
@@ -324,7 +348,8 @@ class MoveForm extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {name: '', damage_type: '', type: '', priority: 0, pp: 0, acc: 100, targeting: '', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: true};
+		this.blankMove = {name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: true, protectable: true};
+		this.state = {...this.blankMove};
 
 		this.handleFormChange = this.handleFormChange.bind(this);
 		this.handleEffectFormChange = this.handleEffectFormChange.bind(this);
@@ -350,10 +375,18 @@ class MoveForm extends React.Component {
 	}
 
 	handleEffectFormChange(event, index) {
-		// console.log('moves form change: index ', index);
-		// console.log(event.target);
-		let newEffects = this.state.effects;
-		newEffects[index][event.target.name] = event.target.value;
+		const newEffects = this.state.effects;
+
+		if (event.target.name === 'effect') {
+			const id = newEffects[index]._id;
+			newEffects.splice(index, 1, { _id: id, [event.target.name]: event.target.value }); // starting at index replace one element with new element
+		}
+		else {
+			newEffects[index] = {...newEffects[index], [event.target.name]: event.target.value};
+		}
+
+		console.log('newEffects:', newEffects);	
+		// this.setState({...this.state,  effects: newEffects });
 		this.setState({ effects: newEffects });
 	}
 
@@ -361,7 +394,7 @@ class MoveForm extends React.Component {
 		event.preventDefault();
 		this.props.onSubmit(this.state);
 
-		this.setState({name: '', damage_type: '', type: '', priority: 0, pp: 0, acc: 100, targeting: '', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: false, protectable: true});
+		this.setState({...this.blankMove});
 
 		if (!this.props.addStatus) {
 			this.props.toggleAddStatus();
@@ -370,7 +403,7 @@ class MoveForm extends React.Component {
 
 	addEffect() {
 		let newEffects = this.state.effects;
-		newEffects.push({effect: ''});
+		newEffects.push({});
 		this.setState({ effects: newEffects });
 	}
 
@@ -382,7 +415,7 @@ class MoveForm extends React.Component {
 	}
 
 	render() {
-		const types = ["NONE", "NORMAL", "FIRE", "WATER", "ELECTRIC", "GRASS", "ICE", "FIGHTING", "POISON", "GROUND", "FLYING", "PSYCHIC", "BUG", "ROCK", "GHOST", "DRAGON", "DARK", "STEEL", "FAIRY"];
+		const types = ['', 'NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON', 'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY'];
 		const typesList = types.map((t, i) => <option key={i}>{t}</option>);
 
 		return(
@@ -394,6 +427,17 @@ class MoveForm extends React.Component {
 							<Label for="name" sm={{ size: 3, offset: 1 }}> Name </Label>
 							<Col sm={8}>
 								<Input type="text" name="name" id="name" value={this.state.name} onChange={this.handleFormChange} />
+							</Col>
+						</FormGroup>
+
+						<FormGroup row>
+							<Label for="damage_type" sm={{ size: 3, offset: 1 }}> Damge Type </Label>
+							<Col sm={8}>
+								<Input type="select" name="damage_type" id="damage_type" value={this.state.damage_type} onChange={this.handleFormChange}>
+									<option> physical 	</option>
+									<option> special 	</option>
+									<option> status 	</option>
+								</Input>
 							</Col>
 						</FormGroup>
 
@@ -453,7 +497,7 @@ class MoveForm extends React.Component {
 
 						Damage Info:
 						<FormGroup row>
-							<Label for="power" sm={{ size: 3, offset: 1 }}> Priority </Label>
+							<Label for="power" sm={{ size: 3, offset: 1 }}> Power </Label>
 							<Col sm={8}>
 								<Input type="number" name="power" id="power" value={this.state.damage_info.power} onChange={this.handleFormChange} />
 							</Col>
