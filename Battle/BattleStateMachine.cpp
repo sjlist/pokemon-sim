@@ -75,8 +75,10 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 }
                 else if(!BattleStateMachine::battle.get_party(PLAYER_ONE)->loaded)
                     return make_pair(BattleNotification::TEAM_CHOICE, PLAYER_1_0);
-                else
+                else if(!BattleStateMachine::battle.get_party(PLAYER_TWO)->loaded)
                     return make_pair(BattleNotification::TEAM_CHOICE, PLAYER_2_0);
+                else
+                    ERR_MSG("UNREACHABLE during team loading");
 
             case BattleState::BATTLE_START:
                 turn_count = 0;
@@ -171,7 +173,6 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 if(message.move_command != Commands::COMMAND_NONE)
                 {
                     BattleStateMachine::turn_messages.push_back(message);
-
                 }
 
                 while(!turn_messages.empty())

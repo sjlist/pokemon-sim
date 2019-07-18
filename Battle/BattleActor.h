@@ -17,7 +17,7 @@ public:
     BattleActor();
     BattleActor(long seed);
 
-    float attack_swap_ratio [2] = {0.8, 0.8};
+    float attack_swap_ratio [2] = {1, 1};
 
     int choose_pokemon(Party* party);
     BattleMessage choose_action(FIELD_POSITION atk_pos, Party* player_party, Field* field, Actions action=Actions::CHOOSE_ACTION);

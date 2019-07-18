@@ -1,45 +1,13 @@
 {
   "0":
   {
-    "species": "Garchomp",
+    "species": "Togekiss",
     "evs":
     {
-      "0": 4,
-      "1": 252,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 252
-    },
-    "ivs":
-    {
-      "0": 31,
-      "1": 31,
-      "2": 31,
-      "3": 31,
-      "4": 31,
-      "5": 31
-    },
-    "nature": "JOLLY",
-    "level": 50,
-    "item": "None",
-    "moves":
-    {
-      "MOVE0": "Fire_Fang",
-      "MOVE1": "Earthquake",
-      "MOVE2": "Dragon_Claw",
-      "MOVE3": "Swords_Dance"
-    }
-  },
-  "1":
-  {
-    "species": "Gengar",
-    "evs":
-    {
-      "0": 4,
+      "0": 252,
       "1": 0,
       "2": 0,
-      "3": 252,
+      "3": 4,
       "4": 0,
       "5": 252
     },
@@ -57,21 +25,21 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Shadow_Ball",
-      "MOVE1": "Sludge_Bomb",
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
       "MOVE2": "Will-O-Wisp",
-      "MOVE3": "Confusion"
+      "MOVE3": "Will-O-Wisp"
     }
   },
-  "2":
+  "1":
   {
-    "species": "Dragonite",
+    "species": "Togekiss",
     "evs":
     {
-      "0": 4,
-      "1": 252,
+      "0": 252,
+      "1": 0,
       "2": 0,
-      "3": 0,
+      "3": 4,
       "4": 0,
       "5": 252
     },
@@ -84,15 +52,47 @@
       "4": 31,
       "5": 31
     },
-    "nature": "JOLLY",
+    "nature": "TIMID",
     "level": 50,
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Dragon_Claw",
-      "MOVE2": "Extreme_Speed",
-      "MOVE3": "Dragon_Dance"
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Will-O-Wisp",
+      "MOVE3": "Will-O-Wisp"
+    }
+  },
+  "2":
+  {
+    "species": "Togekiss",
+    "evs":
+    {
+      "0": 252,
+      "1": 0,
+      "2": 0,
+      "3": 4,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Will-O-Wisp",
+      "MOVE3": "Will-O-Wisp"
     }
   },
   "3":
@@ -121,21 +121,21 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Rock_Slide",
-      "MOVE1": "Earthquake",
-      "MOVE2": "Wing_Attack",
-      "MOVE3": "Roost"
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Will-O-Wisp",
+      "MOVE3": "Will-O-Wisp"
     }
   },
   "4":
   {
-    "species": "Hydreigon",
+    "species": "Togekiss",
     "evs":
     {
-      "0": 4,
+      "0": 252,
       "1": 0,
       "2": 0,
-      "3": 252,
+      "3": 4,
       "4": 0,
       "5": 252
     },
@@ -153,10 +153,10 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Draco_Meteor",
-      "MOVE1": "Fire_Blast",
-      "MOVE2": "Roost",
-      "MOVE3": "Dark_Pulse"
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Will-O-Wisp",
+      "MOVE3": "Will-O-Wisp"
     }
   },
   "5":
@@ -185,10 +185,10 @@
     "item": "None",
     "moves":
     {
-      "MOVE0": "Roost",
-      "MOVE1": "Nasty_Plot",
-      "MOVE2": "Air_Slash",
-      "MOVE3": "Thunder_Wave"
+      "MOVE0": "Will-O-Wisp",
+      "MOVE1": "Will-O-Wisp",
+      "MOVE2": "Will-O-Wisp",
+      "MOVE3": "Will-O-Wisp"
     }
   }
 }
