@@ -64,286 +64,6 @@ class MoveCard extends React.Component {
 }
 
 
-// https://gist.github.com/nicbell/6081098
-Object.compare = (a, b) => JSON.stringify(Object.entries(a).sort()) === JSON.stringify(Object.entries(b).sort())
-
-
-class EffectForm extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.state = this.props.effect;
-
-		this.onChange = this.onChange.bind(this);
-		this.onDelete = this.onDelete.bind(this);
-		this.effectFields = this.effectFields.bind(this);
-	}
-
-	// defaults to true. 
-	shouldComponentUpdate(nextProps, nextState) {
-		// console.log('effect form shouldComponentUpdate:');
-		console.log(this.props.effect, this.state, nextProps.effect, nextState);
-		// console.log('update by Object.compare: nextProps vs current state', !Object.compare(this.state, nextProps));
-
-		//return(JSON.stringify(this.props.effect))
-		return(!Object.compare(this.state, nextProps));
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		// console.log('effect form componentDidUpdate', this.state.effect, this.props.effect.effect);
-		// console.log(Object.compare(this.state, this.props.effect));
-		// if (this.state.effect !== this.props.effect.effect) { 
-		// 	console.log(this.state.effect, this.props.effect.effect);
-		// 	this.setState(this.props.effect);
-		// }
-		// if(!Object.compare(this.state, this.props.effect)) {
-		// 	console.log(this.state, this.props.effect, Object.compare(this.state, this.props.effect));
-		// 	this.setState(this.props.effect);
-		// }
-	}
-
-	onChange(event) {
-		this.props.changeThisEffect(event, this.props.index);
-	}
-
-	onDelete() {
-		console.log('deleting effect:', this.props.index, this.state);
-		this.props.deleteThisEffect(this.props.index);
-	}
-
-	effectFields() {
-		const status_list = ['', 'BURNED', 'FROZEN', 'PARALYZED', 'POISONED', 'ASLEEP'];
-		const status_options = status_list.map((status, i) => <option key={i}>{status}</option>);
-
-		const stats_list = ['', 'HP', 'ATK', 'DEF', 'SPA', 'SPD', 'SPE'];
-		const stats_options = stats_list.map((stat, i) => <option key={i}>{stat}</option>);
-
-		const volatile_stats_list = ['', 'FLINCHED', 'CONFUSION', 'TAUNT'];
-		const volatile_stats_options = volatile_stats_list.map((vstat, i) => <option key={i}>{vstat}</option>);
-
-		const field_object_list = ['', 'LEECH_SEED', 'SPIKES', 'STEALTH_ROCKS', 'STICKY_WEB', 'TOXIC_SPIKES'];
-		const field_object_options = field_object_list.map((fieldobj, i) => <option key={i}>{fieldobj}</option>);
-
-		const types = ['','NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON', 'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY'];
-		const types_options = types.map((t, i) => <option key={i}>{t}</option>);
-
-		switch(this.state.effect) {
-			case 'SWAP':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
-							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
-									<option> </option>
-									<option> SELF </option>
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'STATUS':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
-							<Col sm={8}>
-								<Input type="select" name="status" id="status" value={this.props.status} onChange={this.onChange}>
-									{ status_options }
-								</Input>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
-							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
-							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
-									<option> </option>
-									<option> SELF </option>
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-				case 'VOLATILE_STATUS':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
-							<Col sm={8}>
-								<Input type="select" name="status" id="status" value={this.props.status} onChange={this.onChange}>
-									{ volatile_stats_options }
-								</Input>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
-							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'STAT_CHANGE':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="stat" sm={{ size: 3, offset: 1 }}> Stat: </Label>
-							<Col sm={8}>
-								<Input type="select" name="stat" id="stat" value={this.props.stat} onChange={this.onChange}>
-									{ stats_options }
-								</Input>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="stages" sm={{ size: 3, offset: 1 }}> Stages: </Label>
-							<Col sm={8}>
-								<Input type="number" name="stages" id="stages" value={this.props.stages} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
-							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.props.chance} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
-							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
-									<option> </option>
-									<option> SELF </option>
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'FIELD_CHANGE':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="field_object" sm={{ size: 3, offset: 1 }}> Field Object: </Label>
-							<Col sm={8}>
-								<Input type="select" name="field_object" id="field_object" value={this.props.field_object} onChange={this.onChange}>
-									{ field_object_options }
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'RECOIL':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="recoil_type" sm={{ size: 3, offset: 1 }}> Recoil Type: </Label>
-							<Col sm={8}>
-								<Input type="select" name="recoil_type" id="recoil_type" value={this.props.recoil_type} onChange={this.onChange}>
-									{ stats_options }
-								</Input>
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="percent" sm={{ size: 3, offset: 1 }}> Percent: </Label>
-							<Col sm={8}>
-								<Input type="number" name="percent" id="percent" value={this.props.percent} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'HEAL':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="heal_percent" sm={{ size: 3, offset: 1 }}> Heal Percent: </Label>
-							<Col sm={8}>
-								<Input type="number" name="heal_percent" id="heal_percent" value={this.props.heal_percent} onChange={this.onChange} />
-							</Col>
-						</FormGroup>
-						<FormGroup row>
-							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
-							<Col sm={8}>
-								<Input type="select" name="target" id="target" value={this.props.target} onChange={this.onChange}>
-									<option> </option>
-									<option> SELF </option>
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'REMOVE_TYPE':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="type_removed" sm={{ size: 3, offset: 1 }}> Type Removed: </Label>
-							<Col sm={8}>
-								<Input type="select" name="type_removed" id="type_removed" value={this.props.type_removed} onChange={this.onChange}>
-									{ types_options }
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			case 'FLAT_DAMAGE':
-				return(
-					<div>
-						<FormGroup row>
-							<Label for="use_level" sm={{ size: 3, offset: 1 }}> Use_Level: </Label>
-							<Col sm={8}>
-								<Input type="select" name="use_level" id="use_level" value={this.props.use_level} onChange={this.onChange}>
-									<option> </option>
-									<option> true  </option>
-									<option> false </option>
-								</Input>
-							</Col>
-						</FormGroup>
-					</div>
-				);
-			default:
-      			return null;
-		}
-	}
-
-	render() {
-		const effects = ['', 'SWAP', 'STATUS', 'VOLATILE_STATUS', 'STAT_CHANGE', 'FIELD_CHANGE', 'RECOIL', 'HEAL', 'REMOVE_TYPE', 'FLAT_DAMAGE', 'PROTECT', 'SUBSTITUTE'];
-		const effectsOptions = effects.map((effect, i) => <option key={i}>{effect}</option>);
-
-		return(
-			<Container>
-				<Card>
-					<Row> 
-						<Col sm={9}>
-							Effect { this.props.index }
-						</Col>
-						<Col sm={3}>
-							<Button size="sm" color="danger" outline style={{float:'right'}} onClick={this.onDelete}> Delete </Button>
-						</Col>
-					</Row>
-					<FormGroup row>
-						<Label for="effect" sm={{ size: 3, offset: 1 }}> Effect: </Label>
-						<Col sm={8}>
-						<Input type="select" name="effect" id="effect" value={this.state.effect} onChange={this.onChange}>
-							{ effectsOptions }
-						</Input>
-						</Col>
-					</FormGroup>
-
-					<div>
-					{
-						this.effectFields()
-					}
-					</div>
-				</Card>
-			</Container>
-		);
-	}
-}
-
-
 class MoveForm extends React.Component {
 	constructor(props) {
 		super(props);
@@ -356,6 +76,9 @@ class MoveForm extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.addEffect = this.addEffect.bind(this);
 		this.deleteEffect = this.deleteEffect.bind(this);
+
+		this.effectFields = this.effectFields.bind(this);
+		this.effectCard = this.effectCard.bind(this);
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -385,8 +108,6 @@ class MoveForm extends React.Component {
 			newEffects[index] = {...newEffects[index], [event.target.name]: event.target.value};
 		}
 
-		console.log('newEffects:', newEffects);	
-		// this.setState({...this.state,  effects: newEffects });
 		this.setState({ effects: newEffects });
 	}
 
@@ -412,6 +133,241 @@ class MoveForm extends React.Component {
 			return index !== delete_index;
 		})
 		this.setState({ effects: newEffects });
+	}
+
+	effectFields(index) {
+		console.log('rendering effectcard:', index, 'effect fields, state effect:', this.state.effects[index]);
+
+		const status_list = ['', 'BURNED', 'FROZEN', 'PARALYZED', 'POISONED', 'ASLEEP'];
+		const status_options = status_list.map((status, i) => <option key={i}>{status}</option>);
+
+		const stats_list = ['', 'HP', 'ATK', 'DEF', 'SPA', 'SPD', 'SPE'];
+		const stats_options = stats_list.map((stat, i) => <option key={i}>{stat}</option>);
+
+		const volatile_stats_list = ['', 'FLINCHED', 'CONFUSION', 'TAUNT'];
+		const volatile_stats_options = volatile_stats_list.map((vstat, i) => <option key={i}>{vstat}</option>);
+
+		const field_object_list = ['', 'LEECH_SEED', 'SPIKES', 'STEALTH_ROCKS', 'STICKY_WEB', 'TOXIC_SPIKES'];
+		const field_object_options = field_object_list.map((fieldobj, i) => <option key={i}>{fieldobj}</option>);
+
+		const types = ['','NORMAL', 'FIRE', 'WATER', 'ELECTRIC', 'GRASS', 'ICE', 'FIGHTING', 'POISON', 'GROUND', 'FLYING', 'PSYCHIC', 'BUG', 'ROCK', 'GHOST', 'DRAGON', 'DARK', 'STEEL', 'FAIRY'];
+		const types_options = types.map((t, i) => <option key={i}>{t}</option>);
+
+		switch(this.state.effects[index].effect) {
+			case 'SWAP':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
+							<Col sm={8}>
+								<Input type="select" name="target" id="target" value={this.state.effects[index].target} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									<option> </option>
+									<option> SELF </option>
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'STATUS':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
+							<Col sm={8}>
+								<Input type="select" name="status" id="status" value={this.state.effects[index].status} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ status_options }
+								</Input>
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
+							<Col sm={8}>
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
+							<Col sm={8}>
+								<Input type="select" name="target" id="target" value={this.state.effects[index].target} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									<option> </option>
+									<option> SELF </option>
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+				case 'VOLATILE_STATUS':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="status" sm={{ size: 3, offset: 1 }}> Status: </Label>
+							<Col sm={8}>
+								<Input type="select" name="status" id="status" value={this.state.effects[index].status} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ volatile_stats_options }
+								</Input>
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
+							<Col sm={8}>
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'STAT_CHANGE':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="stat" sm={{ size: 3, offset: 1 }}> Stat: </Label>
+							<Col sm={8}>
+								<Input type="select" name="stat" id="stat" value={this.state.effects[index].stat} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ stats_options }
+								</Input>
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="stages" sm={{ size: 3, offset: 1 }}> Stages: </Label>
+							<Col sm={8}>
+								<Input type="number" name="stages" id="stages" value={this.state.effects[index].stages} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
+							<Col sm={8}>
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
+							<Col sm={8}>
+								<Input type="select" name="target" id="target" value={this.state.effects[index].target} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									<option> </option>
+									<option> SELF </option>
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'FIELD_CHANGE':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="field_object" sm={{ size: 3, offset: 1 }}> Field Object: </Label>
+							<Col sm={8}>
+								<Input type="select" name="field_object" id="field_object" value={this.state.effects[index].field_object} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ field_object_options }
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'RECOIL':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="recoil_type" sm={{ size: 3, offset: 1 }}> Recoil Type: </Label>
+							<Col sm={8}>
+								<Input type="select" name="recoil_type" id="recoil_type" value={this.state.effects[index].recoil_type} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ stats_options }
+								</Input>
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="percent" sm={{ size: 3, offset: 1 }}> Percent: </Label>
+							<Col sm={8}>
+								<Input type="number" name="percent" id="percent" value={this.state.effects[index].percent} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'HEAL':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="heal_percent" sm={{ size: 3, offset: 1 }}> Heal Percent: </Label>
+							<Col sm={8}>
+								<Input type="number" name="heal_percent" id="heal_percent" value={this.state.effects[index].heal_percent} onChange={(event) => this.handleEffectFormChange(event, index)} />
+							</Col>
+						</FormGroup>
+						<FormGroup row>
+							<Label for="target" sm={{ size: 3, offset: 1 }}> Target: </Label>
+							<Col sm={8}>
+								<Input type="select" name="target" id="target" value={this.state.effects[index].target} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									<option> </option>
+									<option> SELF </option>
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'REMOVE_TYPE':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="type_removed" sm={{ size: 3, offset: 1 }}> Type Removed: </Label>
+							<Col sm={8}>
+								<Input type="select" name="type_removed" id="type_removed" value={this.state.effects[index].type_removed} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									{ types_options }
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			case 'FLAT_DAMAGE':
+				return(
+					<div>
+						<FormGroup row>
+							<Label for="use_level" sm={{ size: 3, offset: 1 }}> Use_Level: </Label>
+							<Col sm={8}>
+								<Input type="select" name="use_level" id="use_level" value={this.state.effects[index].use_level} onChange={(event) => this.handleEffectFormChange(event, index)}>
+									<option> </option>
+									<option> true  </option>
+									<option> false </option>
+								</Input>
+							</Col>
+						</FormGroup>
+					</div>
+				);
+			default:
+				return null;
+		}
+	}
+
+	effectCard(index) {
+		console.log('rendering effectcard:', index, 'state effect:', this.state.effects[index]);
+
+		const effect_types = ['', 'SWAP', 'STATUS', 'VOLATILE_STATUS', 'STAT_CHANGE', 'FIELD_CHANGE', 'RECOIL', 'HEAL', 'REMOVE_TYPE', 'FLAT_DAMAGE', 'PROTECT', 'SUBSTITUTE'];
+		const effects_type_Options = effect_types.map((effect, i) => <option key={i}>{effect}</option>);
+
+		return(
+			<Container key={index}>
+				<Card>
+					<Row> 
+						<Col sm={9}>
+							Effect { index }
+						</Col>
+						<Col sm={3}>
+							<Button size="sm" color="danger" outline style={{float:'right'}} onClick={this.onDelete}> Delete Effect </Button>
+						</Col>
+					</Row>
+					<FormGroup row>
+						<Label for="effect" sm={{ size: 3, offset: 1 }}> Effect: </Label>
+						<Col sm={8}>
+						<Input type="select" name="effect" id="effect" value={this.state.effects[index].effect} onChange={(event) => this.handleEffectFormChange(event, index)}>
+							{ effects_type_Options }
+						</Input>
+						</Col>
+					</FormGroup>
+
+					<div>
+					{
+						this.effectFields(index)
+					}
+					</div>
+				</Card>
+			</Container>
+		);
 	}
 
 	render() {
@@ -511,7 +467,8 @@ class MoveForm extends React.Component {
 						</FormGroup>
 
 						{
-							this.state.effects.map((effect, i) => <EffectForm key={i} index={i} effect={effect} deleteThisEffect={this.deleteEffect} changeThisEffect={this.handleEffectFormChange} />)
+							// this.state.effects.map((effect, i) => <EffectForm key={i} index={i} effect={effect} deleteThisEffect={this.deleteEffect} changeThisEffect={this.handleEffectFormChange} />)
+							this.state.effects.map((effect, i) => this.effectCard(i))
 						}
 						<Row>
 							<Col>
