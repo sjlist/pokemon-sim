@@ -25,7 +25,8 @@ const MoveModel = new mongoose.Schema({
 		use_level: Boolean
 	}], 
 	contact: Boolean,
-	protectable: Boolean
+	protectable: Boolean,
+	first_turn: Boolean
 })
 
 // export User model for use in other files.

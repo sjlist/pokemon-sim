@@ -68,7 +68,7 @@ class MoveForm extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.blankMove = {name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true};
+		this.blankMove = {name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true, first_turn: false};
 		this.state = {...this.blankMove};
 
 		this.handleFormChange = this.handleFormChange.bind(this);
@@ -115,7 +115,7 @@ class MoveForm extends React.Component {
 		event.preventDefault();
 		this.props.onSubmit(this.state);
 
-		this.setState({name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true});
+		this.setState({name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true, first_turn: false});
 
 		if (!this.props.addStatus) {
 			this.props.toggleAddStatus();
@@ -487,6 +487,16 @@ class MoveForm extends React.Component {
 								<Input type="select" name="protectable" id="protectable" value={this.state.protectable} onChange={this.handleFormChange}>
 									<option> true  </option>
 									<option> false </option>
+								</Input>
+							</Col>
+						</FormGroup>
+
+						<FormGroup row>
+							<Label for="first_turn" sm={{ size: 4, offset: 0 }}> First Turn: </Label>
+							<Col sm={8}>
+								<Input type="select" name="first_turn" id="first_turn" value={this.state.first_turn} onChange={this.handleFormChange}>
+									<option> false  </option>
+									<option> true </option>
 								</Input>
 							</Col>
 						</FormGroup>
