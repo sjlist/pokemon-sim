@@ -68,7 +68,7 @@ class MoveForm extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.blankMove = {name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_change: 0 }, effects: [], contact: true, protectable: true};
+		this.blankMove = {name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true};
 		this.state = {...this.blankMove};
 
 		this.handleFormChange = this.handleFormChange.bind(this);
@@ -90,7 +90,7 @@ class MoveForm extends React.Component {
 	handleFormChange(event) {
 		const name = event.target.name;
 
-		if (name === 'power' || name === 'crit_change') {
+		if (name === 'power' || name === 'crit_chance') {
 			this.setState({damage_info: {...this.state.damage_info, [name]: event.target.value}});
 		} else {
 			this.setState({[name]: event.target.value});
@@ -115,7 +115,7 @@ class MoveForm extends React.Component {
 		event.preventDefault();
 		this.props.onSubmit(this.state);
 
-		this.setState({...this.blankMove});
+		this.setState({name: '', damage_type: 'physical', type: 'NONE', priority: 0, pp: 0, acc: 100, targeting: 'ADJACENT_ALL', num_targets: 1, damage_info: { power: 0, crit_chance: 0 }, effects: [], contact: true, protectable: true});
 
 		if (!this.props.addStatus) {
 			this.props.toggleAddStatus();
@@ -124,7 +124,7 @@ class MoveForm extends React.Component {
 
 	addEffect() {
 		let newEffects = this.state.effects;
-		newEffects.push({});
+		newEffects.push({ });
 		this.setState({ effects: newEffects });
 	}
 
@@ -136,8 +136,6 @@ class MoveForm extends React.Component {
 	}
 
 	effectFields(index) {
-		console.log('rendering effectcard:', index, 'effect fields, state effect:', this.state.effects[index]);
-
 		const status_list = ['', 'BURNED', 'FROZEN', 'PARALYZED', 'POISONED', 'ASLEEP'];
 		const status_options = status_list.map((status, i) => <option key={i}>{status}</option>);
 
@@ -182,7 +180,7 @@ class MoveForm extends React.Component {
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
@@ -210,7 +208,7 @@ class MoveForm extends React.Component {
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance  || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 					</div>
@@ -229,13 +227,13 @@ class MoveForm extends React.Component {
 						<FormGroup row>
 							<Label for="stages" sm={{ size: 3, offset: 1 }}> Stages: </Label>
 							<Col sm={8}>
-								<Input type="number" name="stages" id="stages" value={this.state.effects[index].stages} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="stages" id="stages" value={this.state.effects[index].stages || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
 							<Label for="chance" sm={{ size: 3, offset: 1 }}> Chance: </Label>
 							<Col sm={8}>
-								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="chance" id="chance" value={this.state.effects[index].chance || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
@@ -276,7 +274,7 @@ class MoveForm extends React.Component {
 						<FormGroup row>
 							<Label for="percent" sm={{ size: 3, offset: 1 }}> Percent: </Label>
 							<Col sm={8}>
-								<Input type="number" name="percent" id="percent" value={this.state.effects[index].percent} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="percent" id="percent" value={this.state.effects[index].percent || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 					</div>
@@ -287,7 +285,7 @@ class MoveForm extends React.Component {
 						<FormGroup row>
 							<Label for="heal_percent" sm={{ size: 3, offset: 1 }}> Heal Percent: </Label>
 							<Col sm={8}>
-								<Input type="number" name="heal_percent" id="heal_percent" value={this.state.effects[index].heal_percent} onChange={(event) => this.handleEffectFormChange(event, index)} />
+								<Input type="number" name="heal_percent" id="heal_percent" value={this.state.effects[index].heal_percent || ''} onChange={(event) => this.handleEffectFormChange(event, index)} />
 							</Col>
 						</FormGroup>
 						<FormGroup row>
@@ -335,8 +333,6 @@ class MoveForm extends React.Component {
 	}
 
 	effectCard(index) {
-		console.log('rendering effectcard:', index, 'state effect:', this.state.effects[index]);
-
 		const effect_types = ['', 'SWAP', 'STATUS', 'VOLATILE_STATUS', 'STAT_CHANGE', 'FIELD_CHANGE', 'RECOIL', 'HEAL', 'REMOVE_TYPE', 'FLAT_DAMAGE', 'PROTECT', 'SUBSTITUTE'];
 		const effects_type_Options = effect_types.map((effect, i) => <option key={i}>{effect}</option>);
 
@@ -460,9 +456,9 @@ class MoveForm extends React.Component {
 						</FormGroup>
 
 						<FormGroup row>
-							<Label for="crit_change" sm={{ size: 3, offset: 1 }}> Crit. Change </Label>
+							<Label for="crit_chance" sm={{ size: 3, offset: 1 }}> Crit. Change </Label>
 							<Col sm={8}>
-								<Input type="number" name="crit_change" id="crit_change" value={this.state.damage_info.crit_change} onChange={this.handleFormChange} />
+								<Input type="number" name="crit_chance" id="crit_chance" value={this.state.damage_info.crit_chance} onChange={this.handleFormChange} />
 							</Col>
 						</FormGroup>
 
