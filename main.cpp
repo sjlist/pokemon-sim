@@ -17,15 +17,15 @@ struct GuessData
 
 string seconds_to_time_string(float total_time);
 BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION pos, BattleActor* actors, Battle* battle);
-GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs, int rounding_val);
+GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs);
 
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 200000, round_dec = 2, rounding_val;
+    int wins [3] = {0, 0, 0}, max_runs = 1000000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
-    float current_pcent = 0, time_since_last_guess, seconds_per_battle, guess_error;
+    float current_pcent = 0, time_since_last_guess, seconds_per_battle;
     chrono::duration<double> time_elasped;
     rounding_val = pow(10, round_dec);
     vector<GuessData> guesses;
@@ -40,7 +40,6 @@ int main()
 
     auto start_time = chrono::system_clock::now();
     auto current_time = chrono::system_clock::now();
-    auto last_time_of_guess = current_time;
 
     while(num_runs < max_runs)
     {
@@ -53,7 +52,7 @@ int main()
             time_elasped = (current_time - start_time);
             time_since_last_guess = (time_elasped.count() - guess_data.time_elasped);
 
-            guess_data = guess_time_left(time_elasped, time_since_last_guess, guess_data.guess, max_runs, num_runs, rounding_val);
+            guess_data = guess_time_left(time_elasped, time_since_last_guess, guess_data.guess, max_runs, num_runs);
 
             guesses.push_back(guess_data);
 
@@ -143,6 +142,7 @@ BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION
         default:
             ERR_MSG("Unhandled Notification");
     }
+    return m;
 }
 
 string seconds_to_time_string(float total_time)
@@ -185,7 +185,7 @@ string seconds_to_time_string(float total_time)
     return time_string;
 }
 
-GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs, int rounding_val)
+GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs)
 {
     float current_guess = 0, guess_diff = 0, guess_confidence = 0, guess_time_variance = 0, guess_run_variance = 0;
     GuessData data;

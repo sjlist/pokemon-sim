@@ -59,7 +59,7 @@ public:
     void reset_temp_field_status();
 
     bool has_lost(Players player);
-    void print_battle(bool detailed=false);
+    static void print_battle();
 
 protected:
     int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);

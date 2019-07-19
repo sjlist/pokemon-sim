@@ -70,7 +70,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 if(BattleStateMachine::battle.get_party(PLAYER_ONE)->loaded && BattleStateMachine::battle.get_party(PLAYER_TWO)->loaded)
                 {
                     state = BattleState::BATTLE_START;
-                    //BattleStateMachine::battle.print_battle(true);
+                    //BattleStateMachine::battle.print_battle();
                     break;
                 }
                 else if(!BattleStateMachine::battle.get_party(PLAYER_ONE)->loaded)
@@ -462,7 +462,7 @@ void BattleStateMachine::sort_message_stack()
     vector<vector<int>> prio_map (FIELD_POSITION::NUM_POSITIONS), speed_tie_list;
     vector<BattleMessage> temp_messages (FIELD_POSITION::NUM_POSITIONS);
 
-    int move_prio, prio_choice, num_messages = BattleStateMachine::turn_messages.size(), map_base;
+    int move_prio = 0, prio_choice, num_messages = BattleStateMachine::turn_messages.size(), map_base;
 
     for(int i = 0; i < num_messages; i++)
     {

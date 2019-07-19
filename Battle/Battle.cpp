@@ -15,6 +15,7 @@
 #include <vector>
 #include <cstdlib>
 #include <random>
+#include <map>
 using namespace std;
 
 static unsigned int pre_attack_v_status_mask = (VOLATILE_STATUS::CONFUSION +
@@ -25,6 +26,15 @@ static unsigned int pre_attack_v_status_mask = (VOLATILE_STATUS::CONFUSION +
 static unsigned int turn_end_v_status_mask = 0;
 
 static unsigned int turn_end_v_status_mask_clear = (VOLATILE_STATUS::FLINCHED);
+
+enum VARIABLE_POWER_MOVES {
+    GYRO_BALL = 0,
+    NUM_VARIABLE_POWER_MOVES
+};
+
+map<string, int> variable_move_power_map ={
+        {"Gyro_Ball", GYRO_BALL}
+};
 
 Battle::Battle()
 {
@@ -303,16 +313,19 @@ pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_P
 
 int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
 {
-    if(move->get_power() != -1)
-        return move->get_power();
-
-    if(move->get_name() == "Gyro_Ball")
+    if(move->get_power() == -1)
     {
-        return (25.0 * Battle::active_field.active_pokes[def_pos]->get_stat(STAT::SPE) /
-                Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE)) + 1;
+        switch (variable_move_power_map[move->get_name()])
+        {
+            case GYRO_BALL:
+                return (25.0 * Battle::active_field.active_pokes[def_pos]->get_stat(STAT::SPE) /
+                        Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE)) + 1;
+            default:
+                ERR_MSG("Unhandled move power equation\n");
+        }
     }
 
-    ERR_MSG("Unhandled move power equation\n");
+    return move->get_power();
 }
 
 Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender)
@@ -439,6 +452,7 @@ Attack_Result Battle::handle_move_effects(Effect move_effect, FIELD_POSITION atk
             ERR_MSG("Unhandled move effect " << move_effect.get_effect() << "\n");
     }
     ERR_MSG("Handling of move effect " << move_effect.get_effect() << " did not return correctly\n");
+    return Attack_Result::NO_ATTACK;
 }
 
 bool Battle::has_lost(Players player)
@@ -839,15 +853,17 @@ void Battle::load_game_moves()
     Battle::game_moves[Game_Moves::MOVE_STRUGGLE].load_move("game_moves/Struggle");
 }
 
-void Battle::print_battle(bool detailed)
-{
 #ifdef DEBUGGING
-    Battle::active_field.print_field(detailed);
+void Battle::print_battle()
+{
+    Battle::active_field.print_field();
 
     DEBUG_MSG("Player ONE party pokemon:\n");
-    Battle::Parties[Players::PLAYER_ONE].print_party(detailed);
+    Battle::Parties[Players::PLAYER_ONE].print_party();
     DEBUG_MSG("\nPlayer TWO party pokemon:\n");
-    Battle::Parties[Players::PLAYER_TWO].print_party(detailed);
+    Battle::Parties[Players::PLAYER_TWO].print_party();
     DEBUG_MSG(endl);
-#endif
 }
+#else
+void Battle::print_battle() {}
+#endif
