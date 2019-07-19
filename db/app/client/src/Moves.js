@@ -39,17 +39,17 @@ class MoveCard extends React.Component {
 			<Container>
 				<Card>
 					<Row>
-						<Col sm={{ size: 3, offset: 1 }}>
+						<Col size="5">
 							<p> {this.state.move.name} </p>
 						</Col>
-						<Col sm={{ size: 2, offset: 1 }}>
+						<Col>
 							{
 								this.state.addStatus ?
 									<Button size="sm" color="primary" outline onClick={this.onUpdate}> Update </Button> :
 									<Button size="sm" color="secondary" outline> Update </Button>
 							}
 						</Col>
-						<Col sm={{ size: 2, offset: 1 }}>
+						<Col>
 							{
 								this.props.addStatus ?
 									<Button size="sm" color="danger" outline onClick={this.onDelete}>  Delete </Button> :
