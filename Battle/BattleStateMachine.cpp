@@ -88,10 +88,16 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 for(int i = 0; i < NUM_POSITIONS; i++)
                 {
                     if(BattleStateMachine::battle.active_field.active_pokes[i] == nullptr)
-                        if(message.pos == static_cast<FIELD_POSITION>(i))
+                    {
+                        if (message.pos == static_cast<FIELD_POSITION>(i))
+                        {
                             BattleStateMachine::battle.send_out(static_cast<FIELD_POSITION>(i), message.reserve_poke);
+                        }
                         else
+                        {
                             return make_pair(BattleNotification::POKEMON_SWAP, static_cast<FIELD_POSITION>(i));
+                        }
+                    }
                 }
 
 //                BattleStateMachine::battle.send_out(FIELD_POSITION::PLAYER_1_0, 0);
@@ -412,7 +418,7 @@ void BattleStateMachine::create_speed_list()
         sort(speed_map.begin(), speed_map.end(), sortcol);
 
         speed_tie_list.push_back(speed_map.front());
-        for(int i = 1; i < speed_map.size(); i++)
+        for(unsigned int i = 1; i < speed_map.size(); i++)
         {
             if(speed_map.at(i)[1] == speed_tie_list.back()[1])
             {
@@ -420,7 +426,7 @@ void BattleStateMachine::create_speed_list()
             }
             else
             {
-                for(int j = 0; j < speed_tie_list.size(); j++)
+                for(unsigned int j = 0; j < speed_tie_list.size(); j++)
                 {
                     prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                     map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
@@ -434,7 +440,7 @@ void BattleStateMachine::create_speed_list()
         }
         if(!speed_tie_list.empty())
         {
-            for (int j = 0; j < speed_tie_list.size(); j++)
+            for (unsigned int j = 0; j < speed_tie_list.size(); j++)
             {
                 prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                 map_base = speed_map.size() - speed_tie_list.size() + j;
@@ -483,7 +489,7 @@ void BattleStateMachine::sort_message_stack()
 
 
     speed_tie_list.push_back(prio_map.front());
-    for(int i = 1; i < prio_map.size(); i++)
+    for(unsigned int i = 1; i < prio_map.size(); i++)
     {
         if(prio_map.at(i)[1] == speed_tie_list.back()[1])
         {
@@ -491,7 +497,7 @@ void BattleStateMachine::sort_message_stack()
         }
         else
         {
-            for(int j = 0; j < speed_tie_list.size(); j++)
+            for(unsigned int j = 0; j < speed_tie_list.size(); j++)
             {
                 prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
                 map_base = (i - 1)  - (speed_tie_list.size() - 1) + j;
@@ -504,7 +510,7 @@ void BattleStateMachine::sort_message_stack()
     }
     if(!speed_tie_list.empty())
     {
-        for (int j = 0; j < speed_tie_list.size(); j++)
+        for (unsigned int j = 0; j < speed_tie_list.size(); j++)
         {
             prio_choice = BattleStateMachine::make_choice(speed_tie_list.size() - j);
             map_base = prio_map.size() - speed_tie_list.size() + j;
@@ -512,7 +518,7 @@ void BattleStateMachine::sort_message_stack()
         }
     }
 
-    for(int i = 0; i < turn_messages.size(); i++)
+    for(unsigned int i = 0; i < turn_messages.size(); i++)
     {
         temp_messages.at(i) = turn_messages.at(prio_map.at(i)[0]);
     }
@@ -524,7 +530,7 @@ void BattleStateMachine::sort_message_stack()
 
 void BattleStateMachine::remove_message_from_stack(FIELD_POSITION pos)
 {
-    int i = 0;
+    unsigned int i = 0;
     while(i < turn_messages.size())
     {
         if(turn_messages[i].pos == pos)

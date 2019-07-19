@@ -13,12 +13,12 @@ using namespace std;
 const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 
 #define BATTLE_TYPE DOUBLE_BATTLE
-#define MAX_TURN_COUNT 300
+#define MAX_TURN_COUNT 400
 
 #define TEAM_1_CHOICE "team1"
 #define TEAM_2_CHOICE "team1"
 
-#define RAND_SEED 2489338927
+#define RAND_SEED
 
 #define DEBUG_LEVEL 1
 

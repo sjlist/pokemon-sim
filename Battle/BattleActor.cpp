@@ -17,7 +17,6 @@ BattleActor::BattleActor()
 {
     BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
     BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
-    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
 BattleActor::BattleActor(long seed)
@@ -25,7 +24,6 @@ BattleActor::BattleActor(long seed)
     BattleActor::generator = mt19937(seed);
     BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
     BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
-    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
 BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
@@ -79,6 +77,8 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
                 message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY, field);
             }
             break;
+        default:
+            ERR_MSG("Unhandled Action");
     }
 
     DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " is ");

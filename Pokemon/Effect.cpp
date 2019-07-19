@@ -31,7 +31,7 @@ Effect::Effect()
     Effect::effect_chance = 0;
     Effect::status_effect = STATUS::NO_STATUS;
     Effect::effect_type = MOVE_EFFECTS::NO_MOVE_EFFECT;
-};
+}
 
 
 // Accessing Effects

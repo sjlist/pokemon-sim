@@ -391,7 +391,7 @@ void Pokemon::reset()
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
-    int evs [6], ivs [6];
+    int evs [NUM_STATS], ivs [NUM_STATS];
     auto ev_ptr = evs;
     auto iv_ptr = ivs;
 
@@ -433,7 +433,6 @@ void Pokemon::load_species(string species_name)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree root_child;
-    auto base_ptr = base_stats;
 
     try
     {

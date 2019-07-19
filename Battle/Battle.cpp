@@ -17,6 +17,15 @@
 #include <random>
 using namespace std;
 
+static unsigned int pre_attack_v_status_mask = (VOLATILE_STATUS::CONFUSION +
+                                                VOLATILE_STATUS::ENCORE +
+                                                VOLATILE_STATUS::FLINCHED +
+                                                VOLATILE_STATUS::TAUNTED);
+
+static unsigned int turn_end_v_status_mask = 0;
+
+static unsigned int turn_end_v_status_mask_clear = (VOLATILE_STATUS::FLINCHED);
+
 Battle::Battle()
 {
     chance = uniform_real_distribution<float>{0,1};
@@ -79,7 +88,7 @@ void Battle::return_poke(FIELD_POSITION pos)
     Battle::active_field.active_pokes[pos]->reset_types();
     Battle::active_field.active_pokes[pos]->reset_protect();
     Battle::active_field.return_poke(pos);
-};
+}
 
 Attack_Result Battle::swap_poke(FIELD_POSITION pos, int poke_position)
 {
@@ -309,6 +318,9 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move*
 Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender)
 {
     //NOT IMPLEMENTED YET
+    DEBUG_MSG("P" << get_player_from_position(attacker) + 1  << "'s " << Battle::active_field.active_pokes[attacker]->get_species()
+           << " made contact with"
+           << "P" << get_player_from_position(defender) + 1  << "'s " << Battle::active_field.active_pokes[defender]->get_species());
     return Attack_Result::HIT;
 }
 
@@ -615,7 +627,7 @@ bool Battle::handle_end_turn_status(FIELD_POSITION pos)
 
 Attack_Result Battle::handle_v_status_mask(FIELD_POSITION pos, int status_mask, int move_num)
 {
-    int current_v_status, i = 0;
+    int current_v_status;
     Attack_Result res = Attack_Result::HIT;
     for(int i = 0; i < VOLATILE_STATUS_NUMBERS::NUM_VOLATILE_STATUS; i++)
     {
