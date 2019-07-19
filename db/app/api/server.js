@@ -36,6 +36,10 @@ app.use('/api/testDB', testDBRouter);
 var pokemonrouter = require('./routes/Pokemon');
 app.use('/api/pokemon', pokemonrouter);
 
+// Moves api
+var movesrouter = require('./routes/Moves');
+app.use('/api/moves', movesrouter);
+
 // other routes here
 app.get('*', function(req, res){
    res.send('Sorry, this is an invalid URL.');

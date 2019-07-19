@@ -2,35 +2,35 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
-// Load pokemon model
-var PokemonModel = require('../models/PokemonModel');
+// Load moves model
+var MoveModel = require('../models/MoveModel');
 
-// Define pokemon api
+// Define move api
 router.get('/', (req, res) => {
-	PokemonModel.find({}, function(err, pokemon) {
+	MoveModel.find({}, function(err, move) {
 		if (err) throw err;
-		console.log(pokemon);
-		res.send(pokemon);
+		console.log(move);
+		res.send(move);
 	});
 });
 
 router.post('/', (req, res) => {
-	let newPokemon = new PokemonModel(req.body);
-	console.log(newPokemon);
-	newPokemon.save();
-	res.send(newPokemon);
+	let newMove = new MoveModel(req.body);
+	console.log(newMove);
+	newMove.save();
+	res.send(newMove);
 });
 
 router.delete('/', (req, res) => {
 	console.log('delete recieved:', req.body);
-	PokemonModel.deleteOne({_id: req.body._id}, function (err) {
+	MoveModel.deleteOne({_id: req.body._id}, function (err) {
 		if (err) console.log(err);
 	});
 	res.send(req.body);
 });
 
 router.put('/', (req, res) => {
-	PokemonModel.updateOne({_id: req.body._id}, req.body, function (err) {
+	MoveModel.updateOne({_id: req.body._id}, req.body, function (err) {
 		if (err) console.log(err);
 	});
 	res.send(req.body);

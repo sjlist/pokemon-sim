@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const PokemonModel = new mongoose.Schema({
-	Species: { type: String },
+	Species: String,
 	Type: { type0: String, type1: String }, 
-	HP:  { type: Number },
-	ATK: { type: Number },
-	DEF: { type: Number },
-	SPA: { type: Number },
-	SPD: { type: Number },
-	SPE: { type: Number }
+	HP:  Number,
+	ATK: Number,
+	DEF: Number,
+	SPA: Number,
+	SPD: Number,
+	SPE: Number 
 })
 
 // export User model for use in other files.
