@@ -429,6 +429,7 @@ class MoveForm extends React.Component {
 								<Input type="select" name="targeting" id="targeting" value={this.state.targeting} onChange={this.handleFormChange}>
 									<option> ADJACENT_ALL 	</option>
 									<option> ADJACENT_ENEMY </option>
+									<option> ALL_OTHERS		</option>
 									<option> SELF 			</option>
 								</Input>
 							</Col>
