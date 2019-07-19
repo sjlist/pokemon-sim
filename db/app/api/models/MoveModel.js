@@ -9,7 +9,7 @@ const MoveModel = new mongoose.Schema({
 	acc: Number,
 	targeting: String,
 	num_targets: Number,
-	damage_info: { power: Number, crit_change: Number },
+	damage_info: { power: Number, crit_chance: Number },
 	effects: [{
 		effect: String, 
 		status: String, 
@@ -19,6 +19,7 @@ const MoveModel = new mongoose.Schema({
 		stages: Number,
 		field_object: String,
 		recoil_type: String,
+		percent: Number,
 		heal_percent: Number,
 		type_removed: String,
 		use_level: Boolean
