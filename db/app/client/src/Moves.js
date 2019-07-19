@@ -348,7 +348,7 @@ class MoveForm extends React.Component {
 							Effect { index }
 						</Col>
 						<Col sm={3}>
-							<Button size="sm" color="danger" outline style={{float:'right'}} onClick={this.onDelete}> Delete Effect </Button>
+							<Button size="sm" color="danger" outline style={{float:'right'}} onClick={() => this.deleteEffect(index)}> Delete Effect </Button>
 						</Col>
 					</Row>
 					<FormGroup row>
@@ -467,7 +467,6 @@ class MoveForm extends React.Component {
 						</FormGroup>
 
 						{
-							// this.state.effects.map((effect, i) => <EffectForm key={i} index={i} effect={effect} deleteThisEffect={this.deleteEffect} changeThisEffect={this.handleEffectFormChange} />)
 							this.state.effects.map((effect, i) => this.effectCard(i))
 						}
 						<Row>
