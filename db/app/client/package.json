@@ -33,5 +33,6 @@
   },
   "author": "Alton Barbehenn",
   "license": "MIT", 
+  "repository": "https://github.com/sjlist/pokemon-sim",
   "proxy": "http://localhost:3001"
 }
