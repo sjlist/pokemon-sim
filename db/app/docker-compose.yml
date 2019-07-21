@@ -1,0 +1,28 @@
+version: "3"
+services:
+  pokemonclient:
+    build: ./client
+    restart: always
+    ports:
+      - 3000:3000
+    depends_on:
+      - pokemonapi
+    networks:
+      - webappnetwork
+  pokemonapi:
+    build: ./api
+    ports: 
+      - 3001:3001
+    depends_on:
+      - pokemonmongo
+    networks:
+      - webappnetwork
+  pokemonmongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    networks:
+      - webappnetwork
+networks:
+  webappnetwork:
+    driver: bridge
