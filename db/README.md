@@ -1,32 +1,46 @@
 # Pokemon Sim API
 
-This API is to help add pokemon, moves, and parties to a database we can use in the simulator. 
+We're trying to build a MongoDB database for the Pokemon Battle Simulator. I decided to use MongoDB because it uses JSON files which are easy to read with the Boost/ptree library in c++ and are flexible for storing properties of pokemon, moves, etc. 
 
-I've been meaning to learn more about docker compose and it seems like the tool for this job, so I'll be following this tutorial to get started: https://medium.com/free-code-camp/create-a-fullstack-react-express-mongodb-app-using-docker-c3e3e21c4074. 
+There are two ways we're going about building this database:
+1. Make a web app to aid in manual entry and
+2. Write a script to take the data from somewhere else.
 
-## Build
+In both cases, we're building a database that can be hooked into by the Battle Simulator. 
 
-I will assume docker is already installed.
 
-1. cd pokemon-sim/db/app
-2. run `npm install` in both api and client directories
-3. run docker pull mongo
+## Web App
 
-## Run
+The website is located in the app directory. I'm using React for the frontend and Express to link the frontend to the MongoDB database. The current functionality is limited to CRUD (create, remove, update, delete) of pokemon and moves. Teams have not been implemented. 
 
-1. run npm start in both api and client directories
-2. run `docker run -it -p 27017:27017 --name pokemon-mongo -v /Users/altonbarbehenn/tmp:/data/db -d mongo`
-3. Load the database `mongorestore db`
-4. go to localhost:3000
+Another thing I wanted to learn more about for this project is docker-compose. For this reason, I've set up the web app so that it runs via docker-compose. Because I need to make sure the containers were properly networking, I had to change the adresses in a way that makes it unable to run outside of docker-compose. Refer to commit `f565c19ce961471270c000e096f2fc954a36d1d3` for the changes to rever to run outside of docker-compose. 
 
-## Save
 
-To save the database in a nice way run: `mongodump --out db/ --db pokemon`
+### Build
+
+All of the `docker-compose` commands must be from the `app` directory. For simplicity, I'll assume all the commands are run in that directory. 
+
+To build the app first install docker and docker-compose. Then run `docker-compose build`. Notice that because we're uing the mongo docker image rather than installing it ourselves, this should not need an installation of mongo. 
+
+### Run
+
+Simply run the app with `docker-compose up`. When you want to stop the app you can use `docker-compose down` or `Ctrl + C`. 
+
+Once the app is running, the database will be empty. To load the existing database use the command from the app directory `mongorestore ../db`. 
+
+**Before you close the app** make sure to dump the database to a known location using the command (from the app directory) `mongodump --out ../db/ --db pokemon`. This creates two files for each collection in the pokemon database and saves them with the correct heirarchy in the database. 
+
+Note that if we are concerned about file size, both `mongorestore` and 	`mongodump` have a `--gzip` flag that should compress the stored database. 
+
+
+## Manual/Script Database Creation
+
+To do
+
 
 ## To-do
 
-- make full pokemon api
-- make full moves api
-- make full teams api
-- auto dump db when updated ? 
-- Make docker images
+- make teams api
+- auto restore db on lauch
+- auto dump db on close
+
