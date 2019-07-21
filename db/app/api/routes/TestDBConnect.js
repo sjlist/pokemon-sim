@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 });
 
 // Connecting to MongoDB
-mongoose.connect('mongodb://localhost:27017/pokemon', {useNewUrlParser: true});
+mongoose.connect('mongodb://pokemonmongo:27017/pokemon', {useNewUrlParser: true});
 
 // If there is a connection error send an error message
 mongoose.connection.on('error', error => {
