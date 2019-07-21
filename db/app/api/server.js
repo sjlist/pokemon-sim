@@ -1,4 +1,4 @@
-const express = require('Express');
+const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const morgan = require('morgan');
@@ -25,7 +25,7 @@ app.use(bodyParser.json())
 // ******** Define API routes ********
 
 // Test API connection
-var testAPIRouter = require('./routes/testAPIConnect');
+var testAPIRouter = require('./routes/TestAPIConnect');
 app.use('/api/testAPI', testAPIRouter); 
 
 // Test DB connection
