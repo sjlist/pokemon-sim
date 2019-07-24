@@ -13,7 +13,7 @@ In both cases, we're building a database that can be hooked into by the Battle S
 
 The website is located in the app directory. I'm using React for the frontend and Express to link the frontend to the MongoDB database. The current functionality is limited to CRUD (create, remove, update, delete) of pokemon and moves. Teams have not been implemented. 
 
-Another thing I wanted to learn more about for this project is docker-compose. For this reason, I've set up the web app so that it runs via docker-compose. Because I need to make sure the containers were properly networking, I had to change the adresses in a way that makes it unable to run outside of docker-compose. Refer to commit `f565c19ce961471270c000e096f2fc954a36d1d3` for the changes to rever to run outside of docker-compose. 
+Another thing I wanted to learn more about for this project is docker-compose. For this reason, I've set up the web app so that it runs via docker-compose. Because I need to make sure the containers were properly networking, I had to change the addresses in a way that makes it unable to run outside of docker-compose. Refer to commit `f565c19ce961471270c000e096f2fc954a36d1d3` for the changes to rever to run outside of docker-compose. 
 
 
 ### Build
@@ -35,7 +35,17 @@ Note that if we are concerned about file size, both `mongorestore` and 	`mongodu
 
 ## Manual/Script Database Creation
 
-To do
+Another approach to building a database for our Battle Simulator is to get the data from elsewhere ahead of time (or online). 
+
+Our first attempt at this is to take the data from the current production environment for [Pokemon Showdown](https://play.pokemonshowdown.com/data/). Their platform is written in javascript and instead of using a database, they have files that export a single object acting as the database. These files are easy to download and then the rest is manipulation. 
+
+I've decided to use python for this. The main issue is how to read the javascript object as JSON (because it doesn't have labels in quotes), fortunately the library `hjson` enables that. In the future, I may also do this in javascript, thus, hopefully cutting out the transformation steps. 
+
+### Run
+
+There is a script called `parse.sh` that makes docker calls to set up the database then dump it in the same dump as the app. *Run this script in the showdown directory*. 
+
+The current version gets the pokedex, the moves, and abilities. To add other datasets they use simply add the file to the list in the python file. You can also choose to save the JSON objects locally by changing one boolean variable.  	
 
 
 ## To-do
@@ -43,4 +53,5 @@ To do
 - make teams api
 - auto restore db on lauch
 - auto dump db on close
+- rewrite showdown database cration in javascript
 
