@@ -110,7 +110,6 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
 {
     Attack_Result res = Attack_Result::HIT, temp_res;
     FIELD_POSITION attack_target;
-    bool crit = false;
     Move* move;
     int num_defenders;
 
@@ -143,9 +142,6 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
         return Attack_Result::NO_ATTACK;
     }
 
-    if(Battle::roll_chance(move->get_crit()))
-        crit = true;
-
     for(int j = 0; j < move->get_num_hits(); j++)
     {
         Battle::Battle_Targets.get_valid_targets(move->get_move_targets(), atk_pos);
@@ -161,7 +157,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
             else
                 attack_target = def_pos;
 
-            temp_res = Battle::attack_target(atk_pos, attack_target, move, crit);
+            temp_res = Battle::attack_target(atk_pos, attack_target, move);
             switch(temp_res)
             {
                 case Attack_Result::FAINT:
@@ -180,7 +176,7 @@ Attack_Result Battle::attack(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, int
     return res;
 }
 
-Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
+Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
 {
     pair<Attack_Result, float> res;
     Attack_Result temp_res;
@@ -216,7 +212,7 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     {
         case move_damage_type::MOVE_PHYSICAL:
         case move_damage_type::MOVE_SPECIAL:
-            res = Battle::attack_damage(atk_pos, def_pos, move, crit);
+            res = Battle::attack_damage(atk_pos, def_pos, move);
             if(res.first == Attack_Result::IMMUNE)
                 return res.first;
             break;
@@ -267,10 +263,14 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
 }
 
 
-pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit)
+pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
 {
-    float eff_atk, eff_def, damage_dealt, move_power;
-    float damage_mod;
+    float eff_atk, eff_def, damage_dealt, damage_mod;
+    int move_power;
+    bool crit = false;
+
+    if(Battle::roll_chance(move->get_crit()))
+        crit = true;
 
     damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], Battle::Battle_Targets.get_num_valid_targets(), crit);
 
@@ -318,8 +318,8 @@ int Battle::get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move*
         switch (variable_move_power_map[move->get_name()])
         {
             case GYRO_BALL:
-                return (25.0 * Battle::active_field.active_pokes[def_pos]->get_stat(STAT::SPE) /
-                        Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE)) + 1;
+                return 25.0 * Battle::active_field.active_pokes[def_pos]->get_stat(STAT::SPE) /
+                       Battle::active_field.active_pokes[atk_pos]->get_stat(STAT::SPE) + 1;
             default:
                 ERR_MSG("Unhandled move power equation\n");
         }
@@ -503,12 +503,12 @@ void Battle::reset_temp_field_status()
     }
 }
 
-float Battle::calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier)
+int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
 {
-    float base_damage = ((((2 * (float)attacker_level / 5) + 2) * (float)move_power * atk / def / 50) + 2) * damage_modifier;
-    float damage_adjustment = damage_calc(Battle::generator) / 100.0;
+    float damage_adjustment = damage_calc(Battle::generator) / 100.0 * damage_modifier;
+    int base_damage = floor((floor(floor(floor(2 * (float)attacker_level / 5 + 2) * move_power * (float)atk / def) / 50.0) + 2));
 
-    return base_damage * damage_adjustment;
+    return floor(base_damage * damage_adjustment);
 }
 
 void Battle::handle_faint(FIELD_POSITION pos)
@@ -691,7 +691,7 @@ Attack_Result Battle::handle_v_status(FIELD_POSITION pos, int v_status, int move
             if(roll_chance(Battle::game_moves[Game_Moves::MOVE_CONFUSION].get_acc()))
             {
                 DEBUG_MSG(Battle::active_field.active_pokes[pos]->get_species() << " hurt itself in its confusion\n");
-                if(Battle::attack_damage(pos, pos, &Battle::game_moves[Game_Moves::MOVE_CONFUSION], false).first == Attack_Result::FAINT)
+                if(Battle::attack_damage(pos, pos, &Battle::game_moves[Game_Moves::MOVE_CONFUSION]).first == Attack_Result::FAINT)
                     return Attack_Result::FAINT;
                 else
                     return Attack_Result::NO_ATTACK;
@@ -815,36 +815,42 @@ void Battle::update_generator(long seed)
     Battle::generator = mt19937(seed);
 }
 
-void Battle::load_battle(Players player, string team_name)
+void Battle::load_battle(Players player, string* team_name)
 {
-    Battle::load_teams(player, team_name);
+    Battle::load_teams(player, *team_name);
     Battle::load_game_moves();
+}
+
+int Battle::count_pokemon_team(boost::property_tree::ptree team)
+{
+    int num_pokemon = 0;
+    for(int i = 0; i < 6; i++)
+    {
+        if(team.count(to_string(i)))
+            num_pokemon++;
+        else
+            return num_pokemon;
+    }
+    return num_pokemon;
 }
 
 void Battle::load_teams(Players player, string team_name)
 {
     boost::property_tree::ptree team = load_json_file("teams/" + team_name + ".json");
-    int i = 0;
+    int num_pokemon = Battle::count_pokemon_team(team), poke_loading;
 
-    while(!Parties[player].loaded  && i < 6)
+    for(int i = 0; i < 6; i++)
     {
+        if(i < num_pokemon)
+            poke_loading = i;
+        else
+            poke_loading = num_pokemon - 1;
 
-        try
-        {
-            Parties[player].party_pokes[i].load_pokemon(team.get_child(to_string(i)));
-        }
-        catch(...)
-        {
-            Parties[player].loaded = true;
-        }
-
-        i++;
-        if(i == 6)
-        {
-            Parties[player].loaded = true;
-        }
+        Parties[player].party_pokes[i].load_pokemon(team.get_child(to_string(poke_loading)));
+        DEBUG_MSG("Finished importing pokemon " << i + 1 << endl << endl);
     }
-    DEBUG_MSG("Finished importing " << team_name << "\n");
+    Parties[player].loaded = true;
+    DEBUG_MSG("Finished importing Player "  << player+1 << "'s team: " << team_name << endl);
 }
 
 void Battle::load_game_moves()

@@ -25,9 +25,11 @@ BattleStateMachine::BattleStateMachine()
     BattleStateMachine::position_choice = uniform_int_distribution<int> {0, 599};
     BattleStateMachine::battle = Battle(seed);
     BattleStateMachine::state = BattleState::BATTLE_IDLE;
+
+    turn_count = 0;
 }
 
-void BattleStateMachine::init(Players player, string team_name)
+void BattleStateMachine::init(Players player, string* team_name)
 {
     BattleStateMachine::battle.load_battle(player, team_name);
 }
@@ -65,7 +67,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 state = BattleState::BATTLE_INIT;
                 return make_pair(BattleNotification::TEAM_CHOICE, PLAYER_1_0);
             case BattleState::BATTLE_INIT:
-                BattleStateMachine::init(get_player_from_position(message.pos), message.team_name);
+                BattleStateMachine::init(get_player_from_position(message.pos), &message.team_name);
                 DEBUG_MSG("Loaded Player " << get_string_from_field_position(message.pos) << endl);
                 if(BattleStateMachine::battle.get_party(PLAYER_ONE)->loaded && BattleStateMachine::battle.get_party(PLAYER_TWO)->loaded)
                 {
@@ -149,8 +151,8 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 BattleStateMachine::battle.print_battle();
                 state = BattleState::ACTION_REQUEST;
 
-                if(BattleStateMachine::turn_messages.size() != 0)
-                    ERR_MSG("Turn Messages was not empty at the start of the turn");
+                if(!BattleStateMachine::turn_messages.empty())
+                    ERR_MSG("Turn Messages was not empty at the start of the turn\n");
 
                 return make_pair(BattleNotification::POKEMON_ACTION, PLAYER_1_0);
 
@@ -218,6 +220,9 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                                  && !BattleStateMachine::battle.active_field.active_pokes[action_message.pos]->moves[action_message.move_num].get_move_effect(-1).does_target_self())
                                     goto swap_end;
 
+                                if(BattleStateMachine::battle.has_lost(get_player_from_position(action_message.target_pos)))
+                                    return make_pair(BattleNotification::PLAYER_LOST, action_message.target_pos);
+
                                 if(BattleStateMachine::battle.active_field.active_pokes[action_message.pos]->moves[action_message.move_num].get_move_effect(0).does_target_self())
                                 {
                                     swap_pos = action_message.pos;
@@ -232,7 +237,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                             if(!BattleStateMachine::battle.can_swap(get_player_from_position(swap_pos)))
                                 goto swap_end;
 
-                        // FOR ATTACKING MOVES THAT SWAP
+                            // FOR ATTACKING MOVES THAT SWAP
                             if (action_message.move_command == Commands::COMMAND_ATTACK)
                             {
                                 // get reserve poke for whatever team needs to swap, if attacking
@@ -247,7 +252,13 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                             // TODO: HANDLE PURSUIT HERE
 
                             //swap pokes!
-                            BattleStateMachine::battle.swap_poke(swap_pos, reserve_poke);
+                            if(BattleStateMachine::battle.swap_poke(swap_pos, reserve_poke) == Attack_Result::FAINT)
+                            {
+                                if(BattleStateMachine::battle.has_lost(get_player_from_position(swap_pos)))
+                                    return make_pair(BattleNotification::PLAYER_LOST, swap_pos);
+                                else
+                                    return make_pair(BattleNotification::POKEMON_SWAP, swap_pos);
+                            }
 
                             BattleStateMachine::remove_message_from_stack(swap_pos);
 
@@ -279,7 +290,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                                 faint_end:;
                             }
                             if(BattleStateMachine::battle_over())
-                                return make_pair(BattleNotification::PLAYER_LOST, PLAYER_2_0);
+                                return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
                             break;
 
                         case Attack_Result::HIT:
@@ -377,7 +388,7 @@ int BattleStateMachine::get_battle_result()
     }
     else if(loser == 0)
     {
-        ERR_MSG("TIED on seed" << BattleStateMachine::seed << endl);
+        ERR_MSG("TIED on seed " << BattleStateMachine::seed << endl);
     }
     else
         ERR_MSG("How did you get this battle result?\n");
@@ -402,7 +413,7 @@ void swap_in_place(vector<vector<int>>& v, int src, int dest)
 void BattleStateMachine::create_speed_list()
 {
         vector<vector<int>> speed_map (FIELD_POSITION::NUM_POSITIONS), speed_tie_list;
-        vector<FIELD_POSITION> speed_list (FIELD_POSITION::NUM_POSITIONS);
+        vector<FIELD_POSITION> temp_speed_list (FIELD_POSITION::NUM_POSITIONS);
         vector<BattleMessage> temp_messages (FIELD_POSITION::NUM_POSITIONS);
 
         int prio_choice, map_base;
@@ -450,10 +461,10 @@ void BattleStateMachine::create_speed_list()
 
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
-        speed_list.at(i) = static_cast<FIELD_POSITION>(speed_map.at(i)[0]);
+        temp_speed_list.at(i) = static_cast<FIELD_POSITION>(speed_map.at(i)[0]);
     }
 
-    BattleStateMachine::speed_list = speed_list;
+    BattleStateMachine::speed_list = temp_speed_list;
 }
 
 void BattleStateMachine::sort_message_stack()
@@ -473,7 +484,7 @@ void BattleStateMachine::sort_message_stack()
                 break;
             case Commands::COMMAND_ATTACK:
                 move_prio = BattleStateMachine::battle.active_field.active_pokes[turn_messages[i].pos]->moves[turn_messages[i].move_num].get_priority() * MAX_SPEED;
-                move_prio += BattleStateMachine::battle.active_field.active_pokes[turn_messages[i].pos]->get_stat(STAT::SPE);
+                move_prio += static_cast<int>(BattleStateMachine::battle.active_field.active_pokes[turn_messages[i].pos]->get_stat(STAT::SPE));
                 break;
             case Commands::COMMAND_NONE:
                 move_prio = FAINT_PRIO * MAX_SPEED;
@@ -580,7 +591,7 @@ int BattleStateMachine::make_choice(int num_positions)
         ERR_MSG("Choose position can only support up to 6 choices");
 
     float c = BattleStateMachine::position_choice(BattleStateMachine::choice);
-    return floor(c/(600/num_positions));
+    return floor(c/(static_cast<float>(600)/num_positions));
 }
 
 void BattleStateMachine::validate_battle_message(BattleMessage message)

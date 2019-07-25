@@ -50,7 +50,7 @@ public:
     void reset();
 
     void load_move(string move_name);
-    static void print_move();
+    void print_move();
     move_damage_type get_damage_type();
 
 private:

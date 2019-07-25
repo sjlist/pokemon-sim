@@ -527,7 +527,7 @@ void Pokemon::print_pokemon(bool detailed)
 
 
 // UNIT TEST HELPERS
-void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp)
+void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp, string species)
 {
     int evs [STAT::NUM_STATS], ivs [STAT::NUM_STATS];
     auto ev_ptr = evs;
@@ -548,16 +548,10 @@ void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float p
     Pokemon::volatile_status = 0;
     Pokemon::to_be_swapped = false;
 
-    Pokemon::base_stats[STAT::HP]  = 40;
-    Pokemon::base_stats[STAT::ATK] = 100;
-    Pokemon::base_stats[STAT::DEF] = 100;
-    Pokemon::base_stats[STAT::SPA] = 100;
-    Pokemon::base_stats[STAT::SPD] = 100;
-    Pokemon::base_stats[STAT::SPE] = 100;
+    Pokemon::load_species(species);
 
     Pokemon::set_stats(iv_ptr, ev_ptr, level, n);
 
-    Pokemon::species = "TESTEMON";
     Pokemon::name = "TESTEMON";
 
     Pokemon::type[0] = t1;

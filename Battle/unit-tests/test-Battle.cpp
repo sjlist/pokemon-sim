@@ -7,6 +7,10 @@
 #include <Battle/Party.h>
 #include <Pokemon/Pokemon.h>
 
+#include <map>
+
+#include "probability-helpers.h"
+
 class BattleTest: public Battle
 {
     FRIEND_TEST(test_get_party, happy);
@@ -37,6 +41,9 @@ class BattleTest: public Battle
     FRIEND_TEST(test_calc_damage_modifiers, crit);
     FRIEND_TEST(test_has_lost, no_loss);
     FRIEND_TEST(test_has_lost, lost);
+    FRIEND_TEST(test_roll_chance, 5);
+    FRIEND_TEST(test_roll_chance, 20);
+    FRIEND_TEST(test_calculate_damage_dealt, claw);
 };
 
 TEST(test_get_party, happy)
@@ -391,4 +398,87 @@ TEST(test_has_lost, lost)
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
 
     EXPECT_TRUE(b.has_lost(PLAYER_ONE));
+}
+
+TEST(test_roll_chance, 5)
+{
+    BattleTest b;
+    int num_runs = get_num_samples(2);
+    float res[2] = {0, 0}, chance = 0.05;
+
+    for(int i = 0; i < num_runs; i++)
+    {
+        if(b.roll_chance(chance))
+        {
+            res[1]++;
+        }
+        else
+            res[0]++;
+    }
+
+    res[0] = abs(res[0]/num_runs - (1-chance)) * 100;
+    res[1] = abs(res[1]/num_runs - chance) * 100;
+
+    EXPECT_LE(abs(res[0]), THRESHOLD*100);
+    EXPECT_LE(abs(res[1]), THRESHOLD*100);
+}
+
+TEST(test_roll_chance, 20)
+{
+    BattleTest b;
+    int num_runs = get_num_samples(2);
+    float res[2] = {0, 0}, chance = 0.2;
+
+    for(int i = 0; i < num_runs; i++)
+    {
+        if(b.roll_chance(chance))
+        {
+            res[1]++;
+        }
+        else
+            res[0]++;
+    }
+
+    res[0] = abs(res[0]/num_runs - (1-chance)) * 100;
+    res[1] = abs(res[1]/num_runs - chance) * 100;
+
+    EXPECT_LE(abs(res[0]), THRESHOLD*100);
+    EXPECT_LE(abs(res[1]), THRESHOLD*100);
+}
+
+TEST(test_calculate_damage_dealt, claw)
+{
+    BattleTest b;
+    Pokemon p1, p2;
+    Move m;
+    map<float, float> results;
+    map<float, float> expected_outcomes = {{124, 1}, {126, 1}, {127, 1}, {129, 1},
+                                           {130, 1}, {132, 1}, {133, 1}, {135, 1},
+                                           {136, 1}, {138, 1}, {139, 1}, {141, 1},
+                                           {142, 1}, {144, 1}, {145, 1}, {147, 1}};
+    int damage, N = expected_outcomes.size(), num_runs = get_num_samples(N);
+
+    p1.create_test_pokemon(PokeTypes::DRAGON, PokeTypes::GROUND, JOLLY, 100, "Garchomp");
+    p2.create_test_pokemon(PokeTypes::DRAGON, PokeTypes::GROUND, JOLLY, 100, "Garchomp");
+    b.active_field.active_pokes[PLAYER_1_0] = &p1;
+    b.active_field.active_pokes[PLAYER_2_0] = &p2;
+
+    m.load_move("Dragon_Claw");
+
+    float damage_mod = b.calculate_damage_modifier(&m, b.active_field.active_pokes[PLAYER_1_0], b.active_field.active_pokes[PLAYER_2_0], 1, false);
+
+    for(int i = 0; i < num_runs; i++)
+    {
+        damage = b.calculate_damage_dealt(p1.get_level(), b.get_move_power(PLAYER_1_0, PLAYER_2_0, &m), p1.get_stat(STAT::ATK), p2.get_stat(STAT::DEF), damage_mod);
+        EXPECT_EQ(expected_outcomes.count(damage), 1);
+        results[damage]++;
+    }
+
+    //NORMALIZE!
+    for (auto const& x : expected_outcomes)
+    {
+        expected_outcomes[x.first] = expected_outcomes[x.first] / expected_outcomes.size();
+        results[x.first] = results[x.first] / num_runs;
+        EXPECT_LE(abs(results[x.first] - expected_outcomes[x.first]), THRESHOLD);
+    }
 }

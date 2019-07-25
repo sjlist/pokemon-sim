@@ -8,6 +8,8 @@
 #include <iostream>
 #include <chrono>
 
+#include "Player_Config.h"
+
 using namespace std;
 
 struct GuessData
@@ -18,14 +20,16 @@ struct GuessData
 string seconds_to_time_string(float total_time);
 BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION pos, BattleActor* actors, Battle* battle);
 GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs);
+void check_probability(float win_pcent, int num_runs);
 
+#define DELTA 0.001
 
 int main()
 {
-    int wins [3] = {0, 0, 0}, max_runs = 1000000, round_dec = 2, rounding_val;
+    int max_runs = 1000000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
-    float current_pcent = 0, time_since_last_guess, seconds_per_battle;
+    float current_pcent = 0, time_since_last_guess, seconds_per_battle, wins [3] = {0, 0, 0};
     chrono::duration<double> time_elasped;
     rounding_val = pow(10, round_dec);
     vector<GuessData> guesses;
@@ -86,9 +90,15 @@ int main()
     time_elasped = (current_time - start_time);
     seconds_per_battle = time_elasped.count() / max_runs;
 
+    for(unsigned int i = 0; i < 3; i++)
+    {
+        wins[i] = wins[i] / max_runs * 100;
+    }
+
     cout << endl;
-    cout << "Player 1 won " << wins[2] / (float)max_runs * 100 << "% of the time\n";
-    cout << "Player 2 won " << wins[0] / (float)max_runs * 100 << "% of the time\n";
+    cout << "Player 1 won " << wins[2] << "% of the time\n";
+    cout << "Player 2 won " << wins[0] << "% of the time\n";
+    check_probability(wins[0], num_runs);
     cout << "Max turn count " << max_turns << "\n";
     cout << "Average turn count " << tot_turns / (float)max_runs << "\n";
     cout << "Average time to execute one battle: " << seconds_per_battle << " s\n";
@@ -206,4 +216,15 @@ GuessData guess_time_left(chrono::duration<double> time_elasped, float time_sinc
     data.time_variance = guess_time_variance;
 
     return data;
+}
+
+void check_probability(float win_pcent, int num_runs)
+{
+    float expected = 50, diff, thresh;
+    diff = abs(expected - win_pcent)/100;
+
+    thresh = sqrt(log(4/DELTA)/(2 * num_runs));
+
+    if(thresh < diff)
+        cout << "There is an error with your win percentage " << thresh*100 << "% < " << diff*100 << "%" << endl;
 }

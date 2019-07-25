@@ -68,7 +68,7 @@ public:
     Move moves[4];
 
     //UNIT TEST HELPERS
-    void create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp);
+    void create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp, string species="unit-test/Testemon");
 private:
     bool alive;
     bool active;

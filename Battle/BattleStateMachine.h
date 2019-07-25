@@ -56,7 +56,7 @@ protected:
     vector<BattleMessage> turn_messages;
     vector<FIELD_POSITION> speed_list;
 private:
-    void init(Players player, string team_name);
+    void init(Players player, string* team_name);
 
     long seed;
     mt19937 choice;

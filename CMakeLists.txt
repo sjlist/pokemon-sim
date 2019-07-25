@@ -71,7 +71,9 @@ set(POKEMON_SIM_FILES
 add_library(Pokemon_Battle_Sim SHARED ${POKEMON_SIM_FILES})
 
 add_executable(pokemon_sim
-    main.cpp)
+        Player_Config.h
+        main.cpp)
+
 target_link_libraries(pokemon_sim gtest_main Pokemon_Battle_Sim)
 
 ##################################################
@@ -113,6 +115,8 @@ endif()
 ### UNIT TESTS
 ##################################################
 set(BATTLE_TEST_FILES
+        Battle/unit-tests/probability-helpers.h
+        Battle/unit-tests/probability-helpers.cpp
         Battle/unit-tests/test-Field.cpp
         Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-Battle.cpp
