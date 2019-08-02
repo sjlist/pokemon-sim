@@ -223,8 +223,8 @@ void check_probability(float win_pcent, int num_runs)
     float expected = 50, diff, thresh;
     diff = abs(expected - win_pcent)/100;
 
-    thresh = sqrt(log(4/DELTA)/(2 * num_runs));
-
+    thresh = sqrt(log(2 * 2/DELTA)/(2 * num_runs));
+    cout << "Threshold is: " << thresh*100 << "%" << endl;
     if(thresh < diff)
         cout << "There is an error with your win percentage " << thresh*100 << "% < " << diff*100 << "%" << endl;
 }

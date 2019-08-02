@@ -44,6 +44,7 @@ class BattleTest: public Battle
     FRIEND_TEST(test_roll_chance, 5);
     FRIEND_TEST(test_roll_chance, 20);
     FRIEND_TEST(test_calculate_damage_dealt, claw);
+    FRIEND_TEST(test, sad);
 };
 
 TEST(test_get_party, happy)
@@ -209,10 +210,15 @@ TEST(test_calc_damage_modifiers, normal)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 1;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Fire_Fang");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, stab)
@@ -220,10 +226,15 @@ TEST(test_calc_damage_modifiers, stab)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 1.5;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Crunch");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1.5);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, super_effective)
@@ -231,10 +242,15 @@ TEST(test_calc_damage_modifiers, super_effective)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 2;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::PSYCHIC, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Crunch");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 2);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, super_effective_stab)
@@ -242,10 +258,15 @@ TEST(test_calc_damage_modifiers, super_effective_stab)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 3;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::PSYCHIC, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Crunch");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 3);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, not_very_effective)
@@ -253,11 +274,16 @@ TEST(test_calc_damage_modifiers, not_very_effective)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 0.5;
+    int power = 100;
+    vector<float> mults (20, 1);
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Crunch");
 
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.5);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, not_very_effective_stab)
@@ -265,11 +291,16 @@ TEST(test_calc_damage_modifiers, not_very_effective_stab)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 0.75;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::DARK, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Crunch");
 
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.75);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, weather_boost)
@@ -277,15 +308,23 @@ TEST(test_calc_damage_modifiers, weather_boost)
     BattleTest b;
     Pokemon p1, p2;
     Move m1, m2;
+    float expected_mod = 1.5;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m1.load_move("Scald");
     m2.load_move("Fire_Fang");
 
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
-    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 1.5);
+    b.calculate_damage_modifier(&mults, &m1, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
+    mults.clear();
+
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HARSH_SUNLIGHT);
-    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 1.5);
+    b.calculate_damage_modifier(&mults, &m2, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, weather_reduce)
@@ -293,15 +332,23 @@ TEST(test_calc_damage_modifiers, weather_reduce)
     BattleTest b;
     Pokemon p1, p2;
     Move m1, m2;
+    float expected_mod = 0.5;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m1.load_move("Scald");
     m2.load_move("Fire_Fang");
 
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::RAIN);
-    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 0.5);
+    b.calculate_damage_modifier(&mults, &m2, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
+    mults.clear();
+
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HARSH_SUNLIGHT);
-    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 0.5);
+    b.calculate_damage_modifier(&mults, &m1, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, weather_extremes)
@@ -309,17 +356,33 @@ TEST(test_calc_damage_modifiers, weather_extremes)
     BattleTest b;
     Pokemon p1, p2;
     Move m1, m2;
+    float expected_mod_1 = 1.5;
+    float expected_mod_2 = 0;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m1.load_move("Scald");
     m2.load_move("Fire_Fang");
 
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::HEAVY_RAIN);
-    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 1.5);
-    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 0);
+    b.calculate_damage_modifier(&mults, &m1, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod_1 * power);
+    mults.clear();
+
+    b.calculate_damage_modifier(&mults, &m2, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod_2 * power);
+    mults.clear();
+
     b.active_field.modify_field_obj(FieldObjects::WEATHER, PLAYER_2_0, PLAYER_1_0, Weather::EXTREMELY_HARSH_SUNLIGHT);
-    EXPECT_EQ(b.calculate_damage_modifier(&m2, &p1, &p2, 1, false), 1.5);
-    EXPECT_EQ(b.calculate_damage_modifier(&m1, &p1, &p2, 1, false), 0);
+    b.calculate_damage_modifier(&mults, &m2, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod_1 * power);
+    mults.clear();
+
+    b.calculate_damage_modifier(&mults, &m1, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod_2 * power);
+    mults.clear();
 }
 
 TEST(test_calc_damage_modifiers, burned_physical)
@@ -327,11 +390,16 @@ TEST(test_calc_damage_modifiers, burned_physical)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 0.5;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p1.set_status(BURNED);
     m.load_move("Fire_Fang");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 0.5);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, burned_special)
@@ -339,11 +407,16 @@ TEST(test_calc_damage_modifiers, burned_special)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 1;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p1.set_status(BURNED);
     m.load_move("Scald");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, false), 1);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, 2_targets)
@@ -351,10 +424,15 @@ TEST(test_calc_damage_modifiers, 2_targets)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 0.75;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Scald");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 2, false), 0.75);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 2, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, grounded)
@@ -362,10 +440,15 @@ TEST(test_calc_damage_modifiers, grounded)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 0;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::FLYING, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Earthquake");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 2, false), 0);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, false);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_calc_damage_modifiers, crit)
@@ -373,10 +456,15 @@ TEST(test_calc_damage_modifiers, crit)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    float expected_mod = 1.5;
+    int power = 100;
+    vector<float> mults;
+
     p1.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     p2.create_test_pokemon(PokeTypes::NORMAL, PokeTypes::NO_TYPE, QUIRKY, 10);
     m.load_move("Earthquake");
-    EXPECT_EQ(b.calculate_damage_modifier(&m, &p1, &p2, 1, true), 1.5);
+    b.calculate_damage_modifier(&mults, &m, &p1, &p2, 1, true);
+    EXPECT_EQ(b.do_chain_mult(power, &mults), expected_mod * power);
 }
 
 TEST(test_has_lost, no_loss)
@@ -451,11 +539,11 @@ TEST(test_calculate_damage_dealt, claw)
     BattleTest b;
     Pokemon p1, p2;
     Move m;
+    vector<float> mults (20, 1);
     map<float, float> results;
-    map<float, float> expected_outcomes = {{124, 1}, {126, 1}, {127, 1}, {129, 1},
-                                           {130, 1}, {132, 1}, {133, 1}, {135, 1},
-                                           {136, 1}, {138, 1}, {139, 1}, {141, 1},
-                                           {142, 1}, {144, 1}, {145, 1}, {147, 1}};
+    map<float, float> expected_outcomes = {{122, 1}, {126, 2}, {128, 2},
+                                           {132, 2}, {134, 2}, {138, 2},
+                                           {140, 2}, {144, 2}, {146, 1}};
     int damage, N = expected_outcomes.size(), num_runs = get_num_samples(N);
 
     p1.create_test_pokemon(PokeTypes::DRAGON, PokeTypes::GROUND, JOLLY, 100, "Garchomp");
@@ -465,20 +553,20 @@ TEST(test_calculate_damage_dealt, claw)
 
     m.load_move("Dragon_Claw");
 
-    float damage_mod = b.calculate_damage_modifier(&m, b.active_field.active_pokes[PLAYER_1_0], b.active_field.active_pokes[PLAYER_2_0], 1, false);
+    b.calculate_damage_modifier(&mults, &m, b.active_field.active_pokes[PLAYER_1_0], b.active_field.active_pokes[PLAYER_2_0], 1, false);
 
     for(int i = 0; i < num_runs; i++)
     {
-        damage = b.calculate_damage_dealt(p1.get_level(), b.get_move_power(PLAYER_1_0, PLAYER_2_0, &m), p1.get_stat(STAT::ATK), p2.get_stat(STAT::DEF), damage_mod);
-        EXPECT_EQ(expected_outcomes.count(damage), 1);
+        damage = b.calculate_damage_dealt(p1.get_level(), b.get_move_power(PLAYER_1_0, PLAYER_2_0, &m), p1.get_stat(STAT::ATK), p2.get_stat(STAT::DEF), &mults);
         results[damage]++;
+        mults.erase(mults.begin());
     }
 
     //NORMALIZE!
     for (auto const& x : expected_outcomes)
     {
-        expected_outcomes[x.first] = expected_outcomes[x.first] / expected_outcomes.size();
-        results[x.first] = results[x.first] / num_runs;
+        expected_outcomes[x.first] = expected_outcomes[x.first] / 16.0;
+        results[x.first] = results[x.first] / static_cast<float>(num_runs);
         EXPECT_LE(abs(results[x.first] - expected_outcomes[x.first]), THRESHOLD);
     }
 }

@@ -65,8 +65,12 @@ protected:
     bool roll_chance(float chance);
 
     int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
-    int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier);
-    float calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
+    int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, vector<float>* damage_mods);
+    void calculate_damage_modifier(vector<float>* mults,Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
+    int do_chain_mult(int base_power, vector<float>* mults);
+
+    uniform_int_distribution<int>damage_calc;
+    mt19937 generator;
 
     Party Parties [2];
 
@@ -90,9 +94,7 @@ private:
 
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
 
-    mt19937 generator;
     uniform_real_distribution<float> chance;
-    uniform_int_distribution<int>damage_calc;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
 };

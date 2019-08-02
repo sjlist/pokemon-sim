@@ -15,7 +15,7 @@ const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
 #define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 400
 
-#define RAND_SEED
+#define RAND_SEED 3156567564
 
 #define DEBUG_LEVEL 1
 

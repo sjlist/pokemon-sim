@@ -262,23 +262,37 @@ Attack_Result Battle::attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_p
     return res.first;
 }
 
+int Battle::do_chain_mult(int base_power, vector<float>* mults)
+{
+    int ret = base_power;
+    for(unsigned int i = 0; i < mults->size(); i++)
+    {
+        ret = floor(ret * mults->at(i));
+    }
+    return ret;
+}
 
 pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move)
 {
-    float eff_atk, eff_def, damage_dealt, damage_mod;
+    vector<float> damage_mults;
+    float eff_atk, eff_def, damage_dealt;
     int move_power;
     bool crit = false;
 
     if(Battle::roll_chance(move->get_crit()))
         crit = true;
 
-    damage_mod = Battle::calculate_damage_modifier(move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], Battle::Battle_Targets.get_num_valid_targets(), crit);
+    Battle::calculate_damage_modifier(&damage_mults, move, Battle::active_field.active_pokes[atk_pos], Battle::active_field.active_pokes[def_pos], Battle::Battle_Targets.get_num_valid_targets(), crit);
 
-    if(damage_mod == 0)
+
+    for(unsigned int i = 0; i < damage_mults.size(); i++)
     {
-        DEBUG_MSG("P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos]->get_species()
-                  << " is immune to " << type_to_string(move->get_type()) << " type moves\n");
-        return make_pair(Attack_Result::IMMUNE, 0);
+        if(damage_mults.at(i) == 0)
+        {
+            DEBUG_MSG("P" << get_player_from_position(def_pos) + 1  << "'s " << Battle::active_field.active_pokes[def_pos]->get_species()
+                          << " is immune to " << type_to_string(move->get_type()) << " type moves\n");
+            return make_pair(Attack_Result::IMMUNE, 0);
+        }
     }
 
     if(move->get_power() == 0)
@@ -299,7 +313,7 @@ pair<Attack_Result, float> Battle::attack_damage(FIELD_POSITION atk_pos, FIELD_P
     move_power = Battle::get_move_power(atk_pos, def_pos, move);
 
     // calculate damage dealt
-    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos]->get_level(), move_power, eff_atk, eff_def, damage_mod);
+    damage_dealt = Battle::calculate_damage_dealt(Battle::active_field.active_pokes[atk_pos]->get_level(), move_power, eff_atk, eff_def, &damage_mults);
 
     // Deal damage and handle fainting but DO NOT RETURN FAINT RESULT UNTIL AFTER SWAP HAS A CHANCE TO RETURN
     if(!Battle::active_field.active_pokes[def_pos]->deal_damage(damage_dealt))
@@ -503,12 +517,13 @@ void Battle::reset_temp_field_status()
     }
 }
 
-int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, float damage_modifier)
+int Battle::calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, vector<float>* damage_mods)
 {
-    float damage_adjustment = damage_calc(Battle::generator) / 100.0 * damage_modifier;
-    int base_damage = floor((floor(floor(floor(2 * (float)attacker_level / 5 + 2) * move_power * (float)atk / def) / 50.0) + 2));
+    float damage_adjustment = damage_calc(Battle::generator) / 100.0;
+    damage_mods->insert(damage_mods->begin(), damage_adjustment);
+    int base_damage  = floor(floor((floor((2 * attacker_level) / 5 + 2) * move_power * atk) / def) / 50 + 2);
 
-    return floor(base_damage * damage_adjustment);
+    return Battle::do_chain_mult(base_damage, damage_mods);
 }
 
 void Battle::handle_faint(FIELD_POSITION pos)
@@ -756,50 +771,46 @@ bool Battle::roll_chance(float pcent_chance)
     return c < pcent_chance;
 }
 
-float Battle::calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit)
+void Battle::calculate_damage_modifier(vector<float>* mults, Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit)
 {
-    float damage_modifier = 1;
-
-    damage_modifier *= calculate_type_damage_modifier(defender->get_type(), move->get_type());
-
-    if(damage_modifier >= 2)
-        DEBUG_MSG("It's super effective\n");
-    else if(damage_modifier > 0 && damage_modifier < 1)
-        DEBUG_MSG("It's not very effective\n");
+    if(is_stab(attacker->get_type(), move->get_type()))
+        mults->push_back(1.5);
 
     if(crit)
     {
         DEBUG_MSG("Critical Hit\n");
-        damage_modifier *= 1.5;
+        mults->push_back(1.5);
     }
 
     if(num_targets > 1)
-        damage_modifier *= 0.75;
+        mults->push_back(0.75);
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::WATER)
     || (Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::WATER)
     || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE)
     || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::FIRE))
-        damage_modifier *= 1.5;
+        mults->push_back(1.5);
 
     if((Battle::active_field.weather_state == Weather::RAIN && move->get_type() == PokeTypes::FIRE)
     || (Battle::active_field.weather_state == Weather::HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
-        damage_modifier *= 0.5;
+        mults->push_back(0.5);
 
     if((Battle::active_field.weather_state == Weather::HEAVY_RAIN && move->get_type() == PokeTypes::FIRE)
     || (Battle::active_field.weather_state == Weather::EXTREMELY_HARSH_SUNLIGHT && move->get_type() == PokeTypes::WATER))
-        damage_modifier = 0;
-
-    if(is_stab(attacker->get_type(), move->get_type()))
-        damage_modifier *= 1.5;
+        mults->push_back(0);
 
     if(move->get_damage_type() == move_damage_type::MOVE_PHYSICAL && attacker->get_status() == STATUS::BURNED)
-        damage_modifier *= 0.5;
+        mults->push_back(0.5);
 
     if(move->get_type() == PokeTypes::GROUND && !defender->is_grounded())
-        damage_modifier = 0;
+        mults->push_back(0);
 
-    return damage_modifier;
+    mults->push_back(calculate_type_damage_modifier(defender->get_type(), move->get_type()));
+
+    if(mults->back() >= 2)
+        DEBUG_MSG("It's super effective\n");
+    else if(mults->back() > 0 && mults->back() < 1)
+        DEBUG_MSG("It's not very effective\n");
 }
 
 // LOADING AND RESETTING
