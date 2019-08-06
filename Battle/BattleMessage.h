@@ -22,8 +22,16 @@ enum Commands
     COMMAND_ATTACK = 0,
     COMMAND_SWAP,
     COMMAND_TEAM_CHOICE,
+    COMMAND_MEGA_EVOLVE,
     COMMAND_NONE,
     NUM_COMMANDS
+};
+
+enum StateTransition
+{
+    inactive = 0,
+    pending,
+    active
 };
 
 class BattleMessage
@@ -35,6 +43,7 @@ public:
 
     Commands move_command;
     FIELD_POSITION pos;
+    bool mega_evolve;
 
     //Attack fields
     int move_num;

@@ -49,11 +49,12 @@ public:
     int get_battle_result();
 
 protected:
-    void sort_message_stack();
+    void sort_message_stack(vector<BattleMessage>*  messages);
     void create_speed_list();
     BattleState state;
 
     vector<BattleMessage> turn_messages;
+    vector<BattleMessage> mega_messages;
     vector<FIELD_POSITION> speed_list;
 private:
     void init(Players player, string* team_name);
@@ -66,14 +67,13 @@ private:
 
     bool battle_over();
 
-    void validate_battle_message(BattleMessage message);
-
-
     int make_choice(int num_positions);
-
     uniform_int_distribution<int> position_choice;
 
+    void validate_battle_message(BattleMessage message);
     void remove_message_from_stack(FIELD_POSITION pos);
+    static BattleMessage get_mega_message(FIELD_POSITION pos);
+    static BattleMessage get_no_op_message(FIELD_POSITION pos);
 };
 
 

@@ -32,6 +32,7 @@ public:
     bool is_alive();
     bool is_grounded();
     bool is_protected();
+    bool can_mega();
 
     bool use_move(int move_number);
     void set_active(bool state);
@@ -46,7 +47,7 @@ public:
     void increment_protect_turns();
     void remove_type(int type_num);
     bool setup_substitute();
-
+    void mega_evolve();
 
     void reset_types();
     void reset_protect();
@@ -77,12 +78,21 @@ private:
     PokeTypes current_type[2];
     float current_hp;
     string name;
+    float* current_stats;
     float base_stats [STAT::NUM_STATS];
     int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
+    int evs [STAT::NUM_STATS];
+    int ivs [STAT::NUM_STATS];
     STATUS status;
     string species;
     bool protect_active;
     int protect_turns;
+    Natures nature;
+
+    bool has_mega;
+    bool is_mega;
+    PokeTypes mega_type[2];
+    float mega_base_stats [STAT::NUM_STATS];
 
     float substitute_hp;
 
@@ -92,7 +102,7 @@ private:
     int v_status_turns [NUM_VOLATILE_STATUS];
 
     void load_species(string species_name);
-    void set_stats(int* ivs, int* evs, int level, Natures nature);
+    void set_stats(bool use_mega = false);
     float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
     float calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
 };

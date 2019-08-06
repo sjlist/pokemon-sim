@@ -9,5 +9,19 @@
   {
     "TYPE0" : "ROCK",
     "TYPE1" : "FLYING"
+  },
+  "mega":
+  {
+    "HP": 80,
+    "ATK": 135,
+    "DEF": 85,
+    "SPA": 70,
+    "SPD": 95,
+    "SPE": 150,
+    "TYPES":
+    {
+      "TYPE0": "ROCK",
+      "TYPE1": "FLYING"
+    }
   }
 }

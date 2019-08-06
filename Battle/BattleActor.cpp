@@ -26,7 +26,7 @@ BattleActor::BattleActor(long seed)
     BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
 }
 
-BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
+BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, bool player_can_mega, Actions action)
 {
     BattleMessage message;
     Players player = get_player_from_position(pos);
@@ -82,6 +82,14 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
     }
 
     DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " is ");
+
+    // Decide if the pokemon is going to mega evolve
+    if(field->active_pokes[pos]->can_mega() && player_can_mega)
+    {
+        message.mega_evolve = true;
+        DEBUG_MSG("mega evolving " <<  field->active_pokes[pos]->get_species() << "and ");
+    }
+
     if(message.move_command == Commands::COMMAND_SWAP)
     {
         DEBUG_MSG("swapping position: " << get_string_from_field_position(pos) << ", sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
@@ -146,9 +154,21 @@ int BattleActor::choose_pokemon(Party* party)
             num_pokes++;
         }
     }
+
+    // If there are no other pokemon we can swap with, allow the actor to chose a pokemon that is slated to be swapped
     if(num_pokes == 0)
     {
-        return -1;
+        for (int i = 0; i < 6; i++)
+        {
+            if (party->party_pokes[i].is_alive()
+                && !party->party_pokes[i].is_active())
+            {
+                pokes[num_pokes] = i;
+                num_pokes++;
+            }
+        }
+        if(num_pokes == 0)
+            return -1;
     }
 
     selection = BattleActor::choose_position(num_pokes);

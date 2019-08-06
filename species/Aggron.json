@@ -9,5 +9,19 @@
   {
     "TYPE0" : "STEEL",
     "TYPE1" : "ROCK"
+  },
+  "mega":
+  {
+    "HP":70,
+    "ATK": 140,
+    "DEF": 230,
+    "SPA": 60,
+    "SPD": 80,
+    "SPE": 50,
+    "TYPES":
+    {
+      "TYPE0" : "STEEL",
+      "TYPE1" : "NONE"
+    }
   }
 }

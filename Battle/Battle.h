@@ -5,10 +5,11 @@
 #ifndef POKEMON_SIM_BATTLE_H
 #define POKEMON_SIM_BATTLE_H
 
+#include <Battle/BattleMessage.h>
 #include <Battle/Field.h>
 #include <Battle/Party.h>
-#include <Pokemon/Pokemon.h>
 #include <Battle/Players.h>
+#include <Pokemon/Pokemon.h>
 
 #include <vector>
 #include <random>
@@ -59,6 +60,9 @@ public:
     void reset_temp_field_status();
 
     bool has_lost(Players player);
+    bool can_mega(FIELD_POSITION pos);
+    void mega_pending(FIELD_POSITION pos);
+    void mega_evolve(FIELD_POSITION pos);
     void print_battle();
 
 protected:
@@ -97,6 +101,7 @@ private:
     uniform_real_distribution<float> chance;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
+    StateTransition has_megad [2];
 };
 
 

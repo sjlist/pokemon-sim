@@ -9,5 +9,19 @@
   {
     "TYPE0" : "PSYCHIC",
     "TYPE1" : "NONE"
+  },
+  "mega":
+  {
+    "HP": 55,
+    "ATK": 50,
+    "DEF": 45,
+    "SPA": 175,
+    "SPD": 105,
+    "SPE": 150,
+    "TYPES":
+    {
+      "TYPE0" : "PSYCHIC",
+      "TYPE1" : "NONE"
+    }
   }
 }

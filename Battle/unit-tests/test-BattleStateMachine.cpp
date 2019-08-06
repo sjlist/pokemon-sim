@@ -94,7 +94,7 @@ TEST(test_sort_message_stack, no_speed_ties_same_prio) {
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    BSM.sort_message_stack();
+    BSM.sort_message_stack(&BSM.turn_messages);
 
     check_order(&BSM.turn_messages, &expected);
 }
@@ -110,7 +110,7 @@ TEST(test_sort_message_stack, no_speed_ties_diff_prio_attacks)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    BSM.sort_message_stack();
+    BSM.sort_message_stack(&BSM.turn_messages);
 
     check_order(&BSM.turn_messages, &expected);
 }
@@ -125,7 +125,7 @@ TEST(test_sort_message_stack, no_speed_ties_diff_prio_attacks_swap) {
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    BSM.sort_message_stack();
+    BSM.sort_message_stack(&BSM.turn_messages);
 
     check_order(&BSM.turn_messages, &expected);
 }
@@ -159,7 +159,7 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -197,7 +197,7 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -236,7 +236,7 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -274,7 +274,7 @@ TEST(test_sort_message_stack, 1_2_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -312,7 +312,7 @@ TEST(test_sort_message_stack, 2_3_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -350,7 +350,7 @@ TEST(test_sort_message_stack, 3_4_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
@@ -389,7 +389,7 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
 
     for(int i = 0; i < num_sorts; i++)
     {
-        BSM.sort_message_stack();
+        BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
         pcent_deviation[BSM.turn_messages[2].pos][1]++;
         pcent_deviation[BSM.turn_messages[1].pos][2]++;
