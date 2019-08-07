@@ -19,7 +19,7 @@ public:
 
     float attack_swap_ratio [2] = {0.8, 0.8};
 
-    int choose_pokemon(Party* party);
+    int choose_pokemon(Party* party, bool force_swap = false);
     BattleMessage choose_action(FIELD_POSITION atk_pos, Party* player_party, Field* field, bool player_can_mega, Actions action=Actions::CHOOSE_ACTION);
     void update_generator(long seed);
 protected:

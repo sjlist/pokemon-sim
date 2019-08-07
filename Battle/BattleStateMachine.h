@@ -29,6 +29,7 @@ enum class BattleState
 enum class BattleNotification
 {
     POKEMON_SWAP,
+    FORCE_POKEMON_SWAP,
     POKEMON_ACTION,
     PLAYER_LOST,
     TEAM_CHOICE

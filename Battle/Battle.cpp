@@ -347,7 +347,7 @@ Attack_Result Battle::handle_contact(FIELD_POSITION attacker, FIELD_POSITION def
     //NOT IMPLEMENTED YET
     DEBUG_MSG("P" << get_player_from_position(attacker) + 1  << "'s " << active_field.active_pokes[attacker]->get_species()
            << " made contact with "
-           << "P" << get_player_from_position(defender) + 1  << "'s " << active_field.active_pokes[defender]->get_species());
+           << "P" << get_player_from_position(defender) + 1  << "'s " << active_field.active_pokes[defender]->get_species() << endl);
     return Attack_Result::HIT;
 }
 

@@ -41,6 +41,7 @@ void BattleStateMachine::update_random_seed(long new_seed)
     choice = mt19937(seed);
     battle.update_generator(seed);
 }
+
 void BattleStateMachine::update_random_seed()
 {
     random_device rd;
@@ -267,8 +268,8 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                             {
                                 if(battle.has_lost(get_player_from_position(swap_pos)))
                                     return make_pair(BattleNotification::PLAYER_LOST, swap_pos);
-                                if(battle.can_swap(get_player_from_position(swap_pos)))
-                                    return make_pair(BattleNotification::POKEMON_SWAP, swap_pos);
+
+                                battle.return_poke(swap_pos);
                             }
 
                             remove_message_from_stack(swap_pos);
@@ -288,15 +289,12 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                                 // lose if no pokes left
                                 if (battle.has_lost(faint_player))
                                 {
-                                    goto faint_end;
+                                    return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
                                 }
 
                                 remove_message_from_stack(static_cast<FIELD_POSITION>(p));
 
-                                if (battle.can_swap(faint_player))
-                                    return make_pair(BattleNotification::POKEMON_SWAP, static_cast<FIELD_POSITION>(p));
-                                else
-                                    battle.swap_poke(static_cast<FIELD_POSITION>(p), -1); //Return the fainted pokemon but do not send out a new pokemon
+                                battle.return_poke(static_cast<FIELD_POSITION>(p));
 
                                 faint_end:;
                             }
@@ -329,12 +327,13 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                 break;
             case BattleState::TURN_END_STATUS_CHECK:
                 create_speed_list();
-                for(int i =0; i < FIELD_POSITION::NUM_POSITIONS; i++)
+                for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
                     if(!battle.handle_end_turn_statuses(speed_list.at(i)))
                     {
                         if(battle.has_lost(get_player_from_position(speed_list.at(i))))
                             return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
+                        battle.return_poke(static_cast<FIELD_POSITION>(speed_list.at(i)));
                     }
                 }
 
@@ -345,22 +344,24 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
             case BattleState::TURN_END_FAINT_CHECK:
                 for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
                 {
-                    if(battle.active_field.active_pokes[i] != nullptr && !battle.active_field.active_pokes[i]->is_alive())
+                    if(battle.active_field.active_pokes[i] == nullptr)
                     {
-                        if(message.pos == static_cast<FIELD_POSITION>(i))
+                        if(message.pos == static_cast<FIELD_POSITION>(i) && message.reserve_poke != -1)
                         {
-                            if(battle.swap_poke(message.pos, message.reserve_poke) == Attack_Result::FAINT)
+                            if(battle.send_out(message.pos, message.reserve_poke) == Attack_Result::FAINT)
                             {
                                 if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
                                     return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
+                                else
+                                    return make_pair(BattleNotification::FORCE_POKEMON_SWAP, static_cast<FIELD_POSITION>(i));
                             }
 
                             message.pos = NO_POSITION; // A little hacky.. trying to avoid swapping multiple times with the same message if there are no pokemon left in the party
                             i--;
                         }
-                        else
+                        else if(battle.can_swap(get_player_from_position(static_cast<FIELD_POSITION>(i))))
                         {
-                            return make_pair(BattleNotification::POKEMON_SWAP, static_cast<FIELD_POSITION>(i));
+                            return make_pair(BattleNotification::FORCE_POKEMON_SWAP, static_cast<FIELD_POSITION>(i));
                         }
                     }
                 }

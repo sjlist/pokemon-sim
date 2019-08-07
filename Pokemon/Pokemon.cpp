@@ -188,7 +188,7 @@ bool Pokemon::deal_damage(float damage, bool ignore_sub)
         }
         return true;
     }
-    DEBUG_MSG("Dealt " << round((float)damage/Pokemon::current_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::species << "\n");
+    DEBUG_MSG("Dealt " << round((float)damage/Pokemon::current_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::get_species() << "\n");
     Pokemon::current_hp -=  damage;
 
     if(Pokemon::current_hp <= 0)

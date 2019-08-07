@@ -140,7 +140,7 @@ int BattleActor::choose_move(Pokemon* poke)
     return moves[selection];
 }
 
-int BattleActor::choose_pokemon(Party* party)
+int BattleActor::choose_pokemon(Party* party, bool force_swap)
 {
     int num_pokes = 0, selection;
     int pokes [6];
@@ -158,16 +158,21 @@ int BattleActor::choose_pokemon(Party* party)
     // If there are no other pokemon we can swap with, allow the actor to chose a pokemon that is slated to be swapped
     if(num_pokes == 0)
     {
-        for (int i = 0; i < 6; i++)
+        if(force_swap)
         {
-            if (party->party_pokes[i].is_alive()
-                && !party->party_pokes[i].is_active())
+            for (int i = 0; i < 6; i++)
             {
-                pokes[num_pokes] = i;
-                num_pokes++;
+                if (party->party_pokes[i].is_alive()
+                    && !party->party_pokes[i].is_active())
+                {
+                    pokes[num_pokes] = i;
+                    num_pokes++;
+                }
             }
+            if(num_pokes == 0)
+                return -1;
         }
-        if(num_pokes == 0)
+        else
             return -1;
     }
 

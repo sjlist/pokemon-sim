@@ -26,7 +26,7 @@ void check_probability(float win_pcent, int num_runs);
 
 int main()
 {
-    int max_runs = 2000000, round_dec = 2, rounding_val;
+    int max_runs = 500000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, wins [3] = {0, 0, 0};
@@ -144,6 +144,11 @@ BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION
             return m;
         case BattleNotification::POKEMON_ACTION:
             return actors[action_player].choose_action(pos, battle->get_party(action_player), &battle->active_field, battle->can_mega(pos), Actions::CHOOSE_ACTION);
+        case BattleNotification::FORCE_POKEMON_SWAP:
+            m.move_command = COMMAND_SWAP;
+            m.reserve_poke = actors[action_player].choose_pokemon(battle->get_party(action_player), true);
+            m.pos = pos;
+            return m;
         case BattleNotification::POKEMON_SWAP:
             m.move_command = COMMAND_SWAP;
             m.reserve_poke = actors[action_player].choose_pokemon(battle->get_party(action_player));
