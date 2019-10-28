@@ -5,7 +5,7 @@
 #ifndef POKEMON_SIM_PLAYER_CONFIG_H
 #define POKEMON_SIM_PLAYER_CONFIG_H
 
-#define TEAM_1_CHOICE "team1"
-#define TEAM_2_CHOICE "team1"
+#define TEAM_1_CHOICE "stall"
+#define TEAM_2_CHOICE "stall"
 
 #endif /* POKEMON_SIM_CONFIG_H */

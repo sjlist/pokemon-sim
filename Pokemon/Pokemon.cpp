@@ -22,7 +22,7 @@ static int MAX_STAGES = 6;
 
 Pokemon::Pokemon()
 {
-    Pokemon::active = false;
+    Pokemon::active = benched;
     Pokemon::alive = false;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::substitute_hp = 0;
@@ -41,7 +41,17 @@ Pokemon::Pokemon()
 // STATE CHECKING FUNCTIONS
 bool Pokemon::is_active()
 {
-    return Pokemon::active;
+    return Pokemon::active == in_field;
+}
+
+bool Pokemon::is_benched()
+{
+    return Pokemon::active == benched;
+}
+
+bool Pokemon::is_swapping()
+{
+    return Pokemon::active == to_be_swapped;
 }
 
 bool Pokemon::can_mega()
@@ -278,9 +288,19 @@ bool Pokemon::set_volatile_status(VOLATILE_STATUS v_status)
     }
 }
 
-void Pokemon::set_active(bool state)
+void Pokemon::set_active()
 {
-    Pokemon::active = state;
+    Pokemon::active = in_field;
+}
+
+void Pokemon::set_benched()
+{
+    Pokemon::active = benched;
+}
+
+void Pokemon::set_swapping()
+{
+    Pokemon::active = to_be_swapped;
 }
 
 void Pokemon::faint_poke()
@@ -386,7 +406,7 @@ void Pokemon::reset_protect()
 
 void Pokemon::reset()
 {
-    Pokemon::active = false;
+    Pokemon::active = benched;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
     {
         Pokemon::stat_modifiers[stat] = 0;
@@ -407,7 +427,6 @@ void Pokemon::reset()
         Pokemon::v_status_turns[i] = 0;
 
     Pokemon::reset_protect();
-    Pokemon::to_be_swapped = false;
     Pokemon::is_mega = false;
 }
 
@@ -448,7 +467,6 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
     Pokemon::volatile_status = 0;
-    Pokemon::to_be_swapped = false;
     Pokemon::is_mega = false;
 }
 
@@ -552,7 +570,7 @@ void Pokemon::print_pokemon(bool detailed)
     if(Pokemon::species.empty())
         return;
 
-    DEBUG_MSG(Pokemon::species << "\n");
+    DEBUG_MSG(Pokemon::get_species() << "\n");
     if(detailed)
     {
         DEBUG_MSG("HP:  "  << Pokemon::current_stats[STAT::HP] << " Modifier: " << Pokemon::stat_modifiers[STAT::HP]  << "\n");
@@ -584,11 +602,10 @@ void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float p
     }
 
     Pokemon::alive = true;
-    Pokemon::active = true;
+    Pokemon::active = in_field;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
     Pokemon::volatile_status = 0;
-    Pokemon::to_be_swapped = false;
 
     Pokemon::load_species(species);
 

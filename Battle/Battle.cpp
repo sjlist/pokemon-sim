@@ -71,8 +71,6 @@ Attack_Result Battle::send_out(FIELD_POSITION pos, int poke_position)
 
     DEBUG_MSG("Sending out P" << player + 1 << "'s " << Parties[player].party_pokes[poke_position].get_species() << "\n");
 
-    Parties[player].party_pokes[poke_position].to_be_swapped = false;
-
     // reset status turns for badly poisoned
     if(Parties[player].party_pokes[poke_position].get_status() == STATUS::BADLY_POISONED)
         Parties[player].party_pokes[poke_position].status_turns = 0;

@@ -11,8 +11,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 ##################################################
 ### Source
 ##################################################
+set(BOOST_VERSION 1.70.0)
+find_package(Boost ${BOOST_VERSION})
+
 include_directories(.
-        ../libs/boost)
+        ${Boost_INCLUDE_DIRS})
 
 set(BATTLE_FILES
         Battle/Battle.cpp

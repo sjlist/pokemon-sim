@@ -14,12 +14,12 @@ using namespace std;
 
 struct GuessData
 {
-    float guess, guess_confidence, time_elasped, run_variance, time_variance;
+    float guess, guess_confidence, time_elapsed, run_variance, time_variance;
 };
 
 string seconds_to_time_string(float total_time);
 BattleMessage request_message_from_actor(BattleNotification note, FIELD_POSITION pos, BattleActor* actors, Battle* battle);
-GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs);
+GuessData guess_time_left(chrono::duration<double> time_elapsed, float time_since_last_guess, float last_guess, int max_runs, int num_runs);
 void check_probability(float win_pcent, int num_runs);
 
 #define DELTA 0.001
@@ -30,7 +30,7 @@ int main()
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, wins [3] = {0, 0, 0};
-    chrono::duration<double> time_elasped;
+    chrono::duration<double> time_elapsed;
     rounding_val = pow(10, round_dec);
     vector<GuessData> guesses;
 
@@ -53,10 +53,10 @@ int main()
             current_pcent = round((float)num_runs/max_runs*rounding_val)/rounding_val;
             current_time = chrono::system_clock::now();
 
-            time_elasped = (current_time - start_time);
-            time_since_last_guess = (time_elasped.count() - guess_data.time_elasped);
+            time_elapsed = (current_time - start_time);
+            time_since_last_guess = (time_elapsed.count() - guess_data.time_elapsed);
 
-            guess_data = guess_time_left(time_elasped, time_since_last_guess, guess_data.guess, max_runs, num_runs);
+            guess_data = guess_time_left(time_elapsed, time_since_last_guess, guess_data.guess, max_runs, num_runs);
 
             guesses.push_back(guess_data);
 
@@ -87,8 +87,8 @@ int main()
         BSM.reset();
     }
     current_time = chrono::system_clock::now();
-    time_elasped = (current_time - start_time);
-    seconds_per_battle = time_elasped.count() / max_runs;
+    time_elapsed = (current_time - start_time);
+    seconds_per_battle = time_elapsed.count() / max_runs;
 
     for(unsigned int i = 0; i < 3; i++)
     {
@@ -102,17 +102,17 @@ int main()
     cout << "Max turn count " << max_turns << "\n";
     cout << "Average turn count " << tot_turns / (float)max_runs << "\n";
     cout << "Average time to execute one battle: " << seconds_per_battle << " s\n";
-    cout << "Execution time: " << seconds_to_time_string(time_elasped.count()) << endl;
+    cout << "Execution time: " << seconds_to_time_string(time_elapsed.count()) << endl;
 
 //    while(!guesses.empty())
 //    {
 //        guess_data = guesses.back();
 //
-//        if(guess_data.time_elasped == 0)
+//        if(guess_data.time_elapsed == 0)
 //            break;
 //
-//        guess_error = abs(time_elasped.count() - (guess_data.time_elasped + guess_data.guess)) / time_elasped.count();
-//        cout << "Guess at " << seconds_to_time_string(guess_data.time_elasped)
+//        guess_error = abs(time_elapsed.count() - (guess_data.time_elapsed + guess_data.guess)) / time_elapsed.count();
+//        cout << "Guess at " << seconds_to_time_string(guess_data.time_elapsed)
 //             << " was " << seconds_to_time_string(guess_data.guess)
 //             << " was off by " << guess_error * 100 << "%"
 //             << " With a confidence: " << guess_data.guess_confidence
@@ -204,23 +204,23 @@ string seconds_to_time_string(float total_time)
     return time_string;
 }
 
-GuessData guess_time_left(chrono::duration<double> time_elasped, float time_since_last_guess, float last_guess, int max_runs, int num_runs)
+GuessData guess_time_left(chrono::duration<double> time_elapsed, float time_since_last_guess, float last_guess, int max_runs, int num_runs)
 {
     float current_guess = 0, guess_diff = 0, guess_confidence = 0, guess_time_variance = 0, guess_run_variance = 0;
     GuessData data;
 
-    current_guess = time_elasped.count() * (max_runs - num_runs) / num_runs;
+    current_guess = time_elapsed.count() * (max_runs - num_runs) / num_runs;
 
     guess_diff = abs(current_guess - last_guess);
 
     //guess_time_variance = abs(2 - (time_since_last_guess / abs(guess_diff)));
-    guess_time_variance = abs(1 - (time_since_last_guess + guess_diff) / (time_elasped.count() + current_guess));
+    guess_time_variance = abs(1 - (time_since_last_guess + guess_diff) / (time_elapsed.count() + current_guess));
     guess_run_variance = 1;//abs(1 - ((float)max_runs / (rounding_val * num_runs)));
     guess_confidence = guess_time_variance * guess_run_variance;
 
     data.guess_confidence = guess_confidence;
     data.guess = current_guess;
-    data.time_elasped = time_elasped.count();
+    data.time_elapsed = time_elapsed.count();
     data.run_variance = guess_run_variance;
     data.time_variance = guess_time_variance;
 

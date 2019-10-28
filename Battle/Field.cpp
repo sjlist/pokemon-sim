@@ -104,7 +104,7 @@ bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
 
     Field::active_pokes[pos] = poke;
     Field::active_pokes[pos]->first_turn = true;
-    Field::active_pokes[pos]->set_active(true);
+    Field::active_pokes[pos]->set_active();
     return Field::handle_entrance(pos);
 }
 
@@ -113,7 +113,7 @@ void Field::return_poke(FIELD_POSITION pos)
     if(Field::active_pokes[pos] != nullptr)
     {
         Field::leech_seed_positions[pos] = FIELD_POSITION::NO_POSITION;
-        Field::active_pokes[pos]->set_active(false);
+        Field::active_pokes[pos]->set_benched();
         Field::active_pokes[pos] = nullptr;
     }
     else

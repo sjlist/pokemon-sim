@@ -5,14 +5,10 @@
 #include <Battle/BattleStateMachine.h>
 #include <Battle/Players.h>
 #include <Config.h>
-#include <fileIO/loadJSON.h>
 #include <Pokemon/Move.h>
 #include <Utils/Logging.h>
 #include <Battle/BattleMessage.h>
 
-#include <boost/property_tree/ptree.hpp>
-#include <cstdlib>
-#include <map>
 #include <random>
 using namespace std;
 
@@ -130,7 +126,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                             num_active_pokes++;
                         if(p->party_pokes[j].is_alive())
                             num_party_pokes_alive++;
-                        if(p->party_pokes[j].to_be_swapped)
+                        if(p->party_pokes[j].is_swapping())
                             ERR_MSG("Player " << (i+1) << "'s " << p->party_pokes[j].get_species() << " started the turn to be swapped\n");
                     }
                     if((num_party_pokes_alive > num_active_pokes) && (num_active_pokes < (NUM_POSITIONS / 2)))
@@ -266,10 +262,10 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                             //swap pokes!
                             if(battle.swap_poke(swap_pos, reserve_poke) == Attack_Result::FAINT)
                             {
+                                battle.return_poke(swap_pos);
+
                                 if(battle.has_lost(get_player_from_position(swap_pos)))
                                     return make_pair(BattleNotification::PLAYER_LOST, swap_pos);
-
-                                battle.return_poke(swap_pos);
                             }
 
                             remove_message_from_stack(swap_pos);
@@ -350,6 +346,8 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                         {
                             if(battle.send_out(message.pos, message.reserve_poke) == Attack_Result::FAINT)
                             {
+                                battle.return_poke(static_cast<FIELD_POSITION>(i));
+
                                 if(battle.has_lost(get_player_from_position(static_cast<FIELD_POSITION>(i))))
                                     return make_pair(BattleNotification::PLAYER_LOST, FIELD_POSITION::NO_POSITION);
                                 else

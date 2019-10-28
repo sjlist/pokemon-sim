@@ -25,12 +25,12 @@ void Party::print_party()
 {
     for(int i = 0; i < 6; i++)
     {
-        if (!Party::party_pokes[i].is_active()) {
-            DEBUG_MSG(Party::party_pokes[i].get_species() << ": " <<
-                                                          round(Party::party_pokes[i].get_current_hp() /
-                                                                Party::party_pokes[i].get_stat(STAT::HP) *
-                                                                100 * 10) / 10 << "%\n");
-        } else
-            DEBUG_MSG(Party::party_pokes[i].get_species() << ": ACTIVE\n");
+        DEBUG_MSG(Party::party_pokes[i].get_species() << ": " <<
+                                                      round(Party::party_pokes[i].get_current_hp() /
+                                                            Party::party_pokes[i].get_stat(STAT::HP) *
+                                                            100 * 10) / 10 << "%");
+        if (Party::party_pokes[i].is_active())
+            DEBUG_MSG(" ACTIVE");
+        DEBUG_MSG(endl);
     }
 }

@@ -130,7 +130,7 @@ TEST(test_sort_message_stack, no_speed_ties_diff_prio_attacks_swap) {
     check_order(&BSM.turn_messages, &expected);
 }
 
-void test_probability(vector<vector<float>>* diff)
+void test_probability(vector<vector<double>>* diff)
 {
     for(int i = 0; i < 4; i++)
     {
@@ -143,10 +143,10 @@ void test_probability(vector<vector<float>>* diff)
 
 TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
 {
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {25, 25, 25, 25};
-    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(16);
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {25, 25, 25, 25};
+    vector<vector<double>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(16);
 
     vector<int> send_outs = {0, 1, 0, 1};
     vector<int> moves     = {0, 0, 0, 0};
@@ -157,7 +157,7 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -180,11 +180,11 @@ TEST(test_sort_message_stack, 1_2_3_4_speed_tie)
 
 TEST(test_sort_message_stack, 1_2_3_speed_tie)
 {
-    float probabilty = 33.333333;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {probabilty, probabilty, probabilty, 0};
-    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 33.333333;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {probabilty, probabilty, probabilty, 0};
+    vector<vector<double>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 1, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -195,7 +195,7 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -218,11 +218,11 @@ TEST(test_sort_message_stack, 1_2_3_speed_tie)
 
 TEST(test_sort_message_stack, 2_3_4_speed_tie)
 {
-    float probabilty = 33.333333;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, probabilty, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 33.333333;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, probabilty, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 2, 2, 3};
     vector<int> moves     = {0, 0, 0, 0};
@@ -234,7 +234,7 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie)
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -257,11 +257,11 @@ TEST(test_sort_message_stack, 2_3_4_speed_tie)
 
 TEST(test_sort_message_stack, 1_2_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {probabilty, probabilty, 0, 0};
-    vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {probabilty, probabilty, 0, 0};
+    vector<vector<double>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -272,7 +272,7 @@ TEST(test_sort_message_stack, 1_2_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -295,11 +295,11 @@ TEST(test_sort_message_stack, 1_2_speed_tie)
 
 TEST(test_sort_message_stack, 2_3_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, probabilty, probabilty, 0};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, probabilty, probabilty, 0};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 2, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -310,7 +310,7 @@ TEST(test_sort_message_stack, 2_3_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -333,11 +333,11 @@ TEST(test_sort_message_stack, 2_3_speed_tie)
 
 TEST(test_sort_message_stack, 3_4_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, 0, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, 0, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 4, 5};
     vector<int> moves     = {0, 0, 0, 0};
@@ -348,7 +348,7 @@ TEST(test_sort_message_stack, 3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -371,12 +371,12 @@ TEST(test_sort_message_stack, 3_4_speed_tie)
 
 TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents1 = {probabilty, probabilty, 0, 0};
-    vector<float> tie_pcents2 = {0, 0, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents1 = {probabilty, probabilty, 0, 0};
+    vector<double> tie_pcents2 = {0, 0, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 4, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -387,7 +387,7 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.sort_message_stack(&BSM.turn_messages);
         pcent_deviation[BSM.turn_messages[3].pos][0]++;
@@ -410,10 +410,10 @@ TEST(test_sort_message_stack, 1_2_and_3_4_speed_tie)
 
 TEST(test_create_speed_list, 1_2_3_4_speed_tie)
 {
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {25, 25, 25, 25};
-    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(16);
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {25, 25, 25, 25};
+    vector<vector<double>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(16);
 
     vector<int> send_outs = {0, 1, 0, 1};
     vector<int> moves     = {0, 0, 0, 0};
@@ -424,7 +424,7 @@ TEST(test_create_speed_list, 1_2_3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -447,11 +447,11 @@ TEST(test_create_speed_list, 1_2_3_4_speed_tie)
 
 TEST(test_create_speed_list, 1_2_3_speed_tie)
 {
-    float probabilty = 33.333333;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {probabilty, probabilty, probabilty, 0};
-    vector<vector<float>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 33.333333;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {probabilty, probabilty, probabilty, 0};
+    vector<vector<double>> expected_pcent = {tie_pcents, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 1, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -462,7 +462,7 @@ TEST(test_create_speed_list, 1_2_3_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -485,11 +485,11 @@ TEST(test_create_speed_list, 1_2_3_speed_tie)
 
 TEST(test_create_speed_list, 2_3_4_speed_tie)
 {
-    float probabilty = 33.333333;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, probabilty, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 33.333333;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, probabilty, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 2, 2, 3};
     vector<int> moves     = {0, 0, 0, 0};
@@ -500,7 +500,7 @@ TEST(test_create_speed_list, 2_3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -523,11 +523,11 @@ TEST(test_create_speed_list, 2_3_4_speed_tie)
 
 TEST(test_create_speed_list, 1_2_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {probabilty, probabilty, 0, 0};
-    vector<vector<float>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {probabilty, probabilty, 0, 0};
+    vector<vector<double>> expected_pcent = {tie_pcents, {0, 0, 100, 0}, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -538,7 +538,7 @@ TEST(test_create_speed_list, 1_2_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -561,11 +561,11 @@ TEST(test_create_speed_list, 1_2_speed_tie)
 
 TEST(test_create_speed_list, 2_3_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, probabilty, probabilty, 0};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, probabilty, probabilty, 0};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, tie_pcents, tie_pcents, {0, 0, 0, 100}};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 2, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -576,7 +576,7 @@ TEST(test_create_speed_list, 2_3_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -599,11 +599,11 @@ TEST(test_create_speed_list, 2_3_speed_tie)
 
 TEST(test_create_speed_list, 3_4_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents = {0, 0, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
-    int num_sorts = get_num_samples(4);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents = {0, 0, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {{100, 0, 0, 0}, {0, 100, 0, 0}, tie_pcents, tie_pcents};
+    long num_sorts = get_num_samples(4);
 
     vector<int> send_outs = {0, 2, 4, 5};
     vector<int> moves     = {0, 0, 0, 0};
@@ -614,7 +614,7 @@ TEST(test_create_speed_list, 3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -637,12 +637,12 @@ TEST(test_create_speed_list, 3_4_speed_tie)
 
 TEST(test_create_speed_list, 1_2_and_3_4_speed_tie)
 {
-    float probabilty = 50;
-    vector<vector<float>> pcent_deviation (4, vector<float>(4));
-    vector<float> tie_pcents1 = {probabilty, probabilty, 0, 0};
-    vector<float> tie_pcents2 = {0, 0, probabilty, probabilty};
-    vector<vector<float>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
-    int num_sorts = get_num_samples(8);
+    double probabilty = 50;
+    vector<vector<double>> pcent_deviation (4, vector<double>(4));
+    vector<double> tie_pcents1 = {probabilty, probabilty, 0, 0};
+    vector<double> tie_pcents2 = {0, 0, probabilty, probabilty};
+    vector<vector<double>> expected_pcent = {tie_pcents1, tie_pcents2, tie_pcents1, tie_pcents2};
+    long num_sorts = get_num_samples(8);
 
     vector<int> send_outs = {0, 4, 0, 4};
     vector<int> moves     = {0, 0, 0, 0};
@@ -653,7 +653,7 @@ TEST(test_create_speed_list, 1_2_and_3_4_speed_tie)
 
     BSM.load_test_teams(team1, team2, &send_outs, &moves);
 
-    for(int i = 0; i < num_sorts; i++)
+    for(long i = 0; i < num_sorts; i++)
     {
         BSM.create_speed_list();
         pcent_deviation[BSM.speed_list[0]][0]++;
@@ -663,7 +663,7 @@ TEST(test_create_speed_list, 1_2_and_3_4_speed_tie)
     }
 
     // Turn pcent_deviation into the deviation from expected
-    for (unsigned int i = 0; i < pcent_deviation.size(); i++)
+    for (unsigned long i = 0; i < pcent_deviation.size(); i++)
     {
         for (unsigned int j = 0; j < pcent_deviation[i].size(); j++)
         {

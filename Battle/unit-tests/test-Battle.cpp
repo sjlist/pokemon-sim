@@ -13,6 +13,8 @@
 
 class BattleTest: public Battle
 {
+    void update_seed();
+
     FRIEND_TEST(test_get_party, happy);
     FRIEND_TEST(test_battle_send_out, reset_badly_poisoned_turns);
     FRIEND_TEST(test_battle_send_out, faint);
@@ -47,6 +49,13 @@ class BattleTest: public Battle
     FRIEND_TEST(test, sad);
 };
 
+void BattleTest::update_seed()
+{
+    random_device rd;
+    long seed = rd();
+    BattleTest::update_generator(seed);
+}
+
 TEST(test_get_party, happy)
 {
     BattleTest b;
@@ -78,7 +87,7 @@ TEST(test_battle_send_out, reset_badly_poisoned_turns)
     BattleTest b;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
-    p.set_active(false);
+    p.set_benched();
     p.set_status(STATUS::BADLY_POISONED);
     p.status_turns = 12;
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
@@ -92,7 +101,7 @@ TEST(test_battle_send_out, faint)
     BattleTest b;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
-    p.set_active(false);
+    p.set_benched();
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
     b.active_field.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_1_0, PLAYER_2_0);
     EXPECT_EQ(b.send_out(PLAYER_1_0, 0), Attack_Result::FAINT);
@@ -105,7 +114,7 @@ TEST(test_battle_send_out, poke_already_fainted)
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
     p.faint_poke();
-    p.set_active(false);
+    p.set_benched();
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
     EXPECT_DEATH(b.send_out(PLAYER_1_0, 0), "");
 }
@@ -136,7 +145,7 @@ TEST(test_battle_swap_poke, happy)
     BattleTest b;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
-    p.set_active(false);
+    p.set_benched();
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
     EXPECT_EQ(b.send_out(PLAYER_1_0, 0), Attack_Result::HIT);
 }
@@ -146,7 +155,7 @@ TEST(test_battle_swap_poke, faint)
     BattleTest b;
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
-    p.set_active(false);
+    p.set_benched();
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
     b.active_field.modify_field_obj(FieldObjects::STEALTH_ROCKS, PLAYER_1_0, PLAYER_2_0);
     EXPECT_EQ(b.send_out(PLAYER_1_0, 0), Attack_Result::FAINT);
@@ -159,7 +168,7 @@ TEST(test_battle_swap_poke, poke_already_fainted)
     Pokemon p;
     p.create_test_pokemon(PokeTypes::NO_TYPE, PokeTypes::NO_TYPE, QUIRKY, 10);
     p.faint_poke();
-    p.set_active(false);
+    p.set_benched();
     b.Parties[PLAYER_ONE].party_pokes[0] = p;
     EXPECT_DEATH(b.send_out(PLAYER_1_0, 0), "");
 }
@@ -491,10 +500,13 @@ TEST(test_has_lost, lost)
 TEST(test_roll_chance, 5)
 {
     BattleTest b;
-    int num_runs = get_num_samples(2);
-    float res[2] = {0, 0}, chance = 0.05;
+    b.update_seed();
+    long num_runs = get_num_samples(2);
+    cout << num_runs << endl;
+    double res[2] = {0, 0};
+    float chance = 0.05;
 
-    for(int i = 0; i < num_runs; i++)
+    for(long i = 0; i < num_runs; i++)
     {
         if(b.roll_chance(chance))
         {
@@ -514,10 +526,11 @@ TEST(test_roll_chance, 5)
 TEST(test_roll_chance, 20)
 {
     BattleTest b;
-    int num_runs = get_num_samples(2);
-    float res[2] = {0, 0}, chance = 0.2;
+    b.update_seed();
+    long num_runs = get_num_samples(2);
+    double res[2] = {0, 0}, chance = 0.2;
 
-    for(int i = 0; i < num_runs; i++)
+    for(long i = 0; i < num_runs; i++)
     {
         if(b.roll_chance(chance))
         {
@@ -537,14 +550,16 @@ TEST(test_roll_chance, 20)
 TEST(test_calculate_damage_dealt, claw)
 {
     BattleTest b;
+    b.update_seed();
     Pokemon p1, p2;
     Move m;
     vector<float> mults (20, 1);
-    map<float, float> results;
+    map<float, double> results;
     map<float, float> expected_outcomes = {{122, 1}, {126, 2}, {128, 2},
                                            {132, 2}, {134, 2}, {138, 2},
                                            {140, 2}, {144, 2}, {146, 1}};
-    int damage, N = expected_outcomes.size(), num_runs = get_num_samples(N);
+    int damage, N = expected_outcomes.size();
+    long num_runs = get_num_samples(N);
 
     p1.create_test_pokemon(PokeTypes::DRAGON, PokeTypes::GROUND, JOLLY, 100, "Garchomp");
     p2.create_test_pokemon(PokeTypes::DRAGON, PokeTypes::GROUND, JOLLY, 100, "Garchomp");
@@ -566,7 +581,7 @@ TEST(test_calculate_damage_dealt, claw)
     for (auto const& x : expected_outcomes)
     {
         expected_outcomes[x.first] = expected_outcomes[x.first] / 16.0;
-        results[x.first] = results[x.first] / static_cast<float>(num_runs);
+        results[x.first] = results[x.first] / static_cast<double>(num_runs);
         EXPECT_LE(abs(results[x.first] - expected_outcomes[x.first]), THRESHOLD);
     }
 }
