@@ -1,0 +1,45 @@
+#!/bin/bash
+
+PROJECT_HOME=$(pwd)
+BUILD_DIR="${PROJECT_HOME}/.build"
+POKEMON_LIB_DIR="${BUILD_DIR}/CMakeFiles/Pokemon_Battle_Sim.dir/"
+
+rm -rf ${BUILD_DIR}
+mkdir ${BUILD_DIR}
+cd ${BUILD_DIR}
+cmake -DCMAKE_BUILD_TYPE=Debug ${PROJECT_HOME}
+cd ${PROJECT_HOME}
+
+
+if [[ "$@" != "" ]]; then
+    unit_test_array=( $@ )
+else
+    unit_tests_string=$(cmake --build ${BUILD_DIR} --target help | grep "unit-test-")
+    readarray -t unit_test_array <<<"${unit_tests_string}"
+fi
+
+for test in "${unit_test_array[@]}"; do
+    if [[ ${test:0:1} == '.' ]]; then
+        test_name=${test:4}
+    fi
+
+    TEST_DIR="${BUILD_DIR}/CMakeFiles/${test_name}.dir"
+    echo "${test_name} test dir: ${TEST_DIR}"
+
+    cmake --build ${BUILD_DIR} --target ${test_name} -j8
+    ${BUILD_DIR}/bin/${test_name}
+
+    cd ${POKEMON_LIB_DIR}/Battle/
+    gcov *.gcno
+    lcov -c -d . --output-file battle.info
+    rm *.gcda
+    cd ${POKEMON_LIB_DIR}/Pokemon/
+    gcov *.gcno
+    lcov -c -d . --output-file pokemon.info
+    rm *.gcda
+
+    cd ${POKEMON_LIB_DIR}
+    genhtml --output-directory ${TEST_DIR}/coverage Battle/battle.info Pokemon/pokemon.info --title ${test_name}
+    #xdg-open ../${test_name}.dir/coverage/index.html &
+    cd ${PROJECT_HOME}
+done

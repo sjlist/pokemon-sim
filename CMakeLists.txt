@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fprofile-arcs -ftest-coverage")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 ##################################################
@@ -125,10 +125,64 @@ set(BATTLE_TEST_FILES
         Battle/unit-tests/test-BattleStateMachine.cpp
         Battle/unit-tests/test-main.cpp)
 
-add_executable(battle-tests
+add_executable(unit-test-all
         ${BATTLE_TEST_FILES})
 
-target_link_libraries(battle-tests gtest_main Pokemon_Battle_Sim)
-add_test(NAME battle-tests COMMAND battle-tests)
+target_link_libraries(unit-test-all gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-all COMMAND unit-test-all)
+
+set(BATTLE_TEST_FILES
+        Battle/unit-tests/test-Field.cpp
+        Battle/unit-tests/test-main.cpp)
+
+add_executable(unit-test-Field
+        ${BATTLE_TEST_FILES})
+
+target_link_libraries(unit-test-Field gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-Field COMMAND unit-test-Field)
+
+set(BATTLE_TEST_FILES
+        Battle/unit-tests/test-Targeting.cpp
+        Battle/unit-tests/test-main.cpp)
+
+add_executable(unit-test-Targeting
+        ${BATTLE_TEST_FILES})
+
+target_link_libraries(unit-test-Targeting gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-Targeting COMMAND unit-test-Targeting)
+
+set(BATTLE_TEST_FILES
+        Battle/unit-tests/test-Battle.cpp
+        Battle/unit-tests/probability-helpers.h
+        Battle/unit-tests/probability-helpers.cpp
+        Battle/unit-tests/test-main.cpp)
+
+add_executable(unit-test-Battle
+        ${BATTLE_TEST_FILES})
+
+target_link_libraries(unit-test-Battle gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-Battle COMMAND unit-test-Battle)
+
+set(BATTLE_TEST_FILES
+        Battle/unit-tests/test-BattleActor.cpp
+        Battle/unit-tests/test-main.cpp)
+
+add_executable(unit-test-BattleActor
+        ${BATTLE_TEST_FILES})
+
+target_link_libraries(unit-test-BattleActor gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-BattleActor COMMAND unit-test-BattleActor)
+
+set(BATTLE_TEST_FILES
+        Battle/unit-tests/test-BattleStateMachine.cpp
+        Battle/unit-tests/probability-helpers.h
+        Battle/unit-tests/probability-helpers.cpp
+        Battle/unit-tests/test-main.cpp)
+
+add_executable(unit-test-BattleStateMachine
+        ${BATTLE_TEST_FILES})
+
+target_link_libraries(unit-test-BattleStateMachine gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-BattleStateMachine COMMAND unit-test-BattleStateMachine)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
