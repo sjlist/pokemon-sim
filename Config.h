@@ -10,7 +10,7 @@
 #include <string>
 using namespace std;
 
-const string PROJECT_DIRECTORY = "/home/slist/Documents/pokemon-sim/";
+const string PROJECT_DIRECTORY = "/home/slist/projects/pokemon-sim/";
 
 #define BATTLE_TYPE DOUBLE_BATTLE
 #define MAX_TURN_COUNT 400

@@ -21,7 +21,14 @@ static map<string, TARGETS> string_target_map = {
 };
 
 Targets::Targets()
-{}
+{
+    num_valid_targets = 0;
+    single_target = FIELD_POSITION::NO_POSITION;
+    for(auto & valid_target : valid_targets)
+    {
+        valid_target = FIELD_POSITION::NO_POSITION;
+    }
+}
 
 void Targets::get_valid_targets(TARGETS attack_target, FIELD_POSITION atk_pos)
 {

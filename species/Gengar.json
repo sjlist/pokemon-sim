@@ -9,5 +9,19 @@
   {
     "TYPE0" : "GHOST",
     "TYPE1" : "POISON"
+  },
+  "mega":
+  {
+    "HP": 60,
+    "ATK": 65,
+    "DEF": 80,
+    "SPA": 170,
+    "SPD": 95,
+    "SPE": 130,
+    "TYPES":
+    {
+      "TYPE0" : "GHOST",
+      "TYPE1" : "POISON"
+    }
   }
 }

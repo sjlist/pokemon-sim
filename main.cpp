@@ -26,7 +26,7 @@ void check_probability(float win_pcent, int num_runs);
 
 int main()
 {
-    int max_runs = 500000, round_dec = 2, rounding_val;
+    int max_runs = 1000000, round_dec = 2, rounding_val;
     int num_runs = 0, winner, max_turns = 0, tot_turns = 0;
     GuessData guess_data;
     float current_pcent = 0, time_since_last_guess, seconds_per_battle, wins [3] = {0, 0, 0};

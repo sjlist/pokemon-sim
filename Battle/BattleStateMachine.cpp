@@ -196,7 +196,7 @@ pair<BattleNotification, FIELD_POSITION> BattleStateMachine::run(BattleMessage m
                     switch(action_message.move_command)
                     {
                         case Commands::COMMAND_MEGA_EVOLVE:
-                            DEBUG_MSG("Mega evolving P" << get_player_from_position(action_message.pos) << "'s " << battle.active_field.active_pokes[action_message.pos]->get_species() << endl);
+                            DEBUG_MSG("Mega evolving P" << get_player_from_position(action_message.pos)+1 << "'s " << battle.active_field.active_pokes[action_message.pos]->get_species() << endl);
                             battle.mega_evolve(action_message.pos);
                             atk_r = Attack_Result::NO_ATTACK;
                             break;

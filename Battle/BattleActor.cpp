@@ -81,13 +81,13 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
             ERR_MSG("Unhandled Action");
     }
 
-    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " is ");
+    DEBUG_MSG(get_string_from_field_position(pos) << ", " << player_party->party_pokes[pos].get_species() << ", is ");
 
     // Decide if the pokemon is going to mega evolve
     if(field->active_pokes[pos]->can_mega() && player_can_mega)
     {
         message.mega_evolve = true;
-        DEBUG_MSG("mega evolving " <<  field->active_pokes[pos]->get_species() << "and ");
+        DEBUG_MSG("mega evolving and ");
     }
 
     if(message.move_command == Commands::COMMAND_SWAP)
@@ -96,11 +96,10 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
     }
     else if(message.move_command == Commands::COMMAND_ATTACK)
     {
-        DEBUG_MSG("attacking with " << field->active_pokes[pos]->get_species() << ", targeting ");
+        DEBUG_MSG("attacking" << ", targeting ");
         if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
         {
-            DEBUG_MSG("P" << get_player_from_position(message.target_pos) + 1 << "'s ");
-            DEBUG_MSG(field->active_pokes[message.target_pos]->get_species());
+            DEBUG_MSG(get_string_from_field_position(message.target_pos) << " " << field->active_pokes[message.target_pos]->get_species());
         }
         else
         {
