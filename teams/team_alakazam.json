@@ -1,0 +1,34 @@
+{
+  "0":
+  {
+    "species": "Alakazam",
+    "evs":
+    {
+      "0": 4,
+      "1": 0,
+      "2": 0,
+      "3": 252,
+      "4": 0,
+      "5": 252
+    },
+    "ivs":
+    {
+      "0": 31,
+      "1": 31,
+      "2": 31,
+      "3": 31,
+      "4": 31,
+      "5": 31
+    },
+    "nature": "TIMID",
+    "level": 50,
+    "item": "None",
+    "moves":
+    {
+      "MOVE0": "Shadow_Ball",
+      "MOVE1": "Psychic",
+      "MOVE2": "Calm_Mind",
+      "MOVE3": "Substitute"
+    }
+  }
+}

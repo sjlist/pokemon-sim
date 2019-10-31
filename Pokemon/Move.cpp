@@ -199,7 +199,6 @@ void Move::load_move(string move_name)
 //Printing moves
 void Move::print_move()
 {
-#ifdef DEBUGGING
     DEBUG_MSG("Name: " << Move::name << "\n");
     DEBUG_MSG("Damage Type: " << Move::damage_type << "\n");
     DEBUG_MSG("Type: " << Move::type << "\n");
@@ -208,5 +207,4 @@ void Move::print_move()
     DEBUG_MSG("PP: " << Move::current_pp << "/" << Move::max_pp << "\n");
     DEBUG_MSG("Priority: " << Move::priority << "\n");
     DEBUG_MSG("Crit chance: " << Move::crit_chance << "\n");
-#endif
 }

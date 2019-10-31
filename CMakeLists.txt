@@ -3,14 +3,19 @@ project(pokemon_sim)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 ##################################################
 ### Source
 ##################################################
+set(BOOST_VERSION 1.70.0)
+find_package(Boost ${BOOST_VERSION})
+
 include_directories(.
-        ../libs/boost)
+        ${Boost_INCLUDE_DIRS})
 
 set(BATTLE_FILES
         Battle/Battle.cpp
@@ -67,7 +72,9 @@ set(POKEMON_SIM_FILES
 add_library(Pokemon_Battle_Sim SHARED ${POKEMON_SIM_FILES})
 
 add_executable(pokemon_sim
-    main.cpp)
+        Player_Config.h
+        main.cpp)
+
 target_link_libraries(pokemon_sim gtest_main Pokemon_Battle_Sim)
 
 ##################################################
@@ -109,6 +116,8 @@ endif()
 ### UNIT TESTS
 ##################################################
 set(BATTLE_TEST_FILES
+        Battle/unit-tests/probability-helpers.h
+        Battle/unit-tests/probability-helpers.cpp
         Battle/unit-tests/test-Field.cpp
         Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-Battle.cpp

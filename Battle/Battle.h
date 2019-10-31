@@ -5,10 +5,11 @@
 #ifndef POKEMON_SIM_BATTLE_H
 #define POKEMON_SIM_BATTLE_H
 
+#include <Battle/BattleMessage.h>
 #include <Battle/Field.h>
 #include <Battle/Party.h>
-#include <Pokemon/Pokemon.h>
 #include <Battle/Players.h>
+#include <Pokemon/Pokemon.h>
 
 #include <vector>
 #include <random>
@@ -41,7 +42,7 @@ public:
     Field active_field;
     Targets Battle_Targets;
 
-    void load_battle(Players player, string team_name);
+    void load_battle(Players player, string* team_name);
     void reset();
     void update_generator(long seed);
 
@@ -59,20 +60,31 @@ public:
     void reset_temp_field_status();
 
     bool has_lost(Players player);
-    void print_battle(bool detailed=false);
+    bool can_mega(FIELD_POSITION pos);
+    void mega_pending(FIELD_POSITION pos);
+    void mega_evolve(FIELD_POSITION pos);
+    void print_battle();
 
 protected:
+    bool roll_chance(float chance);
+
     int get_move_power(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
-    float calculate_damage_modifier(Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
+    int calculate_damage_dealt(int attacker_level, int move_power, int atk, int def, vector<float>* damage_mods);
+    void calculate_damage_modifier(vector<float>* mults,Move* move, Pokemon* attacker, Pokemon* defender, int num_targets, bool crit);
+    int do_chain_mult(int base_power, vector<float>* mults);
+
+    uniform_int_distribution<int>damage_calc;
+    mt19937 generator;
 
     Party Parties [2];
 
 private:
     void load_teams(Players player, string team_name);
+    int count_pokemon_team(boost::property_tree::ptree team);
     void load_game_moves();
 
-    Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
-    pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move, bool crit);
+    Attack_Result attack_target(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
+    pair<Attack_Result, float> attack_damage(FIELD_POSITION atk_pos, FIELD_POSITION def_pos, Move* move);
 
     Attack_Result handle_contact(FIELD_POSITION attacker, FIELD_POSITION defender);
     Attack_Result handle_pre_attack_status(FIELD_POSITION pos);
@@ -84,14 +96,12 @@ private:
 
     void handle_faint(FIELD_POSITION pos);
 
-    bool roll_chance(float chance);
     bool roll_acc(float acc, float atk_acc_mod, float def_eva_mod);
-    float calculate_damage_dealt(int attacker_level, int move_power, float atk, float def, float damage_modifier);
 
-    mt19937 generator;
     uniform_real_distribution<float> chance;
 
     Move game_moves [Game_Moves::NUM_GAME_MOVES];
+    StateTransition has_megad [2];
 };
 
 

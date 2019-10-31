@@ -19,8 +19,8 @@ public:
 
     float attack_swap_ratio [2] = {0.8, 0.8};
 
-    int choose_pokemon(Party* party);
-    BattleMessage choose_action(FIELD_POSITION atk_pos, Party* player_party, Field* field, Actions action=Actions::CHOOSE_ACTION);
+    int choose_pokemon(Party* party, bool force_swap = false);
+    BattleMessage choose_action(FIELD_POSITION atk_pos, Party* player_party, Field* field, bool player_can_mega, Actions action=Actions::CHOOSE_ACTION);
     void update_generator(long seed);
 protected:
     int choose_position(int num_positions);
@@ -30,7 +30,6 @@ private:
     mt19937 generator;
     uniform_real_distribution<float> pcent_chance;
     uniform_int_distribution<int> poke_choice;
-    uniform_int_distribution<int> move_choice;
     Targets actor_targeting;
 
     FIELD_POSITION choose_target(FIELD_POSITION atk_pos, int num_moves, TARGETS targets, Field* field);

@@ -14,6 +14,8 @@
 using namespace std;
 
 static const int MAX_PRIO = 5;
+static const int SWAP_PRIO = MAX_PRIO + 1;
+static const int MEGA_EVOLVE_PRIO = SWAP_PRIO + 1;
 static const int FAINT_PRIO = -10;
 static const int MAX_EFFECTS = 4;
 

@@ -61,14 +61,6 @@ enum VOLATILE_STATUS
     TORMENT     = (1u << NUM_TORMENT),
 };
 
-static unsigned int pre_attack_v_status_mask = (VOLATILE_STATUS::CONFUSION +
-                                                VOLATILE_STATUS::ENCORE +
-                                                VOLATILE_STATUS::FLINCHED +
-                                                VOLATILE_STATUS::TAUNTED);
-static unsigned int turn_end_v_status_mask = 0;
-
-static unsigned int turn_end_v_status_mask_clear = (VOLATILE_STATUS::FLINCHED);
-
 STATUS string_to_status(string status_string);
 string status_to_string(STATUS status);
 

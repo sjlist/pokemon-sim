@@ -13,6 +13,13 @@
 #include <string>
 using namespace std;
 
+enum Active_State
+{
+    benched = 0,
+    to_be_swapped,
+    in_field
+};
+
 class Pokemon {
 public:
     Pokemon();
@@ -28,13 +35,18 @@ public:
 
     bool is_volatile_status(VOLATILE_STATUS v_status);
     bool is_active();
+    bool is_benched();
+    bool is_swapping();
     string get_species();
     bool is_alive();
     bool is_grounded();
     bool is_protected();
+    bool can_mega();
 
     bool use_move(int move_number);
-    void set_active(bool state);
+    void set_active();
+    void set_benched();
+    void set_swapping();
     bool deal_damage(float damage, bool ignore_sub = false);
     void heal_damage(int damage);
     bool set_status(STATUS new_status);
@@ -46,7 +58,7 @@ public:
     void increment_protect_turns();
     void remove_type(int type_num);
     bool setup_substitute();
-
+    void mega_evolve();
 
     void reset_types();
     void reset_protect();
@@ -58,7 +70,6 @@ public:
     void clear_protect_turns();
 
     int status_turns;
-    bool to_be_swapped;
     bool first_turn;
 
     void print_pokemon(bool detailed=false);
@@ -68,21 +79,30 @@ public:
     Move moves[4];
 
     //UNIT TEST HELPERS
-    void create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp);
+    void create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp, string species="unit-test/Testemon");
 private:
     bool alive;
-    bool active;
+    Active_State active;
     int level;
     PokeTypes type[2];
     PokeTypes current_type[2];
     float current_hp;
     string name;
+    float* current_stats;
     float base_stats [STAT::NUM_STATS];
     int stat_modifiers [STAT::NUM_STATS] = {0, 0, 0, 0, 0, 0, 0, 0};
+    int evs [STAT::NUM_STATS];
+    int ivs [STAT::NUM_STATS];
     STATUS status;
     string species;
     bool protect_active;
     int protect_turns;
+    Natures nature;
+
+    bool has_mega;
+    bool is_mega;
+    PokeTypes mega_type[2];
+    float mega_base_stats [STAT::NUM_STATS];
 
     float substitute_hp;
 
@@ -92,7 +112,7 @@ private:
     int v_status_turns [NUM_VOLATILE_STATUS];
 
     void load_species(string species_name);
-    void set_stats(int* ivs, int* evs, int level, Natures nature);
+    void set_stats(bool use_mega = false);
     float calculate_hp(int level, int base_hp, int ev_hp, int iv_hp);
     float calculate_stat_single(int level, int base, int ev, int iv, float nature_mod);
 };

@@ -17,7 +17,6 @@ BattleActor::BattleActor()
 {
     BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
     BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
-    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
 BattleActor::BattleActor(long seed)
@@ -25,10 +24,9 @@ BattleActor::BattleActor(long seed)
     BattleActor::generator = mt19937(seed);
     BattleActor::pcent_chance = uniform_real_distribution<float>{0, 1};
     BattleActor::poke_choice = uniform_int_distribution<int> {0, 599};
-    BattleActor::move_choice = uniform_int_distribution<int> {0, 23};
 }
 
-BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, Actions action)
+BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party, Field* field, bool player_can_mega, Actions action)
 {
     BattleMessage message;
     Players player = get_player_from_position(pos);
@@ -79,20 +77,29 @@ BattleMessage BattleActor::choose_action(FIELD_POSITION pos, Party* player_party
                 message.target_pos = BattleActor::choose_target(pos, 1, TARGETS::ADJACENT_ENEMY, field);
             }
             break;
+        default:
+            ERR_MSG("Unhandled Action");
     }
 
-    DEBUG_MSG("Player " << get_player_from_position(pos) + 1 << " is ");
+    DEBUG_MSG(get_string_from_field_position(pos) << ", " << player_party->party_pokes[pos].get_species() << ", is ");
+
+    // Decide if the pokemon is going to mega evolve
+    if(field->active_pokes[pos]->can_mega() && player_can_mega)
+    {
+        message.mega_evolve = true;
+        DEBUG_MSG("mega evolving and ");
+    }
+
     if(message.move_command == Commands::COMMAND_SWAP)
     {
         DEBUG_MSG("swapping position: " << get_string_from_field_position(pos) << ", sending out " << player_party->party_pokes[message.reserve_poke].get_species() << "\n");
     }
     else if(message.move_command == Commands::COMMAND_ATTACK)
     {
-        DEBUG_MSG("attacking with " << field->active_pokes[pos]->get_species() << ", targeting ");
+        DEBUG_MSG("attacking" << ", targeting ");
         if(message.target_pos != FIELD_POSITION::ALL_TARGETS)
         {
-            DEBUG_MSG("P" << get_player_from_position(message.target_pos) + 1 << "'s ");
-            DEBUG_MSG(field->active_pokes[message.target_pos]->get_species());
+            DEBUG_MSG(get_string_from_field_position(message.target_pos) << " " << field->active_pokes[message.target_pos]->get_species());
         }
         else
         {
@@ -132,27 +139,43 @@ int BattleActor::choose_move(Pokemon* poke)
     return moves[selection];
 }
 
-int BattleActor::choose_pokemon(Party* party)
+int BattleActor::choose_pokemon(Party* party, bool force_swap)
 {
     int num_pokes = 0, selection;
     int pokes [6];
     for(int i = 0; i < 6; i++)
     {
         if(party->party_pokes[i].is_alive()
-        && !party->party_pokes[i].is_active()
-        && !party->party_pokes[i].to_be_swapped)
+        && party->party_pokes[i].is_benched())
         {
             pokes[num_pokes] = i;
             num_pokes++;
         }
     }
+
+    // If there are no other pokemon we can swap with, allow the actor to chose a pokemon that is slated to be swapped
     if(num_pokes == 0)
     {
-        return -1;
+        if(force_swap)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (party->party_pokes[i].is_alive()
+                    && !party->party_pokes[i].is_active())
+                {
+                    pokes[num_pokes] = i;
+                    num_pokes++;
+                }
+            }
+            if(num_pokes == 0)
+                return -1;
+        }
+        else
+            return -1;
     }
 
     selection = BattleActor::choose_position(num_pokes);
-    party->party_pokes[pokes[selection]].to_be_swapped = true;
+    party->party_pokes[pokes[selection]].set_swapping();
     return pokes[selection];
 }
 

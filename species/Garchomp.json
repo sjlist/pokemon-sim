@@ -1,5 +1,5 @@
 {
-  "HP":108,
+  "HP": 108,
   "ATK": 130,
   "DEF": 95,
   "SPA": 80,
@@ -9,5 +9,19 @@
   {
     "TYPE0" : "DRAGON",
     "TYPE1" : "GROUND"
+  },
+  "mega":
+  {
+    "HP": 108,
+    "ATK": 170,
+    "DEF": 115,
+    "SPA": 120,
+    "SPD": 95,
+    "SPE": 92,
+    "TYPES":
+    {
+      "TYPE0" : "DRAGON",
+      "TYPE1" : "GROUND"
+    }
   }
 }

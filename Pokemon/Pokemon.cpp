@@ -22,7 +22,7 @@ static int MAX_STAGES = 6;
 
 Pokemon::Pokemon()
 {
-    Pokemon::active = false;
+    Pokemon::active = benched;
     Pokemon::alive = false;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::substitute_hp = 0;
@@ -35,12 +35,28 @@ Pokemon::Pokemon()
         Pokemon::v_status_turns[i] = 0;
     Pokemon::protect_active = false;
     Pokemon::substitute_hp = 0;
+    Pokemon::has_mega = false;
 }
 
 // STATE CHECKING FUNCTIONS
 bool Pokemon::is_active()
 {
-    return Pokemon::active;
+    return Pokemon::active == in_field;
+}
+
+bool Pokemon::is_benched()
+{
+    return Pokemon::active == benched;
+}
+
+bool Pokemon::is_swapping()
+{
+    return Pokemon::active == to_be_swapped;
+}
+
+bool Pokemon::can_mega()
+{
+    return Pokemon::has_mega;
 }
 
 int Pokemon::get_stat_mod(STAT stat)
@@ -71,7 +87,7 @@ float Pokemon::get_stat(STAT stat)
         adjustment *= (equ_const + mod) / equ_const;
     }
 
-    return Pokemon::base_stats[stat] * adjustment;
+    return Pokemon::current_stats[stat] * adjustment;
 }
 
 STATUS Pokemon::get_status()
@@ -102,7 +118,10 @@ PokeTypes* Pokemon::get_type()
 
 string Pokemon::get_species()
 {
-    return Pokemon::species;
+    if(Pokemon::is_mega)
+        return "Mega " + Pokemon::species;
+    else
+        return Pokemon::species;
 }
 
 int Pokemon::get_v_status_turns(VOLATILE_STATUS_NUMBERS v_status)
@@ -147,12 +166,23 @@ bool Pokemon::use_move(int move_number)
 
 bool Pokemon::setup_substitute()
 {
-    if(Pokemon::current_hp <= (Pokemon::base_stats[STAT::HP] / 4) || Pokemon::substitute_hp != 0)
+    if(Pokemon::current_hp <= (Pokemon::current_stats[STAT::HP] / 4) || Pokemon::substitute_hp != 0)
         return false;
 
-    Pokemon::current_hp -= (Pokemon::base_stats[STAT::HP] / 4);
-    Pokemon::substitute_hp = (Pokemon::base_stats[STAT::HP] / 4);
+    Pokemon::current_hp -= (Pokemon::current_stats[STAT::HP] / 4);
+    Pokemon::substitute_hp = (Pokemon::current_stats[STAT::HP] / 4);
     return true;
+}
+
+void Pokemon::mega_evolve()
+{
+    float temp_current_hp = Pokemon::current_hp;
+    if(!Pokemon::can_mega())
+        ERR_MSG("Trying to mega evolve " << Pokemon::species << ", does not have a mega evolution" << endl);
+
+    Pokemon::current_stats = Pokemon::mega_base_stats;
+    Pokemon::current_hp = temp_current_hp;
+    Pokemon::is_mega = true;
 }
 
 bool Pokemon::deal_damage(float damage, bool ignore_sub)
@@ -168,7 +198,7 @@ bool Pokemon::deal_damage(float damage, bool ignore_sub)
         }
         return true;
     }
-    DEBUG_MSG("Dealt " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::species << "\n");
+    DEBUG_MSG("Dealt " << round((float)damage/Pokemon::current_stats[STAT::HP]*100*10)/10 << "% damage to " << Pokemon::get_species() << "\n");
     Pokemon::current_hp -=  damage;
 
     if(Pokemon::current_hp <= 0)
@@ -181,13 +211,13 @@ bool Pokemon::deal_damage(float damage, bool ignore_sub)
 
 void Pokemon::heal_damage(int damage)
 {
-    DEBUG_MSG("Healed " << round((float)damage/Pokemon::base_stats[STAT::HP]*100*10)/10 << "% hitpoints to " << Pokemon::species << "\n");
+    DEBUG_MSG("Healed " << round((float)damage/Pokemon::current_stats[STAT::HP]*100*10)/10 << "% hitpoints to " << Pokemon::species << "\n");
 
     Pokemon::current_hp = Pokemon::current_hp + damage;
 
-    if(Pokemon::current_hp >= Pokemon::base_stats[STAT::HP])
+    if(Pokemon::current_hp >= Pokemon::current_stats[STAT::HP])
     {
-        Pokemon::current_hp = Pokemon::base_stats[STAT::HP];
+        Pokemon::current_hp = Pokemon::current_stats[STAT::HP];
     }
 }
 
@@ -258,9 +288,19 @@ bool Pokemon::set_volatile_status(VOLATILE_STATUS v_status)
     }
 }
 
-void Pokemon::set_active(bool state)
+void Pokemon::set_active()
 {
-    Pokemon::active = state;
+    Pokemon::active = in_field;
+}
+
+void Pokemon::set_benched()
+{
+    Pokemon::active = benched;
+}
+
+void Pokemon::set_swapping()
+{
+    Pokemon::active = to_be_swapped;
 }
 
 void Pokemon::faint_poke()
@@ -366,13 +406,14 @@ void Pokemon::reset_protect()
 
 void Pokemon::reset()
 {
-    Pokemon::active = false;
+    Pokemon::active = benched;
     for(int stat = STAT::HP; stat < STAT::NUM_STATS; stat++)
     {
         Pokemon::stat_modifiers[stat] = 0;
     }
     Pokemon::alive = true;
-    Pokemon::current_hp = Pokemon::base_stats[STAT::HP];
+    Pokemon::current_stats = Pokemon::base_stats;
+    Pokemon::current_hp = Pokemon::current_stats[STAT::HP];
     Pokemon::clear_volatile_statuses();
     Pokemon::status = STATUS::NO_STATUS;
     for(int i = 0; i < 4; i++)
@@ -386,15 +427,11 @@ void Pokemon::reset()
         Pokemon::v_status_turns[i] = 0;
 
     Pokemon::reset_protect();
-    Pokemon::to_be_swapped = false;
+    Pokemon::is_mega = false;
 }
 
 void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 {
-    int evs [6], ivs [6];
-    auto ev_ptr = evs;
-    auto iv_ptr = ivs;
-
     Pokemon::load_species(poke_ptree.get<string>("species"));
     Pokemon::level = poke_ptree.get<int>("level", 0);
 
@@ -403,14 +440,18 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
 
     for(int i = 0; i < STAT::NUM_STATS; i++)
     {
-        evs[i] = evs_ptree.get(to_string(i), 0);
-        ivs[i] = ivs_ptree.get(to_string(i), 0);
+        Pokemon::evs[i] = evs_ptree.get(to_string(i), 0);
+        Pokemon::ivs[i] = ivs_ptree.get(to_string(i), 0);
     }
+    Pokemon::nature = string_to_nature(poke_ptree.get<string>("nature"));
 
-    Pokemon::set_stats(iv_ptr, ev_ptr, level, string_to_nature(poke_ptree.get<string>("nature")));
+    Pokemon::set_stats();
+    if(Pokemon::can_mega())
+        Pokemon::set_stats(true);
+
+    Pokemon::current_stats = Pokemon::base_stats;
 
     boost::property_tree::ptree moves_ptree = poke_ptree.get_child("moves");
-
 
     string move_name;
     for(int i = 0; i < 4; i++)
@@ -426,14 +467,13 @@ void Pokemon::load_pokemon(boost::property_tree::ptree poke_ptree)
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
     Pokemon::volatile_status = 0;
-    Pokemon::to_be_swapped = false;
+    Pokemon::is_mega = false;
 }
 
 void Pokemon::load_species(string species_name)
 {
     boost::property_tree::ptree root;
     boost::property_tree::ptree root_child;
-    auto base_ptr = base_stats;
 
     try
     {
@@ -459,6 +499,23 @@ void Pokemon::load_species(string species_name)
 
     Pokemon::current_type[0] = Pokemon::type[0];
     Pokemon::current_type[1] = Pokemon::type[1];
+    DEBUG_MSG("Loaded " << Pokemon::species << " species data" << endl);
+
+    if(root.count("mega") == 1)
+    {
+        root_child = root.get_child("mega");
+        Pokemon::mega_base_stats[STAT::HP]  = root.get<int>("HP", 0);
+        Pokemon::mega_base_stats[STAT::ATK] = root.get<int>("ATK", 0);
+        Pokemon::mega_base_stats[STAT::DEF] = root.get<int>("DEF", 0);
+        Pokemon::mega_base_stats[STAT::SPA] = root.get<int>("SPA", 0);
+        Pokemon::mega_base_stats[STAT::SPD] = root.get<int>("SPD", 0);
+        Pokemon::mega_base_stats[STAT::SPE] = root.get<int>("SPE", 0);
+        root_child = root_child.get_child("TYPES");
+        Pokemon::mega_type[0] = string_to_type(root_child.get<string>("TYPE0"));
+        Pokemon::mega_type[1] = string_to_type(root_child.get<string>("TYPE1"));
+        Pokemon::has_mega = true;
+        DEBUG_MSG("Loaded Mega " << Pokemon::species << " species data" <<  endl);
+    }
 }
 
 float Pokemon::calculate_hp(int level, int base_hp, int ev_hp, int iv_hp)
@@ -471,28 +528,34 @@ float Pokemon::calculate_stat_single(int level, int base, int ev, int iv, float 
     return (int)((floor(floor((float)((float)ev / 4) + iv + 2 * base) / 100 * level) + 5) * nature_mod);
 }
 
-void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
+void Pokemon::set_stats(bool use_mega)
 {
+    float* stats;
+    if(use_mega)
+        stats = Pokemon::mega_base_stats;
+    else
+        stats = Pokemon::base_stats;
+
     float nature_mod;
     for(int i = STAT::HP; i < STAT::NUM_STATS; i++)
     {
         switch(i)
         {
             case STAT::HP:
-                Pokemon::base_stats[i] = calculate_hp(level, Pokemon::base_stats[i], evs[i], ivs[i]);
-                Pokemon::current_hp = Pokemon::base_stats[i];
+                stats[i] = calculate_hp(level, stats[i], Pokemon::evs[i], Pokemon::ivs[i]);
+                Pokemon::current_hp = stats[i];
                 break;
             case STAT::ATK:
             case STAT::DEF:
             case STAT::SPA:
             case STAT::SPD:
             case STAT::SPE:
-                nature_mod = get_nature_mod(nature, (STAT)i);
-                Pokemon::base_stats[i] = calculate_stat_single(level, Pokemon::base_stats[i], evs[i], ivs[i], nature_mod);
+                nature_mod = get_nature_mod(Pokemon::nature, (STAT)i);
+                stats[i] = calculate_stat_single(level, stats[i], Pokemon::evs[i], Pokemon::ivs[i], nature_mod);
                 break;
             case STAT::ACC:
             case STAT::EVA:
-                Pokemon::base_stats[i] = 1;
+                stats[i] = 1;
                 break;
             default:
                 ERR_MSG("Unhandled stat " << i << endl);
@@ -504,14 +567,13 @@ void Pokemon::set_stats(int* ivs, int* evs, int level, Natures nature)
 
 void Pokemon::print_pokemon(bool detailed)
 {
-#ifdef DEBUGGING
     if(Pokemon::species.empty())
         return;
 
-    DEBUG_MSG(Pokemon::species << "\n");
+    DEBUG_MSG(Pokemon::get_species() << "\n");
     if(detailed)
     {
-        DEBUG_MSG("HP:  "  << Pokemon::base_stats[STAT::HP] << " Modifier: " << Pokemon::stat_modifiers[STAT::HP]  << "\n");
+        DEBUG_MSG("HP:  "  << Pokemon::current_stats[STAT::HP] << " Modifier: " << Pokemon::stat_modifiers[STAT::HP]  << "\n");
         DEBUG_MSG("ATK: " << Pokemon::get_stat(STAT::ATK) << " Modifier: " << Pokemon::stat_modifiers[STAT::ATK] << "\n");
         DEBUG_MSG("DEF: " << Pokemon::get_stat(STAT::DEF) << " Modifier: " << Pokemon::stat_modifiers[STAT::DEF] << "\n");
         DEBUG_MSG("SPA: " << Pokemon::get_stat(STAT::SPA) << " Modifier: " << Pokemon::stat_modifiers[STAT::SPA] << "\n");
@@ -523,44 +585,33 @@ void Pokemon::print_pokemon(bool detailed)
         Pokemon::moves[0].print_move();
         Pokemon::moves[1].print_move();
     }
-    DEBUG_MSG("Current HP: " << round(Pokemon::current_hp / Pokemon::base_stats[STAT::HP] * 100 * 10) / 10 << "%\n");
+    DEBUG_MSG("Current HP: " << round(Pokemon::current_hp / Pokemon::current_stats[STAT::HP] * 100 * 10) / 10 << "%\n");
     DEBUG_MSG("STATUS: " << status_to_string(Pokemon::status) << "\n");
-#endif
 }
 
 
 // UNIT TEST HELPERS
-void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp)
+void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float pcent_hp, string species)
 {
-    int evs [STAT::NUM_STATS], ivs [STAT::NUM_STATS];
-    auto ev_ptr = evs;
-    auto iv_ptr = ivs;
-
     Pokemon::level = 50;
-
+    Pokemon::nature = n;
     for(int i = 0; i < STAT::NUM_STATS; i++)
     {
-        evs[i] = 0;
-        ivs[i] = 0;
+        Pokemon::evs[i] = 0;
+        Pokemon::ivs[i] = 0;
     }
 
     Pokemon::alive = true;
-    Pokemon::active = true;
+    Pokemon::active = in_field;
     Pokemon::status = STATUS::NO_STATUS;
     Pokemon::status_turns = 0;
     Pokemon::volatile_status = 0;
-    Pokemon::to_be_swapped = false;
 
-    Pokemon::base_stats[STAT::HP]  = 40;
-    Pokemon::base_stats[STAT::ATK] = 100;
-    Pokemon::base_stats[STAT::DEF] = 100;
-    Pokemon::base_stats[STAT::SPA] = 100;
-    Pokemon::base_stats[STAT::SPD] = 100;
-    Pokemon::base_stats[STAT::SPE] = 100;
+    Pokemon::load_species(species);
 
-    Pokemon::set_stats(iv_ptr, ev_ptr, level, n);
+    Pokemon::set_stats();
+    Pokemon::current_stats = Pokemon::base_stats;
 
-    Pokemon::species = "TESTEMON";
     Pokemon::name = "TESTEMON";
 
     Pokemon::type[0] = t1;
@@ -569,7 +620,8 @@ void Pokemon::create_test_pokemon(PokeTypes t1, PokeTypes t2, Natures n, float p
     Pokemon::current_type[0] = Pokemon::type[0];
     Pokemon::current_type[1] = Pokemon::type[1];
 
-    Pokemon::current_hp = Pokemon::base_stats[STAT::HP] * pcent_hp / 100;
+    Pokemon::current_hp = Pokemon::current_stats[STAT::HP] * pcent_hp / 100;
     Pokemon::protect_active = false;
     Pokemon::protect_turns = 0;
+    Pokemon::is_mega = false;
 }

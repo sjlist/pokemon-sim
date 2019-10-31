@@ -59,7 +59,7 @@ public:
     int weather_turns;
     Terrain terrain;
 
-    void print_field(bool detailed=false);
+    void print_field(bool detailed = false);
 
 protected:
     bool handle_entrance(FIELD_POSITION pos);

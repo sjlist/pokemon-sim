@@ -99,15 +99,13 @@ void Field::modify_field_obj(FieldObjects obj, FIELD_POSITION def_pos, FIELD_POS
 
 bool Field::send_out(FIELD_POSITION pos, Pokemon* poke)
 {
-    if(Field::active_pokes[pos] == nullptr)
-    {
-        Field::active_pokes[pos] = poke;
-        Field::active_pokes[pos]->first_turn = true;
-        Field::active_pokes[pos]->set_active(true);
-        return Field::handle_entrance(pos);
-    }
-    else
+    if(Field::active_pokes[pos] != nullptr)
         ERR_MSG("Pokemon improperly returned before sending out " << poke->get_species() << endl);
+
+    Field::active_pokes[pos] = poke;
+    Field::active_pokes[pos]->first_turn = true;
+    Field::active_pokes[pos]->set_active();
+    return Field::handle_entrance(pos);
 }
 
 void Field::return_poke(FIELD_POSITION pos)
@@ -115,7 +113,7 @@ void Field::return_poke(FIELD_POSITION pos)
     if(Field::active_pokes[pos] != nullptr)
     {
         Field::leech_seed_positions[pos] = FIELD_POSITION::NO_POSITION;
-        Field::active_pokes[pos]->set_active(false);
+        Field::active_pokes[pos]->set_benched();
         Field::active_pokes[pos] = nullptr;
     }
     else
@@ -211,7 +209,6 @@ void Field::reset_field_obj()
 
 void Field::print_field(bool detailed)
 {
-#ifdef DEBUGGING
     DEBUG_MSG("ACTIVE POKEMON: " << endl);
     for(int i = 0; i < FIELD_POSITION::NUM_POSITIONS; i++)
     {
@@ -219,7 +216,7 @@ void Field::print_field(bool detailed)
         if(Field::active_pokes[i] == nullptr)
             DEBUG_MSG("NO POKEMON\n");
         else if(Field::active_pokes[i]->is_active())
-            Field::active_pokes[i]->print_pokemon(detailed);
+            Field::active_pokes[i]->print_pokemon();
         DEBUG_MSG(endl);
     }
 
@@ -247,7 +244,6 @@ void Field::print_field(bool detailed)
             DEBUG_MSG(Field::terrain << " weather is active\n");
     }
     DEBUG_MSG("\n");
-#endif
 }
 
 bool Field::handle_end_turn_field_obj(FIELD_POSITION pos)
@@ -283,24 +279,26 @@ void Field::handle_end_turn_weather()
 
 Players get_player_from_position(FIELD_POSITION pos)
 {
-    if(pos == FIELD_POSITION::PLAYER_1_0
-#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
-    || pos == FIELD_POSITION::PLAYER_1_1
+    switch(pos)
+    {
+        case FIELD_POSITION::PLAYER_1_0:
+            return Players::PLAYER_ONE;
+        case FIELD_POSITION::PLAYER_2_0:
+            return Players::PLAYER_TWO;
+#if BATTLE_TYPE >= DOUBLE_BATTLE
+        case FIELD_POSITION::PLAYER_1_1:
+            return Players::PLAYER_ONE;
+        case FIELD_POSITION::PLAYER_2_1:
+            return Players::PLAYER_TWO;
 #endif
 #if BATTLE_TYPE == TRIPLE_BATTLE
-    || pos == FIELD_POSITION::PLAYER_1_2
+        case FIELD_POSITION::PLAYER_1_2:
+            return Players::PLAYER_ONE;
+        case FIELD_POSITION::PLAYER_2_2:
+            return Players::PLAYER_TWO;
 #endif
-    )
-        return Players::PLAYER_ONE;
-    if(pos == FIELD_POSITION::PLAYER_2_0
-#if BATTLE_TYPE == DOUBLE_BATTLE || BATTLE_TYPE == TRIPLE_BATTLE
-    || pos == FIELD_POSITION::PLAYER_2_1
-#endif
-#if BATTLE_TYPE == TRIPLE_BATTLE
-    || pos == FIELD_POSITION::PLAYER_2_2
-#endif
-       )
-        return Players::PLAYER_TWO;
-
-    ERR_MSG("Impossible field position\n");
+        default:
+            ERR_MSG("Impossible field position\n");
+    }
+    return Players::NO_PLAYER;
 }
