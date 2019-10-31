@@ -13,6 +13,7 @@ static map<string, Natures>string_natures = {
         {"LONELY", Natures::LONELY},
         {"BRAVE", Natures::BRAVE},
         {"ADAMANT", Natures::ADAMANT},
+        {"NAUGHTY", Natures::NAUGHTY},
         {"BOLD", Natures::BOLD},
         {"DOCILE", Natures::DOCILE},
         {"RELAXED", Natures::RELAXED},
