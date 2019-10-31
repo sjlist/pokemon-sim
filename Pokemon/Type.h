@@ -8,6 +8,11 @@
 #include <string>
 using namespace std;
 
+#define SE_DM 2
+#define ST_DM 1
+#define NE_DM 0.5
+#define IM_DM 0
+
 enum PokeTypes
 {
     NO_TYPE = 0,

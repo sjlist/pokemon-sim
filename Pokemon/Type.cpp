@@ -7,27 +7,27 @@
 #include <map>
 using namespace std;
 
-static float type_effectiveness [(int)PokeTypes::NUM_TYPES] [(int)PokeTypes::NUM_TYPES] = {
-       //NONE, NORMAL, FIRE, WATER, GRASS, ELECTRIC, ICE, FIGHTING, POISON, GROUND, FLYING, PSYCHIC, BUG, ROCK, GHOST, DRAGON, DARK, STEEL, FAIRY
-        {1.0,  1.0,    1.0,  1.0,   1.0,   1.0,      1.0, 1.0,      1.0,    1.0,     1.0,   1.0,     1.0, 1.0,   1.0,  1.0,    1.0,   1.0,  1.0}, // NONE
-        {1.0,  1.0,    1.0,  1.0,   1.0,   1.0,      1.0, 1.0,      1.0,    1.0,     1.0,   1.0,     1.0, 0.5,   0.0,  1.0,    1.0,   0.5,  1.0}, // NORMAL
-        {1.0,  1.0,    0.5,  0.5,   2.0,   1.0,      2.0, 1.0,      1.0,    1.0,     1.0,   1.0,     2.0, 0.5,   1.0,  0.5,    1.0,   2.0,  1.0}, // FIRE
-        {1.0,  1.0,    2.0,  0.5,   0.5,   1.0,      1.0, 1.0,      1.0,    2.0,     1.0,   1.0,     1.0, 2.0,   1.0,  0.5,    1.0,   1.0,  1.0}, // WATER
-        {1.0,  1.0,    0.5,  2.0,   0.5,   1.0,      1.0, 1.0,      0.5,    2.0,     0.5,   1.0,     0.5, 2.0,   1.0,  0.5,    1.0,   0.5,  1.0}, // GRASS
-        {1.0,  1.0,    1.0,  2.0,   0.5,   0.5,      1.0, 1.0,      1.0,    0.0,     2.0,   1.0,     1.0, 1.0,   1.0,  0.5,    1.0,   1.0,  1.0}, // ELECTRIC
-        {1.0,  1.0,    0.5,  0.5,   2.0,   1.0,      0.5, 1.0,      1.0,    2.0,     2.0,   1.0,     1.0, 1.0,   1.0,  2.0,    1.0,   0.5,  1.0}, // ICE
-        {1.0,  2.0,    1.0,  1.0,   1.0,   1.0,      2.0, 1.0,      0.5,    1.0,     0.5,   0.5,     0.5, 2.0,   0.0,  1.0,    2.0,   2.0,  0.5}, // FIGHTING
-        {1.0,  1.0,    1.0,  1.0,   2.0,   1.0,      1.0, 1.0,      0.5,    0.5,     1.0,   1.0,     1.0, 0.5,   0.5,  1.0,    1.0,   0.0,  2.0}, // POISON
-        {1.0,  1.0,    2.0,  1.0,   0.5,   2.0,      1.0, 1.0,      2.0,    1.0,     0.0,   1.0,     0.5, 2.0,   1.0,  1.0,    1.0,   2.0,  1.0}, // GROUND
-        {1.0,  1.0,    1.0,  1.0,   2.0,   0.5,      1.0, 2.0,      1.0,    1.0,     1.0,   1.0,     2.0, 0.5,   1.0,  1.0,    1.0,   0.5,  1.0}, // FLYING
-        {1.0,  1.0,    1.0,  1.0,   1.0,   1.0,      1.0, 2.0,      2.0,    1.0,     1.0,   0.5,     1.0, 1.0,   1.0,  1.0,    0.0,   0.5,  1.0}, // PSYCHIC
-        {1.0,  1.0,    0.5,  1.0,   2.0,   1.0,      1.0, 0.5,      0.5,    1.0,     0.5,   2.0,     1.0, 1.0,   0.5,  1.0,    2.0,   0.5,  0.5}, // BUG
-        {1.0,  1.0,    2.0,  1.0,   1.0,   1.0,      2.0, 0.5,      1.0,    0.5,     2.0,   1.0,     2.0, 1.0,   1.0,  1.0,    1.0,   0.5,  1.0}, // ROCK
-        {1.0,  0.0,    1.0,  1.0,   1.0,   1.0,      1.0, 1.0,      1.0,    1.0,     1.0,   2.0,     1.0, 1.0,   2.0,  1.0,    0.5,   0.5,  1.0}, // GHOST
-        {1.0,  1.0,    1.0,  1.0,   1.0,   1.0,      1.0, 1.0,      1.0,    1.0,     1.0,   1.0,     1.0, 1.0,   1.0,  2.0,    1.0,   0.5,  0.0}, // DRAGON
-        {1.0,  1.0,    1.0,  1.0,   1.0,   1.0,      1.0, 0.5,      1.0,    1.0,     1.0,   2.0,     1.0, 1.0,   2.0,  1.0,    0.5,   0.5,  0.5}, // DARK
-        {1.0,  1.0,    0.5,  0.5,   1.0,   1.0,      2.0, 1.0,      1.0,    1.0,     1.0,   1.0,     1.0, 2.0,   1.0,  1.0,    1.0,   0.5,  2.0}, // STEEL
-        {1.0,  1.0,    0.5,  1.0,   1.0,   1.0,      1.0, 2.0,      0.5,    1.0,     1.0,   1.0,     1.0, 1.0,   1.0,  2.0,    2.0,   0.5,  1.0}  // FAIRY
+static float type_effectiveness [(int)PokeTypes::NUM_TYPES] [(int)PokeTypes::NUM_TYPES] = { // MOVE TYPE, POKE TYPE
+       //NONE,   NORMAL, FIRE,   WATER, GRASS, ELECTRIC, ICE,   FIGHTING, POISON, GROUND, FLYING, PSYCHIC, BUG,   ROCK,  GHOST, DRAGON, DARK,  STEEL, FAIRY
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   ST_DM, ST_DM, ST_DM, ST_DM,  ST_DM, ST_DM, ST_DM}, // NONE
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   ST_DM, NE_DM, IM_DM, ST_DM,  ST_DM, NE_DM, ST_DM}, // NORMAL
+        {ST_DM,  ST_DM,  NE_DM,  NE_DM, SE_DM, ST_DM,    SE_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   SE_DM, NE_DM, ST_DM, NE_DM,  ST_DM, SE_DM, ST_DM}, // FIRE
+        {ST_DM,  ST_DM,  SE_DM,  NE_DM, NE_DM, ST_DM,    ST_DM, ST_DM,    ST_DM,  SE_DM,  ST_DM,  ST_DM,   ST_DM, SE_DM, ST_DM, NE_DM,  ST_DM, ST_DM, ST_DM}, // WATER
+        {ST_DM,  ST_DM,  NE_DM,  SE_DM, NE_DM, ST_DM,    ST_DM, ST_DM,    NE_DM,  SE_DM,  NE_DM,  ST_DM,   NE_DM, SE_DM, ST_DM, NE_DM,  ST_DM, NE_DM, ST_DM}, // GRASS
+        {ST_DM,  ST_DM,  ST_DM,  SE_DM, NE_DM, NE_DM,    ST_DM, ST_DM,    ST_DM,  IM_DM,  SE_DM,  ST_DM,   ST_DM, ST_DM, ST_DM, NE_DM,  ST_DM, ST_DM, ST_DM}, // ELECTRIC
+        {ST_DM,  ST_DM,  NE_DM,  NE_DM, SE_DM, ST_DM,    NE_DM, ST_DM,    ST_DM,  SE_DM,  SE_DM,  ST_DM,   ST_DM, ST_DM, ST_DM, SE_DM,  ST_DM, NE_DM, ST_DM}, // ICE
+        {ST_DM,  SE_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    SE_DM, ST_DM,    NE_DM,  ST_DM,  NE_DM,  NE_DM,   NE_DM, SE_DM, IM_DM, ST_DM,  SE_DM, SE_DM, NE_DM}, // FIGHTING
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, SE_DM, ST_DM,    ST_DM, ST_DM,    NE_DM,  NE_DM,  ST_DM,  ST_DM,   ST_DM, NE_DM, NE_DM, ST_DM,  ST_DM, IM_DM, SE_DM}, // POISON
+        {ST_DM,  ST_DM,  SE_DM,  ST_DM, NE_DM, SE_DM,    ST_DM, ST_DM,    SE_DM,  ST_DM,  IM_DM,  ST_DM,   NE_DM, SE_DM, ST_DM, ST_DM,  ST_DM, SE_DM, ST_DM}, // GROUND
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, SE_DM, NE_DM,    ST_DM, SE_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   SE_DM, NE_DM, ST_DM, ST_DM,  ST_DM, NE_DM, ST_DM}, // FLYING
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, SE_DM,    SE_DM,  ST_DM,  ST_DM,  NE_DM,   ST_DM, ST_DM, ST_DM, ST_DM,  IM_DM, NE_DM, ST_DM}, // PSYCHIC
+        {ST_DM,  ST_DM,  NE_DM,  ST_DM, SE_DM, ST_DM,    ST_DM, NE_DM,    NE_DM,  ST_DM,  NE_DM,  SE_DM,   ST_DM, ST_DM, NE_DM, ST_DM,  SE_DM, NE_DM, NE_DM}, // BUG
+        {ST_DM,  ST_DM,  SE_DM,  ST_DM, ST_DM, ST_DM,    SE_DM, NE_DM,    ST_DM,  NE_DM,  SE_DM,  ST_DM,   SE_DM, ST_DM, ST_DM, ST_DM,  ST_DM, NE_DM, ST_DM}, // ROCK
+        {ST_DM,  IM_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  SE_DM,   ST_DM, ST_DM, SE_DM, ST_DM,  NE_DM, ST_DM, ST_DM}, // GHOST
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   ST_DM, ST_DM, ST_DM, SE_DM,  ST_DM, NE_DM, IM_DM}, // DRAGON
+        {ST_DM,  ST_DM,  ST_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, NE_DM,    ST_DM,  ST_DM,  ST_DM,  SE_DM,   ST_DM, ST_DM, SE_DM, ST_DM,  NE_DM, ST_DM, NE_DM}, // DARK
+        {ST_DM,  ST_DM,  NE_DM,  NE_DM, ST_DM, ST_DM,    SE_DM, ST_DM,    ST_DM,  ST_DM,  ST_DM,  ST_DM,   ST_DM, SE_DM, ST_DM, ST_DM,  ST_DM, NE_DM, SE_DM}, // STEEL
+        {ST_DM,  ST_DM,  NE_DM,  ST_DM, ST_DM, ST_DM,    ST_DM, SE_DM,    NE_DM,  ST_DM,  ST_DM,  ST_DM,   ST_DM, ST_DM, ST_DM, SE_DM,  SE_DM, NE_DM, ST_DM}  // FAIRY
 };
 
 static map<string, PokeTypes> string_types = {

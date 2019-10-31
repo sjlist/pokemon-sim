@@ -122,31 +122,45 @@ set(BATTLE_TEST_FILES
         Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-Battle.cpp
         Battle/unit-tests/test-BattleActor.cpp
-        Battle/unit-tests/test-BattleStateMachine.cpp
-        Battle/unit-tests/test-main.cpp)
+        Battle/unit-tests/test-BattleStateMachine.cpp)
+
+set(POKEMON_TEST_FILES
+    Pokemon/unit-tests/test-Type.cpp)
 
 add_executable(unit-test-all
-        ${BATTLE_TEST_FILES})
+        ${BATTLE_TEST_FILES}
+        ${POKEMON_TEST_FILES}
+        Battle/unit-tests/test-main.cpp)
 
 target_link_libraries(unit-test-all gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-all COMMAND unit-test-all)
 
-set(BATTLE_TEST_FILES
+set(TYPE_TEST_FILES
+        Pokemon/unit-tests/test-Type.cpp
+        Pokemon/unit-tests/test-main.cpp)
+
+add_executable(unit-test-Type
+        ${TYPE_TEST_FILES})
+
+target_link_libraries(unit-test-Type gtest_main Pokemon_Battle_Sim)
+add_test(NAME unit-test-Type COMMAND unit-test-Type)
+
+set(FIELD_TEST_FILES
         Battle/unit-tests/test-Field.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(unit-test-Field
-        ${BATTLE_TEST_FILES})
+        ${FIELD_TEST_FILES})
 
 target_link_libraries(unit-test-Field gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-Field COMMAND unit-test-Field)
 
-set(BATTLE_TEST_FILES
+set(TARGETING_TEST_FILES
         Battle/unit-tests/test-Targeting.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(unit-test-Targeting
-        ${BATTLE_TEST_FILES})
+        ${TARGETING_TEST_FILES})
 
 target_link_libraries(unit-test-Targeting gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-Targeting COMMAND unit-test-Targeting)
@@ -163,24 +177,24 @@ add_executable(unit-test-Battle
 target_link_libraries(unit-test-Battle gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-Battle COMMAND unit-test-Battle)
 
-set(BATTLE_TEST_FILES
+set(BATTLE_ACTOR_TEST_FILES
         Battle/unit-tests/test-BattleActor.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(unit-test-BattleActor
-        ${BATTLE_TEST_FILES})
+        ${BATTLE_ACTOR_TEST_FILES})
 
 target_link_libraries(unit-test-BattleActor gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-BattleActor COMMAND unit-test-BattleActor)
 
-set(BATTLE_TEST_FILES
+set(BATTLE_STATE_MACHINE_TEST_FILES
         Battle/unit-tests/test-BattleStateMachine.cpp
         Battle/unit-tests/probability-helpers.h
         Battle/unit-tests/probability-helpers.cpp
         Battle/unit-tests/test-main.cpp)
 
 add_executable(unit-test-BattleStateMachine
-        ${BATTLE_TEST_FILES})
+        ${BATTLE_STATE_MACHINE_TEST_FILES})
 
 target_link_libraries(unit-test-BattleStateMachine gtest_main Pokemon_Battle_Sim)
 add_test(NAME unit-test-BattleStateMachine COMMAND unit-test-BattleStateMachine)

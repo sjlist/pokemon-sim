@@ -40,6 +40,6 @@ for test in "${unit_test_array[@]}"; do
 
     cd ${POKEMON_LIB_DIR}
     genhtml --output-directory ${TEST_DIR}/coverage Battle/battle.info Pokemon/pokemon.info --title ${test_name}
-    #xdg-open ../${test_name}.dir/coverage/index.html &
+    xdg-open ../${test_name}.dir/coverage/index.html &
     cd ${PROJECT_HOME}
 done
